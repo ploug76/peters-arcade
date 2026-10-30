@@ -140,6 +140,297 @@ window.__vault={open:false,relock,IDLE}})();
 <script>
 ;(function(){/*swup v1: check for updates on every open*/if(window.__swup)return;window.__swup=1;var S=navigator.serviceWorker;if(!S||!/^https?:$/.test(location.protocol))return;var ARC=1,BUSY=function(){return !!(window.__vault&&window.__vault.open)},had=!!S.controller,inp=0,K='swup:'+location.pathname;['pointerdown','keydown','touchstart','wheel'].forEach(function(t){addEventListener(t,function(){inp=1},{capture:true,passive:true})});function chk(){try{S.getRegistration().then(function(r){if(r)r.update().catch(function(){})},function(){})}catch(e){}}addEventListener('load',function(){setTimeout(chk,800)});document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){if(ARC)inp=0;chk()}});addEventListener('pageshow',function(e){if(e.persisted){if(ARC)inp=0;chk()}});function pill(){if(document.getElementById('swupPill'))return;var b=document.createElement('button');b.id='swupPill';b.type='button';b.textContent='Update ready \u2013 tap to refresh';b.style.cssText='position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 8px);transform:translateX(-50%);z-index:2147483647;padding:8px 14px;border:0;border-radius:999px;background:#ffd23f;color:#111;font:600 14px system-ui,sans-serif;box-shadow:0 2px 10px rgba(0,0,0,.45);cursor:pointer';b.addEventListener('click',function(){location.reload()});(document.body||document.documentElement).appendChild(b)}S.addEventListener('controllerchange',function(){if(!had){had=true;return}var n=Date.now(),l=0,busy=false;try{l=+sessionStorage.getItem(K)||0}catch(e){}try{busy=!!(BUSY&&BUSY())}catch(e){}if(inp||busy||n-l<15000||document.visibilityState!=='visible'){pill();return}try{sessionStorage.setItem(K,String(n))}catch(e){}location.reload()})})();if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js',{updateViaCache:'none'});
 </script>
+
+
+<!--kellydemo-->
+<style>#paDemo{max-width:1500px;margin:10px auto 0;padding:0 14px;text-align:center;font:600 14px system-ui,sans-serif;color:#fcd858}#paDemo a{color:#fff;background:#333;border:2px solid #fcd858;border-radius:999px;padding:5px 12px;margin:4px;display:inline-block;text-decoration:none}</style>
+<script>(()=>{/* demo-only: ?resetdemo=1 or the Reset link wipes Peter's demo token/spin/opened state (pa26demo_*), never Kelly's kg26_* */
+const q=new URLSearchParams(location.search);function wipe(){try{Object.keys(localStorage).filter(k=>/^pa26demo_/.test(k)&&k!=='pa26demo_mute').forEach(k=>localStorage.removeItem(k));Object.keys(sessionStorage).filter(k=>/^pa26demoqa_/.test(k)).forEach(k=>sessionStorage.removeItem(k))}catch(e){}}
+if(q.get('resetdemo')==='1'){wipe();q.delete('resetdemo');const s=q.toString();try{history.replaceState(null,'',location.pathname+(s?'?'+s:'')+location.hash)}catch(e){}}
+window.__paDemo={wipe};
+addEventListener('DOMContentLoaded',()=>{if(window.__pa&&__pa.sample)return;const g=document.getElementById('kgifts');if(!g)return;const d=document.createElement('div');d.id='paDemo';
+d.innerHTML='🧪 Peter\'s demo of Kelly\'s birthday presents. <a href="?resetdemo=1" id="paReset">↺ Reset demo</a><a href="?'+(window.__pa&&__pa.full?'full=1&':'')+'__giftqa=2026-11-01" id="paBday">🎂 Preview Nov 1</a>';g.parentNode.insertBefore(d,g);
+document.getElementById('paReset').addEventListener('click',e=>{e.preventDefault();wipe();location.href=location.pathname})})})()</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap"><style>
+#kgifts{max-width:1500px;margin:14px auto 4px;padding:0 14px;box-sizing:border-box}
+#kgifts *{box-sizing:border-box}
+.kgPanel{position:relative;border-radius:22px;padding:34px 14px 22px;color:#5a2d5f;font-family:Fredoka,"Comic Sans MS","Chalkboard SE",system-ui,sans-serif;background:radial-gradient(circle at 12px 12px,rgba(255,255,255,.55) 3px,transparent 3.5px) 0 0/26px 26px,linear-gradient(160deg,#fff3d6,#ffe1ef 45%,#e3f7ef);border:4px dashed #ff8fc0;box-shadow:0 0 0 4px #fff,0 8px 0 4px rgba(0,0,0,.25)}
+.kgPanel:before{content:"";position:absolute;left:10px;right:10px;top:4px;height:26px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='26'%3E%3Cpath d='M0 3 Q75 9 150 3' stroke='%23c77' stroke-width='1.5' fill='none'/%3E%3Cpath d='M4 4 L26 5 L15 24Z' fill='%23ff7eb6'/%3E%3Cpath d='M34 5.5 L56 6.5 L45 25Z' fill='%23ffd23f'/%3E%3Cpath d='M64 6.5 L86 6.5 L75 25Z' fill='%2364d6b4'/%3E%3Cpath d='M94 6.5 L116 5.5 L105 25Z' fill='%23a78bfa'/%3E%3Cpath d='M124 5 L146 4 L135 24Z' fill='%23ff9a52'/%3E%3C/svg%3E") repeat-x 0 0/150px 26px;pointer-events:none}
+.kgH{margin:6px 44px 4px;text-align:center;font-size:clamp(22px,5.6vw,34px);line-height:1.1;font-weight:700;color:#e0439a;letter-spacing:.5px;text-shadow:2px 2px 0 #fff,4px 4px 0 #ffc6de}
+.kgH .w{display:inline-block;animation:kgBob 2.4s ease-in-out infinite}
+.kgSub{margin:4px auto 16px;text-align:center;font-size:17px;font-weight:500;color:#6b3d70;max-width:640px}
+.kgSub b{color:#e0439a}
+#kgMute{position:absolute;top:30px;right:10px;width:44px;height:44px;border-radius:50%;border:3px solid #fff;background:#ff8fc0;font-size:20px;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.2);touch-action:manipulation}
+.kgGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));grid-auto-flow:row dense;gap:40px 18px;padding-top:22px}
+.kgItem{position:relative}
+.kgItem.kgOpen{grid-column:span 2}
+.kgBox{position:relative;aspect-ratio:1/.9;border-radius:8px;outline:none;cursor:pointer;-webkit-tap-highlight-color:transparent;animation:kgBob 3.2s ease-in-out infinite;animation-delay:var(--d,0s);filter:drop-shadow(0 6px 0 rgba(90,45,95,.18))}
+.kgBox:focus-visible{box-shadow:0 0 0 4px #fff,0 0 0 8px #e0439a}
+.kgBox{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.kgBox img{-webkit-user-drag:none;pointer-events:none}
+.kgBox.rip{animation:none;touch-action:pan-y;cursor:grab}
+.kgBox.ripping{cursor:grabbing;z-index:5}
+.kgIn{position:absolute;inset:0;border-radius:8px;overflow:hidden;background:radial-gradient(circle,#fff 30%,#ffe1ef)}
+.kgIn img,.kgIn .kgTC{width:100%;height:100%;object-fit:cover;display:block}
+.kgPaper,.kgPc{position:absolute;background-repeat:no-repeat}
+.kgPaper{inset:0;border-radius:8px;background-size:cover;background-position:center;box-shadow:inset 0 -10px 18px rgba(0,0,0,.1),inset 0 8px 10px rgba(255,255,255,.35)}
+.kgPcs{position:absolute;inset:0;pointer-events:none}
+.kgPc{will-change:transform}
+.kgLid{position:absolute;left:-5%;right:-5%;top:-4%;height:27%;border-radius:7px;background-size:cover;background-position:center top;box-shadow:0 5px 0 rgba(0,0,0,.13),inset 0 6px 8px rgba(255,255,255,.4)}
+.kgRV,.kgRH{position:absolute;background:linear-gradient(90deg,var(--r),var(--r2) 50%,var(--r));box-shadow:0 0 0 1px rgba(0,0,0,.06)}
+.kgRV{top:-4%;bottom:0;left:50%;width:15%;transform:translateX(-50%);border-left:2px dashed rgba(255,255,255,.7);border-right:2px dashed rgba(255,255,255,.7)}
+.kgRH{left:0;right:0;top:56%;height:14%;background:linear-gradient(180deg,var(--r),var(--r2) 50%,var(--r));border-top:2px dashed rgba(255,255,255,.7);border-bottom:2px dashed rgba(255,255,255,.7)}
+.kgBow{position:absolute;left:50%;top:-24%;width:58%;transform:translateX(-50%);color:var(--r);filter:drop-shadow(0 3px 0 rgba(0,0,0,.15));pointer-events:none}
+.kgTag{position:absolute;right:4%;bottom:7%;transform:rotate(-9deg);transform-origin:top left;background:#fffaf0;color:#6b3d70;border:2px solid #e9c9a8;border-radius:6px 14px 14px 6px;padding:3px 10px 3px 16px;font:700 13px/1.2 Fredoka,"Comic Sans MS",system-ui,sans-serif;white-space:nowrap;box-shadow:0 2px 0 rgba(0,0,0,.15)}
+.kgTag:before{content:"";position:absolute;left:5px;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:#e9c9a8}
+.kgHint{position:absolute;left:50%;top:38%;transform:translateX(-50%);background:rgba(255,255,255,.94);color:#e0439a;border:3px solid #ff8fc0;border-radius:20px;padding:4px 12px;font:700 14px/1.2 Fredoka,system-ui,sans-serif;white-space:nowrap;pointer-events:none;box-shadow:0 3px 0 rgba(0,0,0,.15);animation:kgPulse 1.6s ease-in-out infinite}
+.kgHint i{display:inline-block;font-style:normal;animation:kgSwipe 1.6s ease-in-out infinite}
+.kgBox.ripping .kgHint,.kgBox.torn .kgHint{display:none}
+.kgBox.wig{animation:kgWig .7s ease-in-out}
+@keyframes kgBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes kgWig{0%{transform:rotate(0) scale(1)}15%{transform:rotate(-9deg) scale(1.06)}30%{transform:rotate(8deg) scale(1.06)}45%{transform:rotate(-6deg)}60%{transform:rotate(5deg)}75%{transform:rotate(-2deg) translateY(-6px)}100%{transform:rotate(0)}}
+@keyframes kgPulse{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.07)}}
+@keyframes kgSwipe{0%,100%{transform:translateX(-6px)}50%{transform:translateX(8px)}}
+@keyframes kgPop{0%{transform:scale(.55) rotate(-4deg);opacity:0}60%{transform:scale(1.05) rotate(1deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+.kgOpen .card{animation:kgPop .6s cubic-bezier(.2,.9,.3,1.3) both;position:relative}
+.kgBadge{position:absolute;top:-16px;left:-12px;font-size:30px;transform:rotate(-18deg);filter:drop-shadow(0 2px 0 rgba(0,0,0,.3));pointer-events:none}
+.kgTC{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:4px;aspect-ratio:720/378;width:100%;background:radial-gradient(circle at 20% 30%,#fff6 6px,transparent 7px) 0 0/34px 34px,linear-gradient(135deg,#ffd23f,#ff8fc0 55%,#a78bfa);color:#fff;text-align:center;padding:10px;font:700 clamp(16px,4vw,22px)/1.15 Fredoka,system-ui,sans-serif;text-shadow:2px 2px 0 rgba(90,45,95,.45)}
+.kgTC span{font-size:2.2em;line-height:1}
+.kgPeek{position:absolute;inset:0;pointer-events:none;overflow:visible;z-index:6}
+.kgPeek span{position:absolute;bottom:-6px;font-size:58px;line-height:1;animation:kgPeekUp 2.8s ease-in-out both}
+.kgPeek .a{left:-6px}.kgPeek .b{right:-4px;animation-delay:.15s}
+.kgPeek em{position:absolute;left:0;right:0;margin:0 auto;width:max-content;top:-30px;font:700 18px/1.2 Fredoka,system-ui,sans-serif;font-style:normal;white-space:nowrap;background:#fff;color:#e0439a;border:3px solid #ff8fc0;border-radius:18px;padding:5px 14px;animation:kgPop .5s .25s both,kgFade 2.8s ease-in both}
+@keyframes kgPeekUp{0%{transform:translateY(60px) scale(.6);opacity:0}18%{transform:translateY(-34px) scale(1.1);opacity:1}30%{transform:translateY(-26px) rotate(-6deg)}45%{transform:translateY(-30px) rotate(6deg)}80%{transform:translateY(-28px);opacity:1}100%{transform:translateY(50px);opacity:0}}
+@keyframes kgFade{0%,80%{opacity:1}100%{opacity:0}}
+#kgMsg{position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;background:rgba(40,10,40,.55);padding:16px}
+#kgMsg.on{display:flex}
+.kgM{width:min(360px,100%);background:#fff7fb;border:5px solid #ff8fc0;border-radius:26px;box-shadow:0 0 0 5px #fff,0 10px 0 5px rgba(0,0,0,.25);padding:18px 16px 16px;text-align:center;color:#5a2d5f;font-family:Fredoka,"Comic Sans MS",system-ui,sans-serif;animation:kgPop .45s cubic-bezier(.2,.9,.3,1.4) both}
+.kgM .e{font-size:50px;line-height:1}
+.kgM h3{margin:6px 0 2px;font-size:28px;color:#e0439a}
+.kgM p{margin:4px 0 10px;font-size:17px}
+.kgCd{display:flex;justify-content:center;gap:8px;margin:6px 0 14px}
+.kgCd div{width:76px;padding:8px 0 6px;border-radius:16px;color:#fff;font-size:12px;font-weight:500;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.kgCd b{display:block;font-size:28px;line-height:1}
+.kgCd div:nth-child(1){background:#ff7eb6}.kgCd div:nth-child(2){background:#64c9a8}.kgCd div:nth-child(3){background:#a78bfa}
+.kgM button{min-height:46px;padding:0 26px;border-radius:23px;border:3px solid #fff;background:#e0439a;color:#fff;font:700 18px Fredoka,system-ui,sans-serif;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.2)}
+#kgTease{display:flex;align-items:center;justify-content:center;gap:6px;margin:26px auto 0;max-width:420px}#kgTease[hidden]{display:none}
+.kgTk{font-size:44px;line-height:1;animation:kgBob 2.6s ease-in-out infinite}
+.kgTn{position:relative;background:#fffbe6;color:#6b3d70;border:2px solid #f1d98a;border-radius:4px;padding:8px 12px;font:700 15px/1.3 Fredoka,"Comic Sans MS",system-ui,sans-serif;transform:rotate(-2.5deg);box-shadow:0 3px 0 rgba(0,0,0,.12)}
+.kgTn:before{content:"";position:absolute;left:50%;top:-9px;width:44px;height:16px;margin-left:-22px;background:rgba(255,143,192,.55);transform:rotate(3deg)}
+.kgV{margin-top:26px}.kgV .kvt{animation:kgPop .6s cubic-bezier(.2,.9,.3,1.3) both;position:relative}
+#kgTok{display:flex;align-items:center;gap:12px;margin:0 auto 6px;padding:8px 20px 8px 10px;border-radius:40px;border:4px solid #fff;background:linear-gradient(135deg,#ff7eb6,#a78bfa);color:#fff;font:700 18px/1.15 Fredoka,system-ui,sans-serif;cursor:pointer;box-shadow:0 5px 0 rgba(90,45,95,.3);animation:kgBob 2s ease-in-out infinite;touch-action:manipulation;text-align:left}#kgTok[hidden]{display:none}
+.kgCoin{position:relative;width:64px;height:64px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 35% 30%,#fff6c2,#ffd23f 45%,#e0a100);border:4px solid #fff0a8;box-shadow:inset 0 0 0 4px #f0b400,0 0 18px #ffe066;overflow:hidden;animation:kgSpinC 3s ease-in-out infinite}
+.kgCoin i{font-style:normal;font-size:30px}.kgCoin:after{content:"";position:absolute;top:-20%;left:-60%;width:40%;height:140%;background:rgba(255,255,255,.75);transform:rotate(25deg);animation:kgShine 2.2s ease-in-out infinite}
+@keyframes kgShine{0%,55%{left:-60%}100%{left:130%}}@keyframes kgSpinC{0%,70%,100%{transform:rotateY(0)}85%{transform:rotateY(180deg)}}
+.kgWheelM{width:min(380px,100%)}.kgWheel{position:relative;width:min(300px,72vw,58vh);margin:6px auto 14px}
+.kgWrot{will-change:transform}.kgWheelS{display:block;width:100%;height:auto;filter:drop-shadow(0 5px 0 rgba(90,45,95,.25))}
+.kgPtr{position:absolute;left:50%;top:-14px;z-index:2;width:0;height:0;margin-left:-15px;border-left:15px solid transparent;border-right:15px solid transparent;border-top:32px solid #e0439a;filter:drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff);transform-origin:50% 0}
+.kgPtr.flap{animation:kgFlap .12s ease-out}@keyframes kgFlap{0%{transform:rotate(0)}40%{transform:rotate(-16deg)}100%{transform:rotate(0)}}
+.kgBig{display:block;font-size:26px;color:#e0439a;margin-bottom:2px}
+.kgM button:disabled{opacity:.6}
+@media (max-height:500px){.kgWheelM{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:center;width:min(640px,100%);padding:10px 14px}.kgWheelM h3{grid-column:2;margin:0}.kgWheelM .kgWheel{grid-row:1/span 3;grid-column:1;margin:4px;width:min(300px,62vh)}.kgWheelM p{grid-column:2;margin:0}.kgWheelM button{grid-column:2;justify-self:center}}
+#kgConf{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:79}
+#kgQA{position:fixed;left:6px;bottom:6px;z-index:90;background:#222;color:#ffd23f;font:11px monospace;padding:2px 6px;border-radius:6px;opacity:.75;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.kgBox,.kgH .w,.kgHint,.kgHint i{animation:none}}
+</style><script>
+/* ===== KELLY'S BIRTHDAY GIFTS (Nov 1, 2026) =====
+   Every Volume 2 game lives in GIFTS below (NOT in GAMES), so it never shows on the page, in the
+   All-games list or the leaderboards until it is unwrapped.
+   - Before Oct 31, 2026 (viewer's local time): wrapped presents only (no title/cover/link). Tap = wiggle + "No peeking!" + countdown.
+   - Oct 31, 2026: Kelly gets ONE Birthday Token; she spends it on one prize-wheel spin (8x '1', 2x '2') and may swipe-open that many
+     presents early (kg26_spin = result, saved before the wheel stops; kg26_early = her picks). The rest stay wrapped.
+   - Nov 1, 2026 00:00 local and later: swipe across each present to rip the paper off; it becomes a normal card.
+   Opened presents are remembered in localStorage (kg26_open / kg26_early).
+   TO ADD A VOL 2 GAME: add ONE line to GIFTS, e.g.
+     {id:'my-game-vol-2',title:"My Game: Volume 2",desc:'Short blurb',url:'https://ploug76.github.io/my-game-vol-2/',cover:'../kellys-arcade/covers/my-game-vol-2.gif'},
+   cover is optional (a cheerful title card is shown if it is empty or fails to load; emoji:'🦒' sets its picture); lb:[['board-id','Label']] adds leaderboard boards;
+   paper:'choc'|'kitten'|'giraffe'|'mix' picks the wrapping paper (otherwise it rotates). Do not add Vol 2 covers to sw.js precache.
+   QA only: ?__giftqa=2026-10-30 | 2026-10-31 | 2026-11-01 (optionally T13:45) fakes the date, &__giftspin=1|2 forces the wheel (QA only); QA state uses sessionStorage, never Kelly's saved state. */
+const GIFTS=[
+ {id:'kelly-crunch-vol-2',title:"Doctor Kelly's Lizard Munch: The Great Feast Quest",desc:'Doctor Kelly the little lizard is back! Feed the food chain across 5 painted worlds, beat 5 bosses and save the Rainbow Feast. 230 puzzles too. Free!',url:'https://ploug76.github.io/kelly-crunch-vol-2/',cover:'../kellys-arcade/covers/kelly-crunch-vol-2.gif',paper:'choc'},
+ {id:'kelly-crunch-vol-3',title:'Kelly Krunch: The Great Feast Quest',desc:'Kelly is a little giraffe now! Her stubby neck s-t-r-e-t-c-h-e-s up to grab critters. 5 worlds, 5 bosses, 230 puzzles. Free!',url:'https://ploug76.github.io/kelly-crunch-vol-3/',cover:'../kellys-arcade/covers/kelly-crunch-vol-3.gif',paper:'kitten'},
+ {id:'kellys-giraffe-getaway-vol-2',title:"Kelly's Giraffe Getaway Vol. 2: Return of the Hyena King",desc:'Kelly and Jinxy are back! Ram, swing and slurp across 10 painted savanna levels and 5 boss battles to save Gigi from Cackles the Hyena King. Free!',url:'https://ploug76.github.io/kellys-giraffe-getaway-vol-2/',cover:'../kellys-arcade/covers/kellys-giraffe-getaway-vol-2.gif',lb:[['kellys-giraffe-getaway-vol-2','Top']],paper:'giraffe'},
+ {id:'helenes-treasure-chest-vol-2',title:"Helene's Treasure Chest: Volume 2",desc:"Helene's sequel: a gentle journey through six painted lands, friendly treasure chests to open, boosters and calm new music. Easy on older phones. Free!",url:'https://ploug76.github.io/helenes-treasure-chest-vol-2/',cover:'../kellys-arcade/covers/helenes-treasure-chest-vol-2.gif',lb:[['helenes-treasure-chest-vol-2__journey','Journey'],['helenes-treasure-chest-vol-2__rush','Treasure Rush']],paper:'kitten'},
+ {id:'kellys-giraffe-adventure-vol-2',title:"Kelly's Giraffe Adventure Vol. 2: The Rhino Rumble",desc:"Kelly's giraffe adventure continues! 5 worlds, 10 levels and 5 bosses, all the way to King Rumble the Rhino.",url:'https://ploug76.github.io/kellys-giraffe-adventure-vol-2/',cover:'../kellys-arcade/covers/kellys-giraffe-adventure-vol-2.gif',paper:'mix'},
+ {id:'melissas-super-80s-movies-challenge-vol-2',title:"Melissa's Super 80s Movies Challenge: Volume 2",desc:'Melissa is back in 10 neon movie scenes: prom night, a rooftop car chase, a time-machine dash, a haunted mansion and a moon ride, with bosses and an original synthwave score. Free!',url:'https://ploug76.github.io/melissas-super-80s-movies-challenge-vol-2/',cover:'../kellys-arcade/covers/melissas-super-80s-movies-challenge-vol-2.gif',paper:'giraffe'},
+ {id:'melissaette-bday-c38938-vol-2',title:'Melissa Time: The Great Birthday Rescue, Volume 2',desc:'Happy 54th, Melissa! The remastered sequel: six painted lands, six bosses, 54 candles and a birthday-party finale.',url:'https://ploug76.github.io/melissaette-bday-c38938-vol-2/',cover:'../kellys-arcade/covers/melissaette-bday-c38938-vol-2.gif',lb:[['melissaette-bday-c38938-vol-2','Top']],paper:'choc'},
+ {id:'jedi-jims-rebel-mission-vol-2',title:"Jedi Jim's Rebel Mission: Volume 2",desc:'Jim is back! Saber through stormtroopers, race a speeder bike past an AT-ST and duel Darth Vexis to get the Light Ring back. Free!',url:'https://ploug76.github.io/jedi-jims-rebel-mission-vol-2/',cover:'../kellys-arcade/covers/jedi-jims-rebel-mission-vol-2.gif',paper:'mix'},
+ {id:'taco-strike-80s',title:'Taco Strike',desc:'A walking taco storms the 80s Saturday-morning lands! Pick your hero; swipe to move, JUMP and THROW.',url:'https://ploug76.github.io/taco-strike-80s/',cover:'../kellys-arcade/covers/taco-strike-80s.jpg?v=1',paper:'kitten'},
+ {id:'jimothy-timothy-hair-mob',title:'Jimothy Timothy and the Hair Mob',desc:"Word on the street, they call him J.T.! Pull hair heists on a schedule with Noodles the ferret, drive the solar Jeep and win 5 silly showdowns. Free!",url:'https://ploug76.github.io/jimothy-timothy-hair-mob/',cover:'../kellys-arcade/covers/jimothy-timothy-hair-mob.jpg',lb:[['jimothy-timothy-hair-mob','Top']],paper:'giraffe'},
+];
+(()=>{
+const EARLY=new Date(2026,9,30).getTime(),OPEN=new Date(2026,10,1).getTime();
+const PAPERS=['choc','kitten','giraffe','mix'],RIB={choc:['#2fb5a0','#7fe3d2'],kitten:['#ff5fa0','#ffb3d1'],giraffe:['#8b5cf6','#c4b0ff'],mix:['#ffb703','#ffe08a']};
+const $=i=>document.getElementById(i),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// ---- clock (+ hidden QA hook) ----
+let off=0,QA=false;try{const v=new URLSearchParams(location.search).get('__giftqa');const m=v&&/^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?$/.exec(v);
+ if(m){const d=new Date(+m[1],+m[2]-1,+m[3],m[4]?+m[4]:12,m[5]?+m[5]:0);if(!isNaN(d)){off=d.getTime()-Date.now();QA=true}}}catch(e){}
+const now=()=>Date.now()+off;
+const phase=()=>{const t=now();return t<EARLY?'pre':t<OPEN?'eve':'bday'};
+let ST;try{ST=QA?sessionStorage:localStorage;ST.getItem('x')}catch(e){ST={getItem(){return null},setItem(){}}}
+const K=QA?'pa26demoqa_':'pa26demo_';
+const getOpen=()=>{try{const a=JSON.parse(ST.getItem(K+'open')||'[]');return Array.isArray(a)?a:[]}catch(e){return[]}};
+const setOpen=a=>{try{ST.setItem(K+'open',JSON.stringify(a))}catch(e){}};
+// Oct 31: one Birthday Token -> one wheel spin -> result N (1 or 2) presents may be opened early.
+const early=()=>{const v=ST.getItem(K+'early')||'';try{const a=JSON.parse(v);if(Array.isArray(a))return a.map(String)}catch(e){}return v?[v]:[]};
+const spinN=()=>{const n=+ST.getItem(K+'spin');return n===1||n===2?n:0};
+let FORCE=0;try{if(QA){const f=+new URLSearchParams(location.search).get('__giftspin');if(f===1||f===2)FORCE=f}}catch(e){}
+const WHEEL=[1,1,2,1,1,1,1,2,1,1]; // 10 slices: 8x '1', 2x '2' (pure random, 20% chance of 2)
+const ids=new Set(GIFTS.map(g=>g.id)),VGIFTS=[];const findG=id=>GIFTS.find(x=>x.id===id)||VGIFTS.find(x=>x.id===id);const idxG=g=>GIFTS.includes(g)?GIFTS.indexOf(g):VGIFTS.indexOf(g);
+function shown(id){const p=phase(),o=getOpen().includes(id);return p=='bday'?o:p=='eve'?(o&&early().includes(id)):false}
+function canRip(id){if(shown(id))return false;const p=phase();if(p=='bday')return true;if(p!='eve')return false;const n=spinN(),e=early();return !!n&&(e.includes(id)||e.length<n)}
+// Leaderboard/registry hooks (read by the leaderboard script below)
+window.__kgHide=id=>(ids.has(id)||/-vol-\d+$/.test(id))&&!shown(id);
+window.__kgLB={R:Object.fromEntries(GIFTS.filter(g=>g.lb&&g.lb.length).map(g=>[g.id,{t:g.title,u:g.url,unit:g.unit||'pts',b:g.lb}])),here:GIFTS.filter(g=>g.lb&&g.lb.length).map(g=>g.id)};
+// ---- audio (WebAudio, synthesized) ----
+let AC=null,MG=null,NZ=null;let muted=false;try{muted=localStorage.getItem('pa26demo_mute')==='1'}catch(e){}
+function ac(){if(!AC){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;AC=new C();MG=AC.createGain();MG.gain.value=muted?0:1;MG.connect(AC.destination);
+ const n=AC.sampleRate*1.2|0;NZ=AC.createBuffer(1,n,AC.sampleRate);const d=NZ.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1}
+ if(AC.state==='suspended')AC.resume().catch(()=>{});return AC}
+['pointerup','touchend','keydown','click'].forEach(ev=>addEventListener(ev,()=>{if(AC&&AC.state==='suspended')AC.resume().catch(()=>{})},{passive:true,capture:true}));
+const mf=m=>440*Math.pow(2,(m-69)/12);
+function tine(m,t,v=.2,len=1.5){const f=mf(m),g=AC.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.006);g.gain.exponentialRampToValueAtTime(.0001,t+len);g.connect(MG);
+ [[1,1,'sine'],[2,.28,'sine'],[3.98,.08,'triangle']].forEach(([k,a,ty])=>{const o=AC.createOscillator(),og=AC.createGain();o.type=ty;o.frequency.value=f*k;og.gain.value=a;if(k>3){og.gain.setValueAtTime(a,t);og.gain.exponentialRampToValueAtTime(.0001,t+.25)}o.connect(og).connect(g);o.start(t);o.stop(t+len+.05)})}
+function noise(t,dur,f1,f2,v){const s=AC.createBufferSource();s.buffer=NZ;const bp=AC.createBiquadFilter();bp.type='bandpass';bp.Q.value=.9;bp.frequency.setValueAtTime(f1,t);bp.frequency.exponentialRampToValueAtTime(f2,t+dur);
+ const g=AC.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+dur);s.connect(bp).connect(g).connect(MG);s.start(t,Math.random()*.6,dur+.05)}
+let lastRip=0;function ripSnd(big){if(!ac())return;const t=AC.currentTime;if(!big&&t-lastRip<.05)return;lastRip=t;
+ if(big){noise(t,.5,900,4200,.55);noise(t+.08,.35,2500,1200,.35)}else{const a=900+Math.random()*1800;noise(t,.09+Math.random()*.1,a,a*(1.6+Math.random()),.4)}}
+function popSnd(){if(!ac())return;const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.frequency.setValueAtTime(700,t);o.frequency.exponentialRampToValueAtTime(160,t+.15);g.gain.setValueAtTime(.35,t);g.gain.exponentialRampToValueAtTime(.0001,t+.18);o.connect(g).connect(MG);o.start(t);o.stop(t+.2)}
+function jingle(){if(!ac())return;const t=AC.currentTime;[88,91,93,91,96,100].forEach((m,i)=>tine(m,t+i*.07+Math.random()*.02,.09,.5));noise(t,.45,7000,9000,.06)}
+// Happy Birthday (public domain melody) as a music box: [midi, beats, bass?]
+const HB=[[67,.75],[67,.25],[69,1,48],[67,1],[72,1],[71,2,43],[67,.75],[67,.25],[69,1,43],[67,1],[74,1],[72,2,48],[67,.75],[67,.25],[79,1,48],[76,1],[72,1,41],[71,1],[69,2,41],[77,.75],[77,.25],[76,1,48],[72,1],[74,1,43],[72,3,48]];
+const BEAT=.46;let mus={on:false,i:0,t:0,iv:0};
+function wrappedLeft(){return GIFTS.some(g=>canRip(g.id))||VGIFTS.some(g=>canRip(g.id))}
+function musicStart(){if(mus.on||!ac())return;mus.on=true;mus.i=0;mus.t=AC.currentTime+.12;mus.iv=setInterval(sched,60)}
+function sched(){while(mus.on&&mus.t<AC.currentTime+.35){const [m,b,bs]=HB[mus.i];tine(m,mus.t,.16,Math.min(2.2,b*BEAT+1));if(bs){tine(bs,mus.t,.07,2);tine(bs+7,mus.t,.04,1.6)}
+  mus.t+=b*BEAT;if(++mus.i>=HB.length){mus.i=0;mus.t+=2*BEAT;if(!wrappedLeft()&&!document.querySelector('.kgBox.ripping'))musicStop()}}}
+function musicStop(){mus.on=false;clearInterval(mus.iv)}
+function flourish(){if(!ac())return;musicStop();const t=AC.currentTime+.2;[72,76,79,84,88,91,96].forEach((m,i)=>tine(m,t+i*.08,.15,1.4));[72,76,79,84].forEach(m=>tine(m,t+.75,.12,3))}
+function setMute(v){muted=v;try{localStorage.setItem('pa26demo_mute',v?'1':'0')}catch(e){}if(MG)MG.gain.setTargetAtTime(v?0:1,AC.currentTime,.05);const b=$('kgMute');if(b){b.textContent=v?'🔇':'🔊';b.setAttribute('aria-label',v?'Turn music on':'Mute music');b.setAttribute('aria-pressed',v)}}
+// ---- confetti ----
+function confetti(x,y){const cv=document.createElement('canvas');cv.id='kgConf';document.body.appendChild(cv);const dpr=Math.min(2,devicePixelRatio||1);cv.width=innerWidth*dpr;cv.height=innerHeight*dpr;const c=cv.getContext('2d');c.scale(dpr,dpr);
+ const red=matchMedia('(prefers-reduced-motion: reduce)').matches,N=red?40:150,COL=['#ff7eb6','#ffd23f','#64d6b4','#a78bfa','#ff9a52','#7b4a2a','#fff'],EM=['🍫','🐱','🦒','🎂','💖','⭐'];
+ const P=[...Array(N)].map((_,i)=>{const a=Math.random()*Math.PI*2,s=4+Math.random()*9;return{x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-7,r:Math.random()*6,vr:(Math.random()-.5)*.4,w:6+Math.random()*7,h:4+Math.random()*5,c:COL[i%COL.length],e:i%9==0?EM[i%EM.length]:'',sh:i%3}});
+ const t0=performance.now();(function f(t){const el=t-t0;c.clearRect(0,0,innerWidth,innerHeight);c.globalAlpha=Math.max(0,1-Math.max(0,el-2000)/900);
+  for(const p of P){p.vy+=.28;p.vx*=.985;p.vy*=.985;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;c.save();c.translate(p.x,p.y);c.rotate(p.r);
+   if(p.e){c.font='22px serif';c.fillText(p.e,-11,8)}else{c.fillStyle=p.c;if(p.sh==0){c.beginPath();c.arc(0,0,p.h/1.4,0,7);c.fill()}else c.fillRect(-p.w/2,-p.h/2,p.w,p.h*(p.sh==1?1:.5))}c.restore()}
+  if(el<2900)requestAnimationFrame(f);else cv.remove()})(t0)}
+// ---- rendering ----
+const paperOf=(g,i)=>PAPERS.includes(g.paper)?g.paper:PAPERS[i%4];
+const purl=p=>'../kellys-arcade/gifts/paper-'+p+'.webp';
+const BOW='<svg class="kgBow" viewBox="0 0 120 64" aria-hidden="true"><path fill="currentColor" d="M60 36C42 6 8 4 10 28c2 20 30 18 50 8zM60 36c18-30 52-32 50-8-2 20-30 18-50 8z"/><path fill="#000" opacity=".14" d="M58 35C44 18 22 16 21 28c1 10 22 12 37 7zM62 35c14-17 36-19 37-7-1 10-22 12-37 7z"/><path fill="#fff" opacity=".45" d="M24 16c6-4 14-3 20 2-7-1-13 0-20-2zM96 16c-6-4-14-3-20 2 7-1 13 0 20-2z"/><path fill="currentColor" d="M55 40 40 64l9-3 4 3 7-22zM65 40l15 24-9-3-4 3-7-22z"/><circle cx="60" cy="36" r="9" fill="currentColor"/><circle cx="57" cy="33" r="3.5" fill="#fff" opacity=".5"/></svg>';
+function titleCard(g){return '<div class="kgTC" role="img" aria-label="'+esc(g.title)+'"><span>'+esc(g.emoji||(/giraffe/i.test(g.id)?'🦒':'🎮'))+'</span>'+esc(g.title)+'</div>'}
+function coverHTML(g,cls){return g.cover?'<img'+(cls?' class="'+cls+'"':'')+' src="'+esc(g.cover)+'" width="720" height="378" alt="'+esc(g.title)+' cover art" data-kgc="1">':titleCard(g)}
+function fixCovers(root){root.querySelectorAll('img[data-kgc]').forEach(im=>{const bad=()=>{const it=im.closest('.kgItem'),g=it&&findG(it.dataset.id);if(g)im.outerHTML=titleCard(g)};if(im.complete&&im.naturalWidth===0&&im.src)bad();else im.addEventListener('error',bad,{once:true})})}
+function cardHTML(g){if(g.vault)return '<a class="kvt" href="'+esc(g.url)+'"><span class="kgBadge" aria-hidden="true">🎀</span>'+coverHTML(g)+'<b>'+esc(g.title)+'</b><span>'+esc(g.desc||'')+'</span></a>';return '<div class="card" data-id="'+esc(g.id)+'"><span class="kgBadge" aria-hidden="true">🎀</span><a class="tile play" href="'+esc(g.url)+'">'+coverHTML(g)+'<b>'+esc(g.title)+'</b><span>'+esc(g.desc||'')+'</span></a></div>'}
+function addToGames(g){return;if(typeof GAMES!=='undefined'&&!GAMES.some(x=>x.id===g.id))GAMES.push(Object.assign({free:true,live:true,gift:true},g))}
+function wrapHTML(g,i,rip){const p=paperOf(g,i),[r,r2]=RIB[p],bg='background-image:url('+purl(p)+')';
+ return '<div class="kgBox'+(rip?' rip':'')+'" role="button" tabindex="0" style="--r:'+r+';--r2:'+r2+';--d:-'+(i*.45).toFixed(2)+'s" aria-label="'+(rip?'Wrapped birthday present for Kelly. Swipe across it to unwrap!':'Wrapped birthday present for Kelly. Opens November 1.')+'">'+
+  (rip?'<div class="kgIn" aria-hidden="true"></div>':'')+'<div class="kgPaper" style="'+bg+'"></div><div class="kgPcs"></div><div class="kgRH"></div><div class="kgLid" style="'+bg+'"></div><div class="kgRV"></div>'+BOW+
+  '<div class="kgTag">For Kelly 🎁</div>'+(rip?'<div class="kgHint"><i>👉</i> Swipe to unwrap!</div>':'')+'</div>'}
+function renderItem(el,g,i){if(el.querySelector('.kgBox.ripping'))return;const s=shown(g.id),r=canRip(g.id),k=(s?'o':r?'r':'l');if(el.dataset.k===k)return;el.dataset.k=k;
+ el.classList.toggle('kgOpen',s&&!g.vault);
+ if(s){el.innerHTML=cardHTML(g);if(!g.vault)addToGames(g)}else{el.innerHTML=wrapHTML(g,i,r);if(r)bindRip(el.querySelector('.kgBox'),g,el)}fixCovers(el)}
+function fmtLeft(){const ms=Math.max(0,OPEN-now()),d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4);return{d,h,m}}
+function banner(){if(!$('kgH'))return;const p=phase(),h=$('kgH'),s=$('kgSub'),L=fmtLeft(),tz=$('kgTease'),tk=$('kgTok');if(tk)tk.hidden=!(p=='eve'&&!spinN());if(tz)tz.hidden=!(window.__ka&&__ka.vip)||getOpen().includes(VAULT_KEY);
+ if(p=='pre'){h.innerHTML='<span class="w">🎂</span> Birthday surprises coming Nov 1! <span class="w" style="animation-delay:-1.2s">🎁</span>';s.innerHTML='Kelly, these presents are just for you. They open on your birthday in <b>'+L.d+'d '+L.h+'h '+L.m+'m</b>. No peeking! 🙈'}
+ else if(p=='eve'){h.innerHTML='<span class="w">🎈</span> It\'s almost your birthday! <span class="w" style="animation-delay:-1.2s">🎈</span>';const n=spinN(),e=early(),op=e.filter(x=>getOpen().includes(x)).length,need=n-e.length;
+  s.innerHTML=!n?'You got a <b>Birthday Token</b>! 🪙 Spend it to spin the wheel and find out how many presents you may open tonight!':(op>=n?'You opened your early present'+(n>1?'s':'')+'! 💖 The rest open on your birthday in <b>'+(L.d?L.d+'d ':'')+L.h+'h '+L.m+'m</b>.':'The wheel says you may open <b>'+n+'</b> present'+(n>1?'s':'')+' early 🎁 '+(need>0?'Pick '+need+' and swipe across '+(need>1?'them':'it')+' to rip '+(need>1?'them':'it')+' open!':'Keep swiping!'))}
+ else{const left=GIFTS.filter(g=>canRip(g.id)).length;h.innerHTML='<span class="w">🎉</span> Happy Birthday, Kelly! <span class="w" style="animation-delay:-1.2s">🎂</span>';
+  s.innerHTML=left?'Swipe across each present to rip it open! <b>'+left+'</b> to go 🎁':'All your presents are open. Have the best birthday ever! 💖🐱🦒🍫'}}
+let lastPhase='';function renderAll(){const grid=$('kgGrid');if(!grid)return;lastPhase=phase();GIFTS.forEach((g,i)=>{let el=grid.querySelector('.kgItem[data-id="'+CSS.escape(g.id)+'"]');if(!el){el=document.createElement('div');el.className='kgItem';el.dataset.id=g.id;grid.appendChild(el)}renderItem(el,g,i)});banner()}
+// ---- locked tap: wiggle + No peeking ----
+let msgT=0;function noPeek(box){box.classList.remove('wig');void box.offsetWidth;box.classList.add('wig');jingle();const L=fmtLeft(),p=phase();
+ const m=$('kgMsg');m.innerHTML='<div class="kgM" role="alertdialog" aria-label="No peeking"><div class="e">🙈</div><h3>No peeking!</h3><p>'+(p=='eve'&&!spinN()?'Spend your Birthday Token first! 🪙<br>':p=='eve'?'Your early present'+(spinN()>1?'s are':' is')+' all picked! 😉<br>':'')+'Opens on your birthday, <b>Nov 1</b> 🎂</p><div class="kgCd"><div><b>'+L.d+'</b>days</div><div><b>'+L.h+'</b>hours</div><div><b>'+L.m+'</b>min</div></div><button type="button" id="kgOk">OK! 💕</button></div>';
+ m.classList.add('on');$('kgOk').focus({preventScroll:true});clearTimeout(msgT);msgT=setTimeout(closeMsg,6000)}
+function closeMsg(){if(typeof spinning!=='undefined'&&spinning)return;$('kgMsg').classList.remove('on')}
+// ---- swipe-to-rip ----
+const COLS=6,ROWS=5;
+function bindRip(box,g,item){let st=null,pcs=null,torn=0,down=null,lastP=null,vel={x:1,y:0},done=false;
+ function begin(){if(st)return true;if(!canRip(g.id))return false;
+  if(phase()=='eve'&&!early().includes(g.id)){const e=early();e.push(g.id);try{ST.setItem(K+'early',JSON.stringify(e))}catch(_){};document.querySelectorAll('.kgItem').forEach(el=>{if(el!==item){const gg=el.__g||findG(el.dataset.id);if(gg)renderItem(el,gg,idxG(gg))}});banner()}
+  st=1;box.classList.add('ripping','torn');const kin=box.querySelector('.kgIn');if(kin&&!kin.firstChild){kin.innerHTML=g.cover?'<img src="'+esc(g.cover)+'" alt="" data-kgc="1">':titleCard(g);fixCovers(item)}ac();musicStart();popSnd();
+  const W=box.clientWidth,H=box.clientHeight,S=Math.max(W,H),cw=W/COLS,ch=H/ROWS,ov=Math.max(cw,ch)*.14,url=box.querySelector('.kgPaper').style.backgroundImage;
+  const wrap=box.querySelector('.kgPcs');pcs=[];
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){const d=document.createElement('div');d.className='kgPc';const x=c*cw-ov,y=r*ch-ov,w=cw+2*ov,h=ch+2*ov;
+   const j=()=>(ov*.15+Math.random()*ov*1.6),pts=[];for(let k=0;k<=4;k++)pts.push([w*k/4,k%4?j():0]);for(let k=1;k<=4;k++)pts.push([w-(k%4?j():0),h*k/4]);for(let k=1;k<=4;k++)pts.push([w-w*k/4,h-(k%4?j():0)]);for(let k=1;k<4;k++)pts.push([k%4?j():0,h-h*k/4]);
+   d.style.cssText='left:'+x+'px;top:'+y+'px;width:'+w+'px;height:'+h+'px;background-image:'+url+';background-size:'+S+'px '+S+'px;background-position:'+(-x-(S-W)/2)+'px '+(-y-(S-H)/2)+'px;clip-path:polygon('+pts.map(p=>p[0].toFixed(1)+'px '+p[1].toFixed(1)+'px').join(',')+')';
+   wrap.appendChild(d);pcs.push({d,c,r,cx:(c+.5)*cw,cy:(r+.5)*ch,t:false})}
+  box.querySelector('.kgPaper').style.visibility='hidden';
+  const fly=(el,dx,dy,rot,dur)=>el.animate([{transform:'none',opacity:1},{transform:'translate('+dx+'px,'+dy+'px) rotate('+rot+'deg) scale(.5)',opacity:0}],{duration:dur,easing:'cubic-bezier(.3,.6,.5,1)',fill:'forwards'});
+  fly(box.querySelector('.kgBow'),(Math.random()-.5)*80,-160,(Math.random()-.5)*120,800);fly(box.querySelector('.kgLid'),vel.x*60,-110,-14+Math.random()*28,750);
+  fly(box.querySelector('.kgRV'),0,-40,0,450);fly(box.querySelector('.kgRH'),vel.x*90,20,8,450);fly(box.querySelector('.kgTag'),40,160,40,700);return true}
+ function tearPc(p,quiet){if(p.t)return;p.t=true;torn++;const dx=vel.x*(90+Math.random()*120)+(Math.random()-.5)*70,dy=vel.y*80-60-Math.random()*60;
+  p.d.animate([{transform:'none',opacity:1},{transform:'translate('+dx*.35+'px,'+(dy*.5)+'px) rotate('+(Math.random()-.5)*60+'deg)',opacity:1,offset:.3},{transform:'translate('+dx+'px,'+(dy+260)+'px) rotate('+(Math.random()-.5)*540+'deg) scale(.6)',opacity:0}],{duration:850+Math.random()*350,easing:'cubic-bezier(.25,.5,.5,1)',fill:'forwards'});
+  if(!quiet)ripSnd(false);if(torn>=pcs.length*.5)finish()}
+ function brush(x,y){if(!pcs)return;const W=box.clientWidth,H=box.clientHeight,R=Math.max(W/COLS,H/ROWS)*1.65;for(const p of pcs)if(!p.t&&Math.hypot(p.cx-x,p.cy-y)<R)tearPc(p)}
+ function line(a,b){const n=Math.max(1,Math.ceil(Math.hypot(b.x-a.x,b.y-a.y)/8));for(let i=1;i<=n;i++)brush(a.x+(b.x-a.x)*i/n,a.y+(b.y-a.y)*i/n)}
+ function stepAuto(){if(!begin()||done)return;const left=pcs.filter(p=>!p.t);if(!left.length)return;vel={x:Math.random()<.5?-1:1,y:-.3};tearPc(left[Math.random()*left.length|0]);if(left.length>1&&Math.random()<.5)tearPc(left[(Math.random()*left.length|0)],true)}
+ function finish(){if(done)return;done=true;ripSnd(true);pcs.forEach((p,i)=>{if(!p.t){p.t=true;const dx=(p.cx-box.clientWidth/2)*1.6,dy=(p.cy-box.clientHeight/2)*1.2;p.d.animate([{transform:'none',opacity:1},{transform:'translate('+dx+'px,'+(dy+200)+'px) rotate('+(Math.random()-.5)*400+'deg) scale(.5)',opacity:0}],{duration:900,delay:i*12,easing:'ease-out',fill:'forwards'})}});
+  const o=getOpen();if(!o.includes(g.id)){o.push(g.id);setOpen(o)}
+  const rc=box.getBoundingClientRect();setTimeout(()=>{confetti(rc.left+rc.width/2,rc.top+rc.height/2);box.classList.remove('ripping');item.dataset.k='';renderItem(item,g,idxG(g));
+   const pk=document.createElement('div');pk.className='kgPeek';pk.setAttribute('aria-hidden','true');pk.innerHTML='<span class="a">🐱</span><span class="b">🦒</span><em>Happy Birthday, Kelly! 🎂</em>';item.appendChild(pk);setTimeout(()=>pk.remove(),3000);
+   try{item.scrollIntoView({block:'nearest',behavior:'smooth'})}catch(e){}banner();if(!wrappedLeft())setTimeout(flourish,250)},420)}
+ box.addEventListener('dragstart',e=>e.preventDefault());
+ box.addEventListener('pointerdown',e=>{if(done)return;if(e.pointerType==='mouse')e.preventDefault();ac();const r=box.getBoundingClientRect();down={x:e.clientX-r.left,y:e.clientY-r.top,moved:false};lastP=down;try{box.setPointerCapture(e.pointerId)}catch(_){}});
+ box.addEventListener('pointermove',e=>{if(!down||done)return;const r=box.getBoundingClientRect(),p={x:e.clientX-r.left,y:e.clientY-r.top};const dx=p.x-lastP.x,dy=p.y-lastP.y;
+  if(!down.moved&&Math.hypot(p.x-down.x,p.y-down.y)<8)return;if(!down.moved){down.moved=true;if(!begin()){down=null;return}}
+  const l=Math.hypot(dx,dy)||1;vel={x:dx/l,y:dy/l};line(lastP,p);lastP=p});
+ const up=()=>{if(down&&!down.moved&&!done&&!st){const h=box.querySelector('.kgHint');if(h){h.animate([{transform:'translateX(-50%) scale(1)'},{transform:'translateX(-50%) scale(1.25)'},{transform:'translateX(-50%) scale(1)'}],{duration:400})}box.animate([{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'none'}],{duration:300})}down=null};
+ box.addEventListener('pointerup',up);box.addEventListener('pointercancel',()=>{down=null});
+ let kt=0;box.addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;e.preventDefault();const t=performance.now();if(t-kt<70)return;kt=t;stepAuto()});
+ box.__kgAuto=stepAuto}
+// Gamepad: hold A (button 0) to rip the focused (or first) present
+let gpOn=false,gpT=0;function gpLoop(t){const pads=(navigator.getGamepads&&navigator.getGamepads())||[];let held=false;for(const p of pads)if(p&&p.buttons&&p.buttons[0]&&p.buttons[0].pressed)held=true;
+ if(held&&t-gpT>85){gpT=t;const a=document.activeElement;const b=(a&&a.classList&&a.classList.contains('kgBox')&&a.__kgAuto)?a:[...document.querySelectorAll('.kgBox.rip')].find(x=>x.__kgAuto&&x.isConnected);if(b){b.__kgAuto();if(b.isConnected&&document.activeElement!==b)b.focus({preventScroll:false})}}
+ if([...pads].some(Boolean))requestAnimationFrame(gpLoop);else gpOn=false}
+addEventListener('gamepadconnected',()=>{if(!gpOn){gpOn=true;requestAnimationFrame(gpLoop)}});
+// ---- Birthday Token prize wheel (Oct 31) ----
+function tick(){if(!AC)return;const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.type='square';o.frequency.setValueAtTime(1900,t);o.frequency.exponentialRampToValueAtTime(700,t+.03);g.gain.setValueAtTime(.12,t);g.gain.exponentialRampToValueAtTime(.0001,t+.04);o.connect(g).connect(MG);o.start(t);o.stop(t+.05)}
+function coinSnd(){if(!ac())return;const t=AC.currentTime;[[88,0],[95,.09]].forEach(([m,d])=>tine(m,t+d,.18,.9))}
+function tada(n){if(!ac())return;const t=AC.currentTime+.05;(n>1?[72,76,79,84,88,91]:[72,76,79,84]).forEach((m,i)=>tine(m,t+i*.09,.16,1.2));[72,79,84].forEach(m=>tine(m,t+.6,.1,2.2))}
+function wheelSVG(){const C=['#ff7eb6','#64d6b4','#ffd23f','#a78bfa','#ff9a52'],E=['🍫','🐱','🦒'],R=150;let p='',ix=0;
+ WHEEL.forEach((v,i)=>{const a0=(i*36-90)*Math.PI/180,a1=((i+1)*36-90)*Math.PI/180,x0=R+R*Math.cos(a0),y0=R+R*Math.sin(a0),x1=R+R*Math.cos(a1),y1=R+R*Math.sin(a1),mid=(i*36+18);
+  const fill=v==2?'url(#kgGold)':(i%4==1?'#7b4a2a':C[(ix++)%C.length]);
+  p+='<path d="M'+R+' '+R+'L'+x0.toFixed(1)+' '+y0.toFixed(1)+'A'+R+' '+R+' 0 0 1 '+x1.toFixed(1)+' '+y1.toFixed(1)+'Z" fill="'+fill+'" stroke="#fff" stroke-width="3"/>'+
+   '<g transform="rotate('+mid+' '+R+' '+R+')"><text x="'+R+'" y="46" text-anchor="middle" font-size="'+(v==2?40:34)+'" font-weight="700" font-family="Fredoka,system-ui,sans-serif" fill="#fff" stroke="'+(v==2?'#b7791f':'rgba(90,45,95,.55)')+'" stroke-width="2.5" paint-order="stroke">'+v+'</text><text x="'+R+'" y="86" text-anchor="middle" font-size="24">'+(v==2?'✨':E[i%3])+'</text></g>'});
+ return '<svg viewBox="-8 -8 316 316" class="kgWheelS" aria-hidden="true"><defs><radialGradient id="kgGold" cx="50%" cy="30%" r="80%"><stop offset="0" stop-color="#fff6c2"/><stop offset=".5" stop-color="#ffd23f"/><stop offset="1" stop-color="#e0a100"/></radialGradient></defs><circle cx="150" cy="150" r="157" fill="#ff8fc0"/>'+p+'<circle cx="150" cy="150" r="30" fill="#fff" stroke="#ff8fc0" stroke-width="5"/><text x="150" y="161" text-anchor="middle" font-size="30">🎂</text>'+
+  [...Array(10)].map((_,i)=>{const a=(i*36-90)*Math.PI/180;return '<circle cx="'+(150+150*Math.cos(a)).toFixed(1)+'" cy="'+(150+150*Math.sin(a)).toFixed(1)+'" r="5" fill="#fff"/>'}).join('')+'</svg>'}
+let spinning=false;
+function openWheel(){ac();coinSnd();const m=$('kgMsg'),n=spinN();clearTimeout(msgT);
+ m.innerHTML='<div class="kgM kgWheelM" role="dialog" aria-label="Birthday prize wheel"><h3>🪙 Birthday Token Wheel</h3><p id="kgWtxt">'+(n?'':'One token, one spin! How many presents can you open tonight?')+'</p><div class="kgWheel"><div class="kgPtr" id="kgPtr"></div><div class="kgWrot" id="kgWrot">'+wheelSVG()+'</div></div><button type="button" id="kgSpin">'+(n?'Yay! 🎁':'🪙 SPIN!')+'</button></div>';
+ m.classList.add('on');if(n)showResult(n,true);
+ $('kgSpin').addEventListener('click',()=>{if(spinning)return;if(spinN()){closeMsg();return}spin()})}
+function spin(){ac();let idx=Math.floor(Math.random()*WHEEL.length);if(FORCE){const c=WHEEL.map((v,i)=>v===FORCE?i:-1).filter(i=>i>=0);idx=c[Math.floor(Math.random()*c.length)]}
+ const n=WHEEL[idx];try{ST.setItem(K+'spin',String(n))}catch(e){} // saved BEFORE the animation: refreshing can't respin
+ spinning=true;const b=$('kgSpin');b.disabled=true;b.textContent='Spinning…';$('kgWtxt').textContent='Round and round it goes… 🐱🦒🍫';const tk=$('kgTok');if(tk)tk.hidden=true;
+ const rot=$('kgWrot'),ptr=$('kgPtr'),target=360*7-(idx*36+18)+(Math.random()*20-10),D=matchMedia('(prefers-reduced-motion: reduce)').matches?1500:6500,t0=performance.now();let last=-1;
+ (function f(t){const k=Math.min(1,(t-t0)/D),e=1-Math.pow(1-k,4),a=target*e;rot.style.transform='rotate('+a+'deg)';const sl=Math.floor((a+18)/36);
+  if(sl!==last){last=sl;tick();ptr.classList.remove('flap');void ptr.offsetWidth;ptr.classList.add('flap')}
+  if(k<1)requestAnimationFrame(f);else{spinning=false;showResult(n)}})(t0)}
+function showResult(n,again){const t=$('kgWtxt'),b=$('kgSpin');if(!t)return;
+ if(again){const i=WHEEL.indexOf(n);$('kgWrot').style.transform='rotate('+(360-(i*36+18))+'deg)'}
+ t.innerHTML=(n>1?'<b class="kgBig">✨ 2 presents! ✨</b>WOW, lucky you! You may open <b>2</b> presents tonight!':'<b class="kgBig">1 present! 🎁</b>You may open <b>1</b> present tonight!')+(again?'':'<br>Pick and swipe to rip '+(n>1?'them':'it')+' open!');
+ b.disabled=false;b.textContent='Pick my present'+(n>1?'s':'')+'! 🎁';if(!again){tada(n);const r=$('kgWrot').getBoundingClientRect();confetti(r.left+r.width/2,r.top+r.height/2)}
+ document.querySelectorAll('.kgItem').forEach(el=>{const g=el.__g||findG(el.dataset.id);if(g)renderItem(el,g,idxG(g))});banner()}
+// ---- mount ----
+function mount(){if($('kgifts'))return;if(window.__pa&&__pa.sample)return;const main=document.querySelector('body>main');if(!main)return;const s=document.createElement('section');s.id='kgifts';s.setAttribute('aria-label',"Kelly's birthday presents");
+ s.innerHTML='<div class="kgPanel"><button id="kgMute" type="button"></button><h2 class="kgH" id="kgH"></h2><p class="kgSub" id="kgSub" aria-live="polite"></p><button type="button" class="kgTok" id="kgTok" hidden aria-label="Spend your Birthday Token: spin the wheel"><span class="kgCoin" aria-hidden="true"><i>🎂</i></span><span class="kgTokT">Spend my<br>Birthday Token!</span></button><div class="kgGrid" id="kgGrid"></div><div class="kgTease" id="kgTease" hidden><span class="kgTk" aria-hidden="true">🐱</span><span class="kgTn">Psst... one more surprise is hiding in your Vault 🔐🎁</span></div></div>';
+ main.parentNode.insertBefore(s,main);const m=document.createElement('div');m.id='kgMsg';document.body.appendChild(m);
+ m.addEventListener('click',e=>{if(e.target===m||e.target.id==='kgOk')closeMsg()});addEventListener('keydown',e=>{if(e.key==='Escape')closeMsg()});
+ $('kgMute').addEventListener('click',()=>{setMute(!muted)});setMute(muted);
+ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.kgBox');if(b&&!b.classList.contains('rip'))noPeek(b)});
+ document.addEventListener('keydown',e=>{const b=e.target.closest&&e.target.closest('.kgBox');if(b&&!b.classList.contains('rip')&&(e.key==='Enter'||e.key===' ')){e.preventDefault();noPeek(b)}});
+ if(QA){const q=document.createElement('div');q.id='kgQA';q.textContent='QA date '+new Date(now()).toLocaleString();document.body.appendChild(q)}
+ $('kgTok').addEventListener('click',openWheel);
+ renderAll();if(phase()=='eve'&&!spinN())setTimeout(()=>{const c=$('kgTok').getBoundingClientRect();if(c.width)confetti(c.left+c.width/2,c.top+c.height/2)},700);setInterval(()=>{if(phase()!==lastPhase)renderAll();else banner()},20000)}
+// Vault gift(s): vault.json entries with "gift":"<key>" (key is opaque, never the game name) are wrapped inside the Vault only.
+const VAULT_KEY='vault1';
+window.__kgVault={mount(box,VG,SRC){box.querySelectorAll('.kgV[data-vg]').forEach(el=>{const v=VG[+el.dataset.vg];if(!v)return;let g=VGIFTS.find(x=>x.id===String(v.gift));
+  if(!g){g={id:String(v.gift),title:v.title||'',desc:v.desc||'',url:v.url||'',cover:v.cover?(/^https?:/.test(v.cover)?v.cover:SRC+v.cover):'',paper:v.paper,vault:true};VGIFTS.push(g)}
+  el.dataset.id=g.id;el.__g=g;el.dataset.k='';renderItem(el,g,idxG(g))})},
+ lb(VG){return (VG||[]).filter(v=>!v.gift||shown(String(v.gift)))}};
+mount();setTimeout(banner,1500);window.__kgifts={GIFTS,phase,shown,canRip,now,get qa(){return QA}};
+})();
+</script><!--/kellydemo-->
 <!--hubsample--><style>.hubsmp main .card.nosmp,.hubsmp #vault{display:none!important}#smpNote{display:none;margin:4px auto 0;font:bold 15px "Courier New",monospace;color:#fcd858}.hubsmp #smpNote{display:block}</style>
 <script>(()=>{const K='pa_hub_sample',q=new URLSearchParams(location.search),v=q.get('sample');try{if(v==='0')sessionStorage.removeItem(K);else if(v)sessionStorage.setItem(K,'1')}catch(e){}
 let on=false;try{on=!!sessionStorage.getItem(K)}catch(e){on=!!v&&v!=='0'}window.__hubSample=on;if(!on)return;document.documentElement.classList.add('hubsmp');window.__vaultRm&&__vaultRm();
