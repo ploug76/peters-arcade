@@ -121,7 +121,7 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 async function sha(t){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 const until=()=>+localStorage.getItem(LK)||0;
 function lockMsg(){const l=until()-Date.now();if(l>0){go.disabled=code.disabled=true;msg.textContent='Too many tries. Try again in '+Math.ceil(l/1000)+'s.';return true}go.disabled=code.disabled=false;return false}
-function relock(){open=false;clearTimeout(idleT);inV.hidden=true;lockV.hidden=false;$('vGames').innerHTML='';code.value='';ov.classList.remove('on');window.__vault&&(__vault.open=false)}
+function relock(){open=false;clearTimeout(idleT);if(inV)inV.hidden=true;if(lockV)lockV.hidden=false;const vg=$('vGames');if(vg)vg.innerHTML='';if(code)code.value='';if(ov)ov.classList.remove('on');window.__vault&&(__vault.open=false)}
 function bump(){if(!open)return;clearTimeout(idleT);idleT=setTimeout(relock,IDLE)}
 function show(){lockV.hidden=false;inV.hidden=true;msg.textContent='';code.value='';ov.classList.add('on');if(!lockMsg())setTimeout(()=>code.focus(),50);clearInterval(tick);tick=setInterval(()=>{if(ov.classList.contains('on')&&!open&&until())lockMsg();if(!until()||until()<Date.now()){if(until()){localStorage.removeItem(LK);localStorage.setItem(FK,'0');msg.textContent=''}lockMsg()}},500)}
 const owner=()=>!!(window.__pa&&__pa.full&&!__pa.sample&&!__pa.gated&&!window.__hubSample);
