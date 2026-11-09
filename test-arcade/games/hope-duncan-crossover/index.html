@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head><meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Hope &amp; Constable Duncan — crossover prototype</title>
+<link rel="stylesheet" href="crossover.css">
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="hud" hidden>
+  <div id="who"></div>
+  <div id="goals"></div>
+  <div id="phase"></div>
+  <div id="keys"></div>
+</div>
+<section id="title">
+  <div class="card">
+    <h1>Hope &amp; Constable Duncan<span>Isolated crossover prototype. The main game is unchanged.</span></h1>
+    <p class="note">Hope wears a fitted black long-sleeve shirt, black baseball cap, black aviator sunglasses, and blue jeans. Her long brown ponytail catches criminals, swings the ravine, and strikes with forgiveness.</p>
+    <p>Save the world from evil. Switch between Hope and Constable Duncan. Duncan keeps the on-foot actions verified in the original game: walk, run, jump, and ACTION to bust.</p>
+    <ul>
+      <li><b>Move:</b> ← → or A D. Hold Shift, or hold a direction, to run. Swipe and hold anywhere. A long swipe runs.</li>
+      <li><b>Jump:</b> ↑, W, or K, or swipe up, or JUMP. A run-jump does not cross the ravine.</li>
+      <li><b>Switch:</b> C or SWITCH.</li>
+      <li><b>Hope punch:</b> Space or J, or PUNCH. One tap punches. Two taps punch twice. Three taps inside 0.45s coil the ponytail, then unroll it. Contact is a blast of forgiveness, and it does not also fire the punches.</li>
+      <li><b>Hope prayer:</b> Q or PRAY. A prayer blast knocks evil aside.</li>
+      <li><b>Hope grace:</b> E or GRACE. Grace Abounding knocks evil aside in a wide wave.</li>
+      <li><b>Hope lasso:</b> F or LASSO. The brown ponytail catches a criminal, or swings her across the ravine from the near edge.</li>
+      <li><b>Duncan action:</b> Space, J, or ACTION. Busts a crook within 90 and folds a closed umbrella within 84. Running into a fleeing crook within 38 nabs him.</li>
+    </ul>
+    <button id="bStart" class="big" type="button">Start</button>
+  </div>
+</section>
+<section id="win" hidden>
+  <div class="card">
+    <h1>The world is saved<span id="winText"></span></h1>
+    <button id="bAgain" class="big" type="button">Play again</button>
+  </div>
+</section>
+<div id="pad" hidden>
+  <div id="hint">SWIPE &amp; HOLD ANYWHERE TO MOVE<br>LONG SWIPE RUNS · SWIPE UP JUMPS</div>
+  <button id="bPray" type="button">PRAY</button>
+  <button id="bGrace" type="button">GRACE</button>
+  <button id="bLasso" type="button">LASSO</button>
+  <button id="bSwitch" type="button">SWITCH</button>
+  <button id="bPunch" type="button">PUNCH</button>
+  <button id="bJump" type="button">JUMP</button>
+</div>
+<script type="module" src="game.js"></script>
+<a id="paTestBack" class="prototype" href="../../" aria-label="Back to Test Arcade. Prototype, not finished."><b>← Arcade</b></a>
+<style>
+#paTestBack{position:fixed;z-index:100000;left:max(6px,env(safe-area-inset-left));top:max(6px,env(safe-area-inset-top));display:inline-flex;align-items:center;text-decoration:none;background:#ffe14a;color:#14120c;border:2px solid #14120c;border-radius:999px;padding:6px 10px;font:700 13px/1 "Courier New",ui-monospace,monospace;touch-action:manipulation;white-space:nowrap}
+#paTestBack.adult{background:#ffb4b4;left:auto;right:max(6px,env(safe-area-inset-right));top:calc(60px + env(safe-area-inset-top))}
+#paTestBack.prototype{background:#ffd59a}
+</style>
+</body>
+</html>
