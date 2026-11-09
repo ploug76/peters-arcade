@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pete's 420 Adventure</title>
+<meta name="description" content="Pete's 420 Adventure. Adults only, 21+. A chill cartoon about connecting the pieces and meeting the right people.">
+<meta name="theme-color" content="#14081c">
+<style>
+:root { --btn: 72px; --tile: 72px; --panel-h: 0px; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #0c0612; color: #fcfcfc; }
+body {
+  overflow: hidden;
+  font-family: "Courier New", ui-monospace, monospace;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+button {
+  font-family: "Courier New", ui-monospace, monospace;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+button:focus-visible { outline: 3px solid #fcd858; outline-offset: 2px; }
+h1, h2, p { margin: 0; }
+
+#view { position: fixed; left: 0; right: 0; top: 0; bottom: var(--panel-h); }
+#view canvas { display: block; width: 100%; height: 100%; }
+
+#hud {
+  display: none;
+  position: fixed;
+  z-index: 4;
+  top: calc(8px + env(safe-area-inset-top));
+  left: calc(8px + env(safe-area-inset-left));
+  right: calc(64px + env(safe-area-inset-right));
+  gap: 8px;
+  pointer-events: none;
+  align-items: flex-start;
+}
+body[data-screen="play"] #hud { display: flex; }
+#hud .card {
+  background: rgba(8, 4, 16, .82);
+  border: 2px solid #fcd858;
+  padding: 4px 8px;
+  min-width: 0;
+}
+#areaName { color: #fcd858; font: bold 16px/1.2 "Courier New", monospace; }
+#goal, #bag { color: #fcfcfc; font: 14px/1.3 "Courier New", monospace; }
+#hudAge {
+  flex: none;
+  border: 2px solid #f83838;
+  color: #f83838;
+  background: rgba(8, 4, 16, .82);
+  font: bold 14px "Courier New", monospace;
+  padding: 4px 6px;
+}
+
+#muteBtn {
+  position: fixed;
+  z-index: 12;
+  top: calc(8px + env(safe-area-inset-top));
+  right: calc(8px + env(safe-area-inset-right));
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  border: 3px solid #fcfcfc;
+  background: #1a1020;
+  color: #fff;
+  font-size: 20px;
+  padding: 0;
+}
+
+#controls {
+  display: none;
+  position: fixed;
+  z-index: 5;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
+  background: #120a16;
+  border-top: 4px solid #fcd858;
+}
+body[data-screen="play"] #controls { display: flex; }
+#controls button {
+  width: var(--btn);
+  height: var(--btn);
+  min-width: 64px;
+  min-height: 64px;
+  flex: 0 0 auto;
+  border: 3px solid #fcfcfc;
+  border-radius: 16px;
+  background: #1a3a28;
+  color: #fcfcfc;
+  font: bold 22px/1 "Courier New", monospace;
+  box-shadow: 0 4px 0 #000;
+  padding: 0;
+}
+#controls button.on, #controls button:active { transform: translateY(2px); box-shadow: 0 2px 0 #000; filter: brightness(1.12); }
+#controls #btnA {
+  background: #f83838;
+  color: #fff;
+  font-size: 13px;
+  letter-spacing: .5px;
+  width: auto;
+  min-width: 76px;
+  padding: 0 10px;
+}
+
+#toast {
+  display: none;
+  position: fixed;
+  z-index: 6;
+  left: 50%;
+  bottom: calc(var(--panel-h) + 12px);
+  transform: translateX(-50%);
+  max-width: calc(100% - 24px);
+  background: rgba(8, 4, 16, .92);
+  color: #fcfcfc;
+  border: 2px solid #fcd858;
+  padding: 8px 12px;
+  font: bold 16px "Courier New", monospace;
+  text-align: center;
+  pointer-events: none;
+}
+#toast.on { display: block; }
+
+#titleScreen, #puzzleScreen, #talkScreen, #endScreen {
+  position: fixed;
+  inset: 0;
+  z-index: 8;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 62px 14px 14px;
+  background: #0c0612;
+  overflow: auto;
+}
+body[data-screen="title"] #titleScreen { display: flex; }
+body[data-screen="puzzle"] #puzzleScreen,
+body[data-screen="talk"] #talkScreen,
+body[data-screen="end"] #endScreen {
+  display: flex;
+  background: rgba(8, 4, 16, .94);
+}
+#titleScreen { flex-direction: column; text-align: center; gap: 8px; }
+#titleArt, #endArt {
+  width: min(92vw, 420px);
+  height: auto;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  border: 3px solid #fcfcfc;
+  outline: 3px solid #f83838;
+  background: #14081c;
+}
+#titleScreen h1, #endScreen h2, .sheet h2 {
+  color: #fcd858;
+  font-size: clamp(26px, 5vw, 40px);
+  letter-spacing: 1px;
+  text-shadow: 3px 3px 0 #f83838;
+  line-height: 1.05;
+}
+#ageNotice, #endAge {
+  display: inline-block;
+  align-self: center;
+  border: 3px solid #f83838;
+  color: #f83838;
+  background: #1a0a0a;
+  font: bold 22px "Courier New", monospace;
+  letter-spacing: 3px;
+  padding: 6px 14px;
+}
+.tag { font-size: 18px; line-height: 1.35; max-width: 460px; }
+.fine, .keys { color: #bcbcbc; font-size: 15px; line-height: 1.35; max-width: 460px; }
+.title-copy, .end-copy { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+
+#startBtn, #replayBtn, .sheet .row button, #talkScreen .row button {
+  min-height: 64px;
+  min-width: 160px;
+  border: 3px solid #fcfcfc;
+  border-radius: 16px;
+  background: #f83838;
+  color: #fff;
+  font: bold 20px "Courier New", monospace;
+  letter-spacing: 1px;
+  padding: 0 18px;
+  box-shadow: 0 4px 0 #000;
+}
+#startBtn:active, #replayBtn:active, .sheet button:active, #talkScreen button:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #000;
+}
+.sheet {
+  width: min(640px, 100%);
+  max-height: 100%;
+  overflow: auto;
+  background: #140c18;
+  border: 3px solid #fcfcfc;
+  outline: 3px solid #f83838;
+  padding: 12px;
+  text-align: center;
+}
+.sheet h2 { font-size: clamp(20px, 4vw, 28px); margin: 0 52px 4px; }
+.help { color: #fcfcfc; font-size: 16px; line-height: 1.3; margin: 0 0 8px; }
+#puzzleStatus, #talkLine { font-size: 18px; line-height: 1.35; min-height: 1.35em; }
+#talkWho { color: #fcd858; font: bold 14px "Courier New", monospace; letter-spacing: 2px; margin-bottom: 6px; }
+.sheet .row, #talkScreen .row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+
+.pipe {
+  display: grid;
+  grid-template-columns: 58px repeat(var(--cols), var(--tile)) 58px;
+  grid-auto-rows: var(--tile);
+  gap: 6px;
+  justify-content: center;
+  margin: 8px auto;
+}
+.edge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fcd858;
+  font: bold 12px/1.1 "Courier New", monospace;
+  text-align: center;
+}
+.tile, .pot {
+  width: var(--tile);
+  height: var(--tile);
+  min-width: 64px;
+  min-height: 64px;
+  padding: 0;
+  border-radius: 10px;
+}
+.sheet button.tile {
+  width: var(--tile);
+  height: var(--tile);
+  min-width: 64px;
+  min-height: 64px;
+  padding: 0;
+  border: 3px solid #fcfcfc;
+  border-radius: 10px;
+  background: #102033;
+  color: #3ec6f2;
+  font-size: 0;
+  letter-spacing: 0;
+  box-shadow: 0 3px 0 #000;
+}
+.tile {
+  border: 3px solid #fcfcfc;
+  background: #102033;
+  color: #3ec6f2;
+  box-shadow: 0 3px 0 #000;
+}
+.tile.light, .sheet button.tile.light { background: #2a220f; color: #ffe14a; }
+.tile.hot { box-shadow: 0 0 0 3px #fcd858, 0 3px 0 #000; }
+.tile .spin { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+.tile svg { width: 78%; height: 78%; display: block; }
+.pot { border: 3px solid #6b4428; background: #3a2418; display: flex; align-items: center; justify-content: center; }
+.pot svg { width: 70%; height: 70%; display: block; }
+
+.kit { display: flex; gap: 8px; justify-content: center; margin: 10px 0; }
+.piece, .sheet button.piece {
+  flex: 1 1 0;
+  min-width: 64px;
+  width: auto;
+  min-height: 96px;
+  position: relative;
+  border: 3px solid #fcfcfc;
+  border-radius: 12px;
+  background: #1a1030;
+  color: #fcfcfc;
+  font: bold 12px "Courier New", monospace;
+  letter-spacing: 0;
+  padding: 18px 4px 6px;
+  box-shadow: 0 3px 0 #000;
+}
+.piece canvas { width: 48px; height: 48px; image-rendering: pixelated; display: block; margin: 0 auto 4px; }
+.piece.sel { outline: 3px solid #fcd858; outline-offset: 2px; }
+.mark {
+  position: absolute;
+  top: 6px;
+  width: 12px;
+  height: 12px;
+  background: #fcd858;
+}
+.mark.socket { left: 6px; }
+.mark.plug { right: 6px; }
+.mark[data-shape="a"] { clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.mark[data-shape="b"] { border-radius: 2px; }
+.mark[data-shape="c"] { border-radius: 50%; }
+.piece.fitL { box-shadow: inset 6px 0 0 #39ff88, 0 3px 0 #000; }
+.piece.fitR { box-shadow: inset -6px 0 0 #39ff88, 0 3px 0 #000; }
+.piece.fitL.fitR { box-shadow: inset 6px 0 0 #39ff88, inset -6px 0 0 #39ff88, 0 3px 0 #000; }
+
+#endScreen { flex-direction: column; text-align: center; gap: 8px; }
+#endBag { color: #fcd858; font-size: 16px; }
+
+@media (max-width: 420px) {
+  :root { --btn: 64px; --tile: 64px; }
+  #controls #btnA { min-width: 64px; padding: 0 4px; font-size: 12px; }
+  .tag { font-size: 16px; }
+}
+@media (min-width: 800px) {
+  :root { --btn: 80px; }
+  #controls #btnA { font-size: 15px; min-width: 104px; }
+}
+@media (max-height: 520px) {
+  :root { --btn: 68px; --tile: 64px; }
+  #controls { padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); }
+  #puzzleScreen, #talkScreen, #endScreen { align-items: flex-start; padding-top: 8px; }
+  .sheet { padding: 8px; }
+  #titleScreen, #endScreen { flex-direction: row; flex-wrap: wrap; align-content: center; text-align: left; }
+  .title-copy, .end-copy { align-items: flex-start; text-align: left; flex: 1; min-width: 240px; }
+  #titleArt, #endArt { width: min(34vw, 240px); }
+  #titleScreen h1 { font-size: 26px; }
+  .tag, .fine, .keys { font-size: 14px; }
+  .sheet h2 { margin: 0 8px 2px; font-size: 18px; }
+  .help { font-size: 14px; margin-bottom: 4px; }
+  .pipe { margin: 4px auto; }
+  #puzzleStatus { font-size: 15px; }
+  .sheet button, #talkScreen button { min-height: 64px; }
+}
+@media (max-height: 420px) {
+  #titleArt { display: none; }
+}
+</style>
+</head>
+<body data-screen="title" data-x="0" data-y="0" data-area="0" data-puzzle="0">
+<div id="titleScreen">
+  <canvas id="titleArt" width="240" height="140" aria-hidden="true"></canvas>
+  <div class="title-copy">
+    <h1>Pete's 420 Adventure</h1>
+    <p id="ageNotice">21+ ONLY</p>
+    <p class="tag">Adults-only cartoon. Connect the pieces. Meet the right people.</p>
+    <p class="fine">Nothing here has a price. No real brands. Just a chill puzzle.</p>
+    <button id="startBtn" type="button">START</button>
+    <p class="keys">Arrows or W A S D to walk. E to use the thing in front of you. On a phone, use the big buttons.</p>
+  </div>
+</div>
+
+<div id="view"><canvas id="c"></canvas></div>
+<div id="hud">
+  <div id="hudAge">21+</div>
+  <div class="card">
+    <div id="areaName"></div>
+    <div id="goal"></div>
+    <div id="bag"></div>
+  </div>
+</div>
+<button id="muteBtn" type="button" aria-label="Sound">🔊</button>
+<div id="controls" aria-label="Controls">
+  <button id="btnL" type="button" aria-label="Left">◀</button>
+  <button id="btnU" type="button" aria-label="Up">▲</button>
+  <button id="btnD" type="button" aria-label="Down">▼</button>
+  <button id="btnR" type="button" aria-label="Right">▶</button>
+  <button id="btnA" type="button" aria-label="Look">LOOK</button>
+</div>
+<div id="toast" role="status"></div>
+
+<div id="puzzleScreen" role="dialog" aria-modal="true" aria-labelledby="puzzleTitle">
+  <div class="sheet">
+    <h2 id="puzzleTitle"></h2>
+    <p id="puzzleHelp" class="help"></p>
+    <div id="puzzleBoard"></div>
+    <p id="puzzleStatus" role="status"></p>
+    <div class="row"><button id="puzzleBack" type="button">BACK</button></div>
+  </div>
+</div>
+
+<div id="talkScreen" role="dialog" aria-modal="true" aria-labelledby="talkWho">
+  <div class="sheet">
+    <p id="talkWho"></p>
+    <p id="talkLine"></p>
+    <div class="row">
+      <button id="talkNext" type="button">NEXT</button>
+      <button id="talkOk" type="button">OK</button>
+      <button id="onward" type="button">ONWARD</button>
+    </div>
+  </div>
+</div>
+
+<div id="endScreen">
+  <canvas id="endArt" width="240" height="140" aria-hidden="true"></canvas>
+  <div class="end-copy">
+    <h2>Chill Complete</h2>
+    <p id="endAge">21+ ONLY</p>
+    <p class="tag">Pete connected the water, the light, and the kit, and met the right people along the way. The couch has accepted you.</p>
+    <p id="endBag"></p>
+    <button id="replayBtn" type="button">PLAY AGAIN</button>
+  </div>
+</div>
+
+<script src="logic.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
