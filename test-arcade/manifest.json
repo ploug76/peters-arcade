@@ -1,0 +1,330 @@
+{
+  "name": "Peter's Test Arcade",
+  "kind": "unlisted-review-shelf",
+  "updated": "2026-11-09",
+  "hostedPath": "/peters-arcade/test-arcade/",
+  "notes": [
+    "Unlisted review copies for play. This is not a release of the live arcade.",
+    "Anyone with the URL can open it. The noindex tag asks crawlers to skip the page. It is not a privacy lock.",
+    "Not linked from the live hub. Live player pages, vault, and service worker were not changed.",
+    "To add or remove a game, edit the games array in this file and add or delete that folder under games/. The shelf reads this file. There is no admin form and nothing here is publicly writable.",
+    "Primary Play buttons open games/<id>/ which is the runnable folder (HTML, JS, images, and any audio the build already had).",
+    "Sound was left as each build already implemented it: Web Audio synthesis for music and effects. No external audio files were added. Prepare the Manger also keeps its silent generated clip that starts mobile audio.",
+    "Copied service workers use a pa-test- cache prefix, delete only caches with that prefix, and ignore requests outside their own folder. Save keys are prefixed with pa-test- so they do not read or write live saves.",
+    "The live Peter's Arcade service worker is registered at /peters-arcade/sw.js, so its scope already includes this folder. It was not modified. It is network-first and only deletes caches named peters-arcade-*. A copied game worker does not take over the live games."
+  ],
+  "games": [
+    {
+      "id": "palm-tree-pete-vol3",
+      "title": "Palm Tree Pete — Release the Files",
+      "kind": "review",
+      "tag": "Review build",
+      "blurb": "Volume 3 review. Volume 2 stays a separate game on this shelf and in the live arcade.",
+      "controls": "Swipe anywhere and hold to walk. Green ACTION is on the left. Orange JUMP is on the right.",
+      "warn": "",
+      "playLabel": "Play this build",
+      "href": "games/palm-tree-pete-vol3/",
+      "cover": "games/palm-tree-pete-vol3/cover.png",
+      "source": {
+        "repo": "ploug76/peters-arcade",
+        "pr": 5,
+        "url": "https://github.com/ploug76/peters-arcade/pull/5",
+        "branch": "cursor/palm-tree-pete-vol3-f054",
+        "sha": "7368c4d58292a9030f7cf2fbfb7a32bc9ecd6192",
+        "path": "games/palm-tree-pete-release-the-files"
+      },
+      "integrationEdits": [
+        "Cache name pa-test-ptp3-files-v1. Activate deletes only that prefix. The review head deleted every other cache on the origin.",
+        "Fetch handler ignores URLs outside this folder.",
+        "Save key pa-test-ptp3-release-the-files-v1.",
+        "noindex and a back link to this shelf."
+      ]
+    },
+    {
+      "id": "huck-and-jimothy",
+      "title": "Huck X and Jimothy — Chapter 1",
+      "kind": "review",
+      "tag": "Review build",
+      "blurb": "Chapter 1, Side A. Huck and J.T. on one short story. No service worker in this build.",
+      "controls": "Phone buttons: LEFT, RIGHT, UP, JUMP, ACT, SWAP. Keyboard: arrows or WASD, Space jump, X act, C swap.",
+      "warn": "",
+      "playLabel": "Play this build",
+      "href": "games/huck-and-jimothy/",
+      "cover": "",
+      "source": {
+        "repo": "ploug76/peters-arcade",
+        "pr": 2,
+        "url": "https://github.com/ploug76/peters-arcade/pull/2",
+        "branch": "cursor/huck-and-jimothy-8c89",
+        "sha": "1aaeb11deb48ba1d5a594f4e8dfa9e3e3215b142",
+        "path": "games/huck-and-jimothy"
+      },
+      "integrationEdits": [
+        "Save key pa-test-huck-jimothy-ch1 and mute key pa-test-huck-jimothy-mute.",
+        "noindex and a back link to this shelf."
+      ]
+    },
+    {
+      "id": "petes-420-adventure",
+      "title": "Pete's 420 Adventure",
+      "kind": "adult",
+      "tag": "21+ cannabis review",
+      "blurb": "Peter's review copy only. Adults only, 21+. A cartoon about cannabis. Not on the live hub.",
+      "controls": "Phone: arrow buttons and LOOK. Keyboard: arrows or WASD, E to use what is in front of Pete.",
+      "warn": "Adults only, 21+. Cannabis theme. Review copy, not a live-arcade release.",
+      "playLabel": "Play 21+ review",
+      "href": "games/petes-420-adventure/",
+      "cover": "",
+      "source": {
+        "repo": "ploug76/peters-arcade",
+        "pr": 4,
+        "url": "https://github.com/ploug76/peters-arcade/pull/4",
+        "branch": "cursor/petes-420-adventure-aec5",
+        "sha": "7ba0a5da568a727f43096946ff350746963939b4",
+        "path": "games/petes-420-adventure"
+      },
+      "integrationEdits": [
+        "No save keys and no service worker in this build.",
+        "noindex, adult label, and a back link to this shelf."
+      ]
+    },
+    {
+      "id": "hope-duncan-crossover",
+      "title": "Hope and Constable Duncan",
+      "kind": "prototype",
+      "tag": "Prototype, not finished",
+      "blurb": "Crossover prototype only. The Constable Duncan game itself was not copied and was not changed.",
+      "controls": "Swipe and hold to move. A long swipe runs. Swipe up or JUMP. Hope: PRAY, GRACE, LASSO, PUNCH. Duncan: ACTION. SWITCH changes character.",
+      "warn": "Prototype, not finished. Mobile play in this build was already incomplete.",
+      "limitations": "Missing files or buttons that never appear would be an integration fault, separate from the unfinished mobile mechanics. This shelf was not tested on a physical Galaxy S25 and was not played through to the end.",
+      "playLabel": "Play prototype",
+      "href": "games/hope-duncan-crossover/",
+      "cover": "",
+      "source": {
+        "repo": "ploug76/constable-duncan",
+        "pr": 1,
+        "url": "https://github.com/ploug76/constable-duncan/pull/1",
+        "branch": "cursor/hope-duncan-crossover-967a",
+        "sha": "135751edf41e7f9708c0f0eb3ec3a32ede182c64",
+        "path": "crossover"
+      },
+      "integrationEdits": [
+        "Only the crossover folder was copied.",
+        "The Lilita font file the prototype already used is copied beside it, and the stylesheet points at fonts/lilita.woff2 instead of the parent repo.",
+        "No service worker and no save keys in this build.",
+        "noindex, prototype label, and a back link to this shelf.",
+        "The node test file was left out. The game does not load it."
+      ]
+    },
+    {
+      "id": "palm-tree-pete-vol2-art",
+      "title": "Rescue from Palm Tree Pete's Island 2",
+      "kind": "review",
+      "tag": "Art-match review",
+      "blurb": "Volume 2 art matched to the first island game. Not a new volume. The live Volume 2 game is unchanged.",
+      "controls": "Same touch and keyboard controls as that Volume 2 build. Play, Levels, and How are on the title picture.",
+      "warn": "",
+      "playLabel": "Play this build",
+      "href": "games/palm-tree-pete-vol2-art/",
+      "cover": "games/palm-tree-pete-vol2-art/cover.png",
+      "source": {
+        "repo": "ploug76/escape-from-palm-tree-petes-island-vol-2",
+        "pr": 1,
+        "url": "https://github.com/ploug76/escape-from-palm-tree-petes-island-vol-2/pull/1",
+        "branch": "cursor/match-vol1-art-8a90",
+        "sha": "3f14f86fe0a513b2115722061d177edeb22e36a6",
+        "path": ""
+      },
+      "integrationEdits": [
+        "Cache name pa-test-esc2-v3. Activate deletes only that prefix. The review head deleted every other cache on the origin.",
+        "Fetch handler ignores URLs outside this folder.",
+        "Save key pa-test-ptp-island-2-save-v1.",
+        "noindex and a back link to this shelf."
+      ]
+    },
+    {
+      "id": "prepare-the-manger",
+      "title": "Prepare the Manger",
+      "kind": "review",
+      "tag": "Stride and animation review",
+      "blurb": "Same levels and painted art, with the in-play stride and angel motion from the review.",
+      "controls": "Swipe and hold to move. Green ACTION and orange JUMP. No D-pad.",
+      "warn": "",
+      "playLabel": "Play this build",
+      "href": "games/prepare-the-manger/",
+      "cover": "games/prepare-the-manger/icon-512.png",
+      "source": {
+        "repo": "ploug76/prepare-the-manger",
+        "pr": 1,
+        "url": "https://github.com/ploug76/prepare-the-manger/pull/1",
+        "branch": "cursor/manger-vol2-animation-7788",
+        "sha": "8f3be69fb67f1c3b5afdb6b266a03503e3f306df",
+        "path": ""
+      },
+      "integrationEdits": [
+        "Cache prefix pa-test-prepare-the-manger- so this copy cannot delete the live game's prepare-the-manger- caches.",
+        "Fetch handler ignores URLs outside this folder.",
+        "Save prefix pa-test-ptm_.",
+        "noindex was already on this game. A back link was added."
+      ]
+    },
+    {
+      "id": "tams-heavenly-hair-salon",
+      "title": "Tam's Heavenly Hair Salon",
+      "kind": "review",
+      "tag": "Art review",
+      "blurb": "Stylized Tam likeness and salon work poses. Same salon game.",
+      "controls": "Tap a customer, then tap the matching station. P pauses. M mutes.",
+      "warn": "",
+      "playLabel": "Play this build",
+      "href": "games/tams-heavenly-hair-salon/",
+      "cover": "games/tams-heavenly-hair-salon/cover.png",
+      "source": {
+        "repo": "ploug76/tams-heavenly-hair-salon",
+        "pr": 1,
+        "url": "https://github.com/ploug76/tams-heavenly-hair-salon/pull/1",
+        "branch": "cursor/tam-likeness-animation-1b90",
+        "sha": "5f345a75179c0f6048b172f21067f8bf7651591d",
+        "path": ""
+      },
+      "integrationEdits": [
+        "Cache prefix pa-test-tams-heavenly-hair-salon-.",
+        "Fetch handler ignores URLs outside this folder.",
+        "Save id pa-test-tams-heavenly-hair-salon. Shared leaderboard, hint, sample, and unlock keys prefixed pa-test-.",
+        "noindex and a back link to this shelf."
+      ]
+    },
+    {
+      "id": "tams-home-health-hustle",
+      "title": "Tam's Home Health Hustle",
+      "kind": "review",
+      "tag": "Art review",
+      "blurb": "Tam drawn with animated poses on the route. Same home-health game.",
+      "controls": "Existing on-screen buttons for the route, driving, and visits.",
+      "warn": "",
+      "playLabel": "Play this build",
+      "href": "games/tams-home-health-hustle/",
+      "cover": "games/tams-home-health-hustle/cover.png",
+      "source": {
+        "repo": "ploug76/tams-home-health-hustle",
+        "pr": 1,
+        "url": "https://github.com/ploug76/tams-home-health-hustle/pull/1",
+        "branch": "cursor/tam-likeness-anims-76d6",
+        "sha": "6f0d48e76bb6fb8608eaeccfe24969be7663ac2c",
+        "path": ""
+      },
+      "integrationEdits": [
+        "Cache prefix pa-test-tams-home-health-hustle-.",
+        "Fetch handler ignores URLs outside this folder.",
+        "Save id pa-test-tams-home-health-hustle. Shared keys prefixed pa-test-.",
+        "noindex and a back link to this shelf."
+      ]
+    },
+    {
+      "id": "tams-home-health-hustle-589",
+      "title": "Tam's Home Health Hustle (five8nine)",
+      "kind": "review",
+      "tag": "Art review",
+      "blurb": "Animated Tam on the five8nine build. Branding in that review was left as it was.",
+      "controls": "Existing on-screen buttons for the route, driving, and visits.",
+      "warn": "",
+      "playLabel": "Play this build",
+      "href": "games/tams-home-health-hustle-589/",
+      "cover": "games/tams-home-health-hustle-589/cover.png",
+      "source": {
+        "repo": "ploug76/tams-home-health-hustle-589",
+        "pr": 1,
+        "url": "https://github.com/ploug76/tams-home-health-hustle-589/pull/1",
+        "branch": "cursor/tam-likeness-animation-4e6b",
+        "sha": "8654f275ab9329d2e81fb8643e22db2a51ffc884",
+        "path": ""
+      },
+      "integrationEdits": [
+        "Cache prefix pa-test-f589-tams-home-health-hustle-589-.",
+        "Fetch handler ignores URLs outside this folder.",
+        "Save id pa-test-tams-home-health-hustle-589, separate from the other Home Health copy and from the live game.",
+        "Shared keys prefixed pa-test-.",
+        "noindex and a back link to this shelf."
+      ]
+    },
+    {
+      "id": "tams-road-to-emmaus",
+      "title": "Tam's Road to Emmaus",
+      "kind": "review",
+      "tag": "Art review",
+      "blurb": "Tam's likeness in the Emmaus walk cycle. Same road game.",
+      "controls": "Existing on-screen walk controls.",
+      "warn": "",
+      "playLabel": "Play this build",
+      "href": "games/tams-road-to-emmaus/",
+      "cover": "games/tams-road-to-emmaus/cover.png",
+      "source": {
+        "repo": "ploug76/tams-road-to-emmaus",
+        "pr": 1,
+        "url": "https://github.com/ploug76/tams-road-to-emmaus/pull/1",
+        "branch": "cursor/tam-emmaus-likeness-5d83",
+        "sha": "bb4502e99afe3a53d8abb8c736b5516725ac54dc",
+        "path": ""
+      },
+      "integrationEdits": [
+        "Cache prefix pa-test-tams-road-to-emmaus-.",
+        "Fetch handler ignores URLs outside this folder.",
+        "Save id pa-test-tams-road-to-emmaus. Shared keys prefixed pa-test-.",
+        "noindex and a back link to this shelf."
+      ]
+    },
+    {
+      "id": "tams-big-texas-hair-salon-589",
+      "title": "Tam's Big Texas Hair Salon",
+      "kind": "review",
+      "tag": "Art review",
+      "blurb": "Animated Tam in the five8nine salon build.",
+      "controls": "Tap a customer, then tap the matching station.",
+      "warn": "",
+      "playLabel": "Play this build",
+      "href": "games/tams-big-texas-hair-salon-589/",
+      "cover": "games/tams-big-texas-hair-salon-589/cover.png",
+      "source": {
+        "repo": "ploug76/tams-big-texas-hair-salon-589",
+        "pr": 1,
+        "url": "https://github.com/ploug76/tams-big-texas-hair-salon-589/pull/1",
+        "branch": "cursor/tam-salon-likeness-beeb",
+        "sha": "e73dfaf90c6c678265cf2441bc0974d30b7e3fa0",
+        "path": ""
+      },
+      "integrationEdits": [
+        "Cache prefix pa-test-f589-tams-big-texas-hair-salon-589-.",
+        "Fetch handler ignores URLs outside this folder.",
+        "Save id pa-test-tams-big-texas-hair-salon-589. Shared keys prefixed pa-test-.",
+        "noindex and a back link to this shelf."
+      ]
+    }
+  ],
+  "notSeparateGames": [
+    {
+      "repo": "ploug76/peters-arcade",
+      "pr": 1,
+      "url": "https://github.com/ploug76/peters-arcade/pull/1",
+      "sha": "48a0d0a30bbed69d6d4b3dac84eab446627e19dd",
+      "title": "Fix vault relock crash on the public hub",
+      "why": "Hub-only. Not a new game. Not merged and not copied."
+    },
+    {
+      "repo": "ploug76/peters-arcade",
+      "pr": 3,
+      "url": "https://github.com/ploug76/peters-arcade/pull/3",
+      "sha": "3ed84905d26ccba0517cab5021f36768a1979136",
+      "title": "Add Escape from Palm Tree Pete's Island Vol 2 card",
+      "why": "Hub card only. The playable art review is palm-tree-pete-vol2-art, from the Volume 2 repo. Not merged."
+    },
+    {
+      "repo": "ploug76/duncans-arcade",
+      "pr": 1,
+      "url": "https://github.com/ploug76/duncans-arcade/pull/1",
+      "sha": "0cd12fee3fac5dee2876690f64fc2b8f60f5c063",
+      "title": "Review copy: Duncan's Arcade lists Peter's live games, except copyrighted titles",
+      "why": "Hub listing only. Not a new game. Not merged and not copied."
+    }
+  ],
+  "omitted": []
+}
