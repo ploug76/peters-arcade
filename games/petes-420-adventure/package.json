@@ -1,0 +1,12 @@
+{
+  "name": "petes-420-adventure",
+  "private": true,
+  "description": "Review copy of Pete's 420 Adventure. Not linked from the arcade hub.",
+  "scripts": {
+    "test": "playwright test",
+    "start": "python3 -m http.server 4173 --bind 127.0.0.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0"
+  }
+}
