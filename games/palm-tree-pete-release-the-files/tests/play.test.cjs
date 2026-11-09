@@ -129,16 +129,25 @@ async function runStory(page, label) {
     if (!jumped) fail('keyboard jump did not leave the ground');
 
     const touch = await desk.page.evaluate(() => {
-      const L = __RTF.padLayout();
-      const mid = b => ({ x: b.x + b.w / 2, y: b.y + b.h / 2, label: b.label });
-      return { left: mid(L.left), jump: mid(L.jump), act: mid(L.act), right: mid(L.right) };
+      const C = __RTF.ctlLayout();
+      const inside = q => q.cx - q.r >= -2 && q.cy - q.r >= -2 && q.cx + q.r <= innerWidth + 2 && q.cy + q.r <= innerHeight + 2;
+      return {
+        jump: { x: C.jump.cx, y: C.jump.cy, label: C.jump.label },
+        act: { x: C.act.cx, y: C.act.cy, label: C.act.label },
+        swipe: { x: Math.round(K.W * 0.28), y: Math.round(Math.max(K.safe.t + 100, C.bandTop * 0.45)) },
+        order: C.act.cx < C.jump.cx && (C.jump.cx - C.jump.r) - (C.act.cx + C.act.r) > 8,
+        hint: C.hint, dpad: !!(C.left || C.up || C.right || C.down),
+        fit: inside(C.jump) && inside(C.act)
+      };
     });
     if (touch.jump.label !== 'JUMP' || touch.act.label !== 'ACTION') fail('button labels ' + JSON.stringify(touch));
+    if (!touch.order || touch.dpad || !touch.hint) fail('control scheme is not swipe + ACTION/JUMP ' + JSON.stringify(touch));
     const before = await desk.page.evaluate(() => ({ x: __RTF.G.hero.x, y: __RTF.G.hero.y }));
-    await desk.page.evaluate(({ right, jump }) => {
+    await desk.page.evaluate(({ swipe, jump }) => {
       const cv = document.getElementById('cv');
       const ev = (type, id, x, y) => cv.dispatchEvent(new PointerEvent(type, { pointerId: id, clientX: x, clientY: y, bubbles: true, pointerType: 'touch', buttons: type === 'pointerup' ? 0 : 1 }));
-      ev('pointerdown', 1, right.x, right.y);
+      ev('pointerdown', 1, swipe.x, swipe.y);
+      ev('pointermove', 1, swipe.x + 90, swipe.y);
       ev('pointerdown', 2, jump.x, jump.y);
     }, touch);
     let multi = false;
@@ -150,36 +159,51 @@ async function runStory(page, label) {
       }, before.x);
       if (multi) break;
     }
-    await desk.page.evaluate(({ right, jump }) => {
+    await desk.page.evaluate(({ swipe, jump }) => {
       const cv = document.getElementById('cv');
       const ev = (id, x, y) => cv.dispatchEvent(new PointerEvent('pointerup', { pointerId: id, clientX: x, clientY: y, bubbles: true, pointerType: 'touch' }));
-      ev(1, right.x, right.y); ev(2, jump.x, jump.y);
+      ev(1, swipe.x + 90, swipe.y); ev(2, jump.x, jump.y);
     }, touch);
-    if (!multi) fail('multitouch left+jump did not move and jump');
+    if (!multi) fail('swipe plus JUMP did not move and jump together');
+    await sleep(220);
+    const released = await desk.page.evaluate(() => {
+      const h = __RTF.G.hero;
+      return { x: h.x, vx: h.vx };
+    });
+    await sleep(180);
+    const settled = await desk.page.evaluate(x => {
+      const h = __RTF.G.hero;
+      return { dx: h.x - x, vx: Math.abs(h.vx) };
+    }, released.x);
+    if (settled.dx > 8 || settled.vx > 8) fail('movement stuck after release ' + JSON.stringify(settled));
+    const ui = await desk.page.evaluate(() => {
+      const b = K.btns.find(q => q.id === 'pause');
+      const x0 = __RTF.G.hero.x;
+      if (b) b.cb();
+      return { paused: __RTF.G.state === 'pause', x0, x1: __RTF.G.hero.x };
+    });
+    if (!ui.paused || Math.abs(ui.x1 - ui.x0) > 2) fail('pause press moved the hero ' + JSON.stringify(ui));
+    await sleep(80);
+    await desk.page.evaluate(() => { const b = K.btns.find(q => q.id === 'resume'); if (b) b.cb(); });
+    await sleep(80);
     await shot(desk.page, 'desktop_play.png');
 
+    function fitEval() {
+      const C = __RTF.ctlLayout();
+      const box = q => q.cx - q.r >= -2 && q.cy - q.r >= -2 && q.cx + q.r <= innerWidth + 2 && q.cy + q.r <= innerHeight + 2;
+      const gap = (C.jump.cx - C.jump.r) - (C.act.cx + C.act.r);
+      return { jump: box(C.jump), act: box(C.act), gap, land: K.land, hint: C.hint, labels: [C.jump.label, C.act.label], hero: !!__RTF.G.hero, dpad: !!(C.left || C.up) };
+    }
     await desk.page.setViewport({ width: 390, height: 844, isMobile: false, hasTouch: true });
     await sleep(300);
-    const portFit = await desk.page.evaluate(() => {
-      const L = __RTF.padLayout();
-      const boxes = ['up', 'down', 'left', 'right', 'jump', 'act'].map(id => L[id]);
-      const inside = boxes.every(b => b.x >= -2 && b.y >= -2 && b.x + b.w <= innerWidth + 2 && b.y + b.h <= innerHeight + 2);
-      const gap = L.act.x - (L.right.x + L.right.w);
-      return { inside, gap, land: K.land, w: innerWidth, h: innerHeight, labels: [L.jump.label, L.act.label] };
-    });
-    if (!portFit.inside || portFit.gap < 4 || portFit.land) fail('portrait pad ' + JSON.stringify(portFit));
+    const portFit = await desk.page.evaluate(fitEval);
+    if (!portFit.jump || !portFit.act || portFit.gap < 8 || portFit.land || portFit.dpad || portFit.hint !== 'SWIPE ANYWHERE') fail('portrait controls ' + JSON.stringify(portFit));
     await shot(desk.page, 'phone_portrait_play.png');
 
     await desk.page.setViewport({ width: 844, height: 390, isMobile: false, hasTouch: true });
     await sleep(300);
-    const landFit = await desk.page.evaluate(() => {
-      const L = __RTF.padLayout();
-      const boxes = ['up', 'down', 'left', 'right', 'jump', 'act'].map(id => L[id]);
-      const inside = boxes.every(b => b.x >= -2 && b.y >= -2 && b.x + b.w <= innerWidth + 2 && b.y + b.h <= innerHeight + 2);
-      const gap = L.act.x - (L.right.x + L.right.w);
-      return { inside, gap, land: K.land, hero: !!__RTF.G.hero };
-    });
-    if (!landFit.inside || landFit.gap < 4 || !landFit.land || !landFit.hero) fail('landscape pad ' + JSON.stringify(landFit));
+    const landFit = await desk.page.evaluate(fitEval);
+    if (!landFit.jump || !landFit.act || landFit.gap < 8 || !landFit.land || !landFit.hero || landFit.dpad || landFit.hint !== 'SWIPE TO MOVE') fail('landscape controls ' + JSON.stringify(landFit));
     await shot(desk.page, 'phone_landscape_play.png');
     await desk.page.setViewport({ width: 1100, height: 700, isMobile: false, hasTouch: true });
     await sleep(200);

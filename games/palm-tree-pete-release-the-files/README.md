@@ -14,7 +14,7 @@ Progress is stored in this browser under `ptp3-release-the-files-v1`. That key i
 
 ## Controls
 
-On-screen pad: arrows, orange **JUMP**, green **ACTION**. Two fingers can hold a direction and JUMP together. The layout refits for portrait, landscape, and a turn mid-game.
+Movement matches the other games: swipe anywhere and hold to walk, lift to stop. Orange **JUMP** and green **ACTION** are round buttons, ACTION on the left. A swipe and JUMP can be held at the same time. The layout refits for portrait, landscape, and a turn mid-game.
 
 Keyboard: arrows or WASD, Space jump, X / J / E action, C evidence bag, P pause. A game controller uses the stick, A to jump, and X or B for action.
 

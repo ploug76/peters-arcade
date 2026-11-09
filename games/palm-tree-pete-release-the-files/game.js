@@ -18,7 +18,8 @@
   K.FONT = '"Lilita One","Arial Rounded MT Bold",system-ui,sans-serif';
   let RT = 0, G = null, sceneName = 'title';
   const pend = { jump: 0, act: 0 };
-  const held = new Map();
+  /* One finger per pointer. Swipe fingers move; JUMP and ACTION are the round buttons. */
+  const fingers = new Map();
   const IN = { dir: 0, run: 0, up: 0, down: 0, jump: 0, act: 0 };
   let SONG = null, SONG2 = null;
   try {
@@ -36,49 +37,55 @@
   }
   const solid = ch => ch === '#' || ch === 'C';
   function solidAt(x, y) { return solid(tile(Math.floor(x / T), Math.floor(y / T))); }
-  function padLayout() {
-    const s = K.safe, gap = 6, m = 8;
-    let b = K.land ? 52 : 60;
-    const have = K.W - s.l - s.r;
-    for (let i = 0; i < 10; i++) {
-      const dpadR = m + 3 * b + 2 * gap;
-      const jw = b + 10, aw = b + 6;
-      const actX = have - m - jw - gap - aw;
-      if (actX >= dpadR + 8) break;
-      b -= 4;
+  /* Same phone scheme as Rescue from Palm Tree Pete's Island and Kelly's Giraffe Adventure
+     (Peter, 31 Oct): swipe anywhere to move, round ACTION (green) left of round JUMP (orange). No D-pad. */
+  function ctlLayout() {
+    const s = K.safe, W = K.W, H = K.H, land = !!K.land;
+    const gap = land ? 14 : 16;
+    let r = land ? Math.round(Math.min(46, Math.max(32, H * 0.11))) : Math.round(Math.min(56, Math.max(36, Math.min(W * 0.105, H * 0.075))));
+    const margin = land ? 12 : 16;
+    let ax = W - s.r - margin - r;
+    let bx = ax - r - gap - r;
+    const minX = s.l + (land ? 120 : 150);
+    if (bx - r < minX) {
+      const room = Math.max(28, (W - s.r - margin - minX - gap) / 4);
+      r = Math.max(28, Math.min(r, room));
+      ax = W - s.r - margin - r;
+      bx = ax - r - gap - r;
     }
-    b = Math.max(40, b);
-    const bottom = K.H - s.b - m;
-    const downY = bottom - b;
-    const midY = downY - gap - b;
-    const upY = midY - gap - b;
-    const leftX = s.l + m;
-    const cx = leftX + b + gap;
-    const jw = b + 10, aw = b + 6;
-    const jx = K.W - s.r - m - jw;
-    const L = {
-      up: { x: cx, y: upY, w: b, h: b, label: '▲' },
-      left: { x: leftX, y: midY, w: b, h: b, label: '◀' },
-      right: { x: cx + b + gap, y: midY, w: b, h: b, label: '▶' },
-      down: { x: cx, y: downY, w: b, h: b, label: '▼' },
-      act: { x: jx - gap - aw, y: bottom - aw, w: aw, h: aw, label: 'ACTION' },
-      jump: { x: jx, y: bottom - jw, w: jw, h: jw, label: 'JUMP' },
-      b: b
+    const cy = H - s.b - (land ? 10 : 14) - r;
+    const bandTop = cy - r - (land ? 10 : 16);
+    return {
+      land: land, r: r, bandTop: bandTop,
+      hint: land ? 'SWIPE TO MOVE' : 'SWIPE ANYWHERE',
+      hint2: land ? '' : 'TO MOVE',
+      act: { cx: bx, cy: cy, r: r, label: 'ACTION' },
+      jump: { cx: ax, cy: cy, r: r, label: 'JUMP' }
     };
-    return L;
   }
-  function controlAt(x, y) {
-    const L = padLayout();
-    for (const id of ['jump', 'act', 'up', 'down', 'left', 'right']) {
-      const q = L[id];
-      if (x >= q.x - 6 && x <= q.x + q.w + 6 && y >= q.y - 6 && y <= q.y + q.h + 6) return id;
+  function circleAt(x, y) {
+    const C = ctlLayout();
+    let best = null, bd = 1e9;
+    for (const k of ['act', 'jump']) {
+      const q = C[k], d = Math.hypot(x - q.cx, y - q.cy), lim = Math.max(q.r + 12, q.r * 1.55);
+      if (d <= lim && d / q.r < bd) { bd = d / q.r; best = k; }
     }
-    return null;
+    return best;
+  }
+  /* Vol1 swipe: 16px dead zone, anchor follows past 56px, mostly one axis. Hold keeps the direction. */
+  function swipeDirs(q, x, y) {
+    let dx = x - q.ox, dy = y - q.oy, d = Math.hypot(dx, dy);
+    if (d > 56) { q.ox = x - dx * 56 / d; q.oy = y - dy * 56 / d; dx = x - q.ox; dy = y - q.oy; d = 56; }
+    if (d < 16) return q.dirs || {};
+    const ax = Math.abs(dx), ay = Math.abs(dy), o = {}, Tn = 2.414;
+    if (ax > ay / Tn) o[dx > 0 ? 'r' : 'l'] = 1;
+    if (ay > ax / Tn) o[dy > 0 ? 'd' : 'u'] = 1;
+    return o;
   }
   function viewGeom() {
-    const L = padLayout();
+    const C = ctlLayout();
     const top = K.safe.t + (K.land ? 54 : 64);
-    const bottom = Math.max(top + 90, L.up.y - 6);
+    const bottom = Math.max(top + 90, C.bandTop - 4);
     const sc = Math.max(.55, Math.min((K.W - K.safe.l - K.safe.r) / ((K.land ? 22 : 13) * T), (bottom - top) / (7.6 * T)));
     const oy = bottom - GY * sc - 4;
     return { sc: sc, oy: oy, top: top, bottom: bottom };
@@ -132,7 +139,7 @@
     G.wire = wirePoints();
     G.hero = newHero(wx(st.hero), GY);
     G.hero.inv = .4;
-    held.clear();
+    fingers.clear();
     sceneName = 'play';
     K.go(Play);
     if (SONG) K.music.play(SONG);
@@ -420,12 +427,17 @@
     if (k.ArrowUp || k.KeyW) IN.up = 1;
     if (k.ArrowDown || k.KeyS) IN.down = 1;
     if (k.ShiftLeft || k.ShiftRight) IN.run = 1;
-    for (const id of held.values()) {
-      if (id === 'left') IN.dir = -1;
-      if (id === 'right') IN.dir = 1;
-      if (id === 'up') IN.up = 1;
-      if (id === 'down') IN.down = 1;
+    let swL = !!(k.ArrowLeft || k.KeyA), swR = !!(k.ArrowRight || k.KeyD), swU = !!IN.up, swD = !!IN.down;
+    for (const f of fingers.values()) {
+      if (f.kind !== 'swipe' || !f.dirs) continue;
+      if (f.dirs.l) swL = true;
+      if (f.dirs.r) swR = true;
+      if (f.dirs.u) swU = true;
+      if (f.dirs.d) swD = true;
     }
+    IN.dir = swR && !swL ? 1 : swL && !swR ? -1 : 0;
+    IN.up = swU ? 1 : 0;
+    IN.down = swD ? 1 : 0;
     const P = K.pad;
     if (P.on) {
       if (P.held.left || P.ax.x < -.35) IN.dir = -1;
@@ -647,32 +659,40 @@
     const txt = 'ACTION: ' + a.prompt;
     X.font = K.font(15, 800);
     const tw = Math.min(K.W - 24, X.measureText(txt).width + 22);
-    const bx = K.clamp(x - tw / 2, 8, K.W - tw - 8), by = K.clamp(y, K.safe.t + 78, padLayout().up.y - 36);
+    const bx = K.clamp(x - tw / 2, 8, K.W - tw - 8), by = K.clamp(y, K.safe.t + 78, ctlLayout().bandTop - 36);
     X.fillStyle = 'rgba(10,12,24,.9)'; K.rr(bx, by, tw, 28, 8); X.fill();
     X.strokeStyle = '#ffe14a'; X.lineWidth = 2; X.stroke();
     K.text(txt, bx + tw / 2, by + 14, 14, '#ffe14a', { max: tw - 10 });
   }
-  function drawPad() {
-    const L = padLayout();
-    X.fillStyle = 'rgba(6,8,18,.45)';
-    X.fillRect(0, L.up.y - 8, K.W, K.H - L.up.y + 8);
-    for (const id of ['up', 'down', 'left', 'right', 'act', 'jump']) {
-      const q = L[id];
-      const down = heldHas(id);
-      const col = id === 'jump' ? '#e88b2e' : id === 'act' ? '#2fae4a' : '#243056';
-      const col2 = id === 'jump' ? '#a85a12' : id === 'act' ? '#1c7a34' : '#141a30';
-      X.save(); X.translate(0, down ? 2 : 0);
-      X.fillStyle = 'rgba(0,0,0,.4)'; K.rr(q.x, q.y + 4, q.w, q.h, 12); X.fill();
-      const g = X.createLinearGradient(0, q.y, 0, q.y + q.h);
-      g.addColorStop(0, col); g.addColorStop(1, col2);
-      X.fillStyle = g; K.rr(q.x, q.y, q.w, q.h, 12); X.fill();
-      X.strokeStyle = '#fff'; X.lineWidth = 2; X.stroke();
-      const px = id === 'jump' || id === 'act' ? Math.max(11, Math.min(16, q.w * .28)) : Math.min(22, q.w * .42);
-      K.text(q.label, q.x + q.w / 2, q.y + q.h / 2 + 1, px, '#fff', { stroke: '#000', lw: 3, max: q.w - 8 });
-      X.restore();
-    }
+  function fingerDown(kind) { for (const f of fingers.values()) if (f.kind === kind) return true; return false; }
+  function drawRound(q, on, hi, mid, lo) {
+    const dy = on ? 2 : 0;
+    X.beginPath(); X.arc(q.cx, q.cy + 3, q.r, 0, TAU); X.fillStyle = '#000'; X.fill();
+    const g = X.createRadialGradient(q.cx - q.r * .3, q.cy + dy - q.r * .4, q.r * .1, q.cx, q.cy + dy, q.r);
+    g.addColorStop(0, hi); g.addColorStop(.55, mid); g.addColorStop(1, lo);
+    X.beginPath(); X.arc(q.cx, q.cy + dy, q.r, 0, TAU); X.fillStyle = g; X.fill();
+    if (on) { X.fillStyle = 'rgba(255,255,255,.22)'; X.fill(); }
+    X.lineWidth = 3; X.strokeStyle = '#fff'; X.stroke();
+    X.beginPath(); X.arc(q.cx - q.r * .28, q.cy + dy - q.r * .32, q.r * .26, 0, TAU); X.fillStyle = 'rgba(255,255,255,.28)'; X.fill();
+    const px = Math.max(11, Math.round(q.r * (q.label === 'JUMP' ? .5 : .38)));
+    K.text(q.label, q.cx, q.cy + dy + 1, px, '#fff', { stroke: '#000', lw: Math.max(3, px * .22), max: q.r * 1.75, fam: '"Arial Black",Impact,system-ui,sans-serif', w: 900 });
   }
-  function heldHas(id) { for (const v of held.values()) if (v === id) return true; return false; }
+  function drawControls() {
+    const C = ctlLayout(), s = K.safe;
+    if (!C.land) {
+      const x = s.l + 6, y = C.bandTop, w = K.W - s.l - s.r - 12, h = K.H - s.b - 6 - C.bandTop;
+      K.rr(x, y, w, h, 18); X.fillStyle = '#b9b6bf'; X.fill(); X.strokeStyle = '#efeef2'; X.lineWidth = 3; X.stroke();
+      K.rr(x + 8, y + 8, w - 16, h - 16, 12); X.fillStyle = '#2b2833'; X.fill();
+      const right = C.act.cx - C.act.r - 8, left = x + 16;
+      const hx = (left + right) / 2;
+      K.text(C.hint, hx, C.act.cy - 12, 15, '#8f8c99', { fam: '"Courier New",ui-monospace,monospace', max: Math.max(40, right - left) });
+      K.text(C.hint2, hx, C.act.cy + 14, 15, '#8f8c99', { fam: '"Courier New",ui-monospace,monospace', max: Math.max(40, right - left) });
+    } else {
+      K.text(C.hint, s.l + 14, K.H - s.b - 16, 13, 'rgba(232,228,220,.72)', { align: 'left', fam: '"Courier New",ui-monospace,monospace' });
+    }
+    drawRound(C.act, fingerDown('act'), '#d8ffd0', '#38b040', '#0a5a12');
+    drawRound(C.jump, fingerDown('jump'), '#ffe0b0', '#ff8a1a', '#a03a00');
+  }
   function drawSheet() {
     const W = K.W, H = K.H, s = K.safe;
     X.fillStyle = 'rgba(6,8,18,.96)'; X.fillRect(0, 0, W, H);
@@ -704,11 +724,23 @@
   }
   const Play = {
     menu: false, primary: 'resume',
-    enter() { this.menu = false; sceneName = 'play'; held.clear(); },
-    down(p) { if (!G || G.state === 'pause' || G.sheet) return; const id = controlAt(p.x, p.y); if (!id) return; held.set(p.id, id); if (id === 'jump') pend.jump = 1; if (id === 'act') pend.act = 1; },
-    move(p) { if (!held.has(p.id)) return; const id = controlAt(p.x, p.y); held.set(p.id, id || held.get(p.id)); },
-    up(p) { held.delete(p.id); },
-    pause() { if (!G || G.sheet) return; G.state = 'pause'; this.menu = true; K.focus = 'resume'; held.clear(); },
+    enter() { this.menu = false; sceneName = 'play'; fingers.clear(); },
+    down(p) {
+      if (!G || G.state !== 'play' || G.sheet) return;
+      const id = circleAt(p.x, p.y);
+      if (id === 'jump') { fingers.set(p.id, { kind: 'jump' }); pend.jump = 1; return; }
+      if (id === 'act') { fingers.set(p.id, { kind: 'act' }); pend.act = 1; return; }
+      fingers.set(p.id, { kind: 'swipe', ox: p.x, oy: p.y, dirs: {} });
+    },
+    move(p) {
+      const f = fingers.get(p.id);
+      if (!f) return;
+      if (f.kind === 'swipe') { f.dirs = swipeDirs(f, p.x, p.y); return; }
+      const id = circleAt(p.x, p.y);
+      if (id !== f.kind) fingers.delete(p.id);
+    },
+    up(p) { fingers.delete(p.id); },
+    pause() { if (!G || G.sheet) return; G.state = 'pause'; this.menu = true; K.focus = 'resume'; fingers.clear(); },
     resume() { G.state = 'play'; this.menu = false; },
     back() { if (G && G.sheet) { G.sheet = false; this.menu = false; return; } if (G && G.state === 'pause') this.resume(); else this.pause(); },
     update(dt) {
@@ -736,7 +768,7 @@
       drawPrompt();
       drawHUD();
       if (G.state === 'caught') { X.fillStyle = 'rgba(120,0,0,.25)'; X.fillRect(0, 0, K.W, K.H); K.text('SPOTTED', K.W / 2, K.H * .4, 40, '#fff', { stroke: '#600', lw: 6 }); }
-      if (!G.sheet && G.state !== 'pause') drawPad();
+      if (!G.sheet && G.state !== 'pause') drawControls();
       if (G.sheet) drawSheet();
       if (G.state === 'pause') drawPause();
     }
@@ -888,7 +920,7 @@
     draw() {
       bg(1); X.fillStyle = 'rgba(6,8,18,.55)'; X.fillRect(0, 0, K.W, K.H);
       K.text('HOW TO PLAY', K.W / 2, K.safe.t + 36, 28, '#ffe14a', { fam: TF, stroke: '#000', lw: 5 });
-      const t = 'Move with the arrow pad. JUMP is the orange button. ACTION is the green button: search, punch, free a kid, eject a reel, or board the boat.\n\nA yellow cable runs from each camera to a recorder. Walk the cable. At the machine, ACTION ejects the master reel.\n\nEvidence stays in the bag if you are spotted. Collecting the same object twice does not add another.\n\nKeyboard: arrows or WASD, Space jump, X or J or E action, C bag, P pause.\n\nBoth JUMP and a direction can be held at once.';
+      const t = 'Swipe anywhere and hold to walk. Slide your finger to turn. Lift it to stop. Swipe up or down on a ladder to climb.\n\nJUMP is the orange button. ACTION is the green button: search, punch, free a kid, eject a reel, or board the boat. Hold a swipe and JUMP together.\n\nA yellow cable runs from each camera to a recorder. Walk the cable. At the machine, ACTION ejects the master reel.\n\nEvidence stays in the bag if you are spotted. Collecting the same object twice does not add another.\n\nKeyboard: arrows or WASD, Space jump, X or J or E action, C bag, P pause.';
       K.para(t, K.W / 2, K.safe.t + 70, Math.min(K.W - 28, 640), K.land ? 14 : 15, '#fff', { lh: 1.28 });
       K.button('ok', K.W / 2 - 90, K.H - K.safe.b - 64, 180, 48, 'GOT IT', { color: '#2fae4a', px: 18, cb: () => K.go(Title) });
     }
@@ -943,7 +975,7 @@
     get scene() { return sceneName; },
     get endingLine() { return Ending.line || ''; },
     STAGES: R.STAGES, CATS: R.CATS, ITEMS: R.ITEMS, KIDS: R.KIDS,
-    startStage: startStage, doAction: doAction, nearestAct: nearestAct, padLayout: padLayout,
+    startStage: startStage, doAction: doAction, nearestAct: nearestAct, ctlLayout: ctlLayout,
     bot: false, fast: false,
     counts: () => R.counts(save),
     kids: () => R.kidCount(save),
