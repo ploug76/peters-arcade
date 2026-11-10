@@ -93,6 +93,7 @@ function genLevel(L){const r=rng(L.i*7919+101+(L.seedAdd||0)),wi=L.w,li=L.li;
   else if(ch.k==='cam'){for(let i=c+2;i<=c+9;i++)set(i,7,'=');ladder(c+2,7,9);lv.cams.push({x:(c+6)*T,y:8*T+4,per:5+r()*2,ph:r()*TAU,fy:GY});bush(c+4,GY);set(c+8,9,'C');if(wi>=3)thug(c+3.5,c+9,7*T);if(hasCage)cage(c+8.4,7*T)}}
  // exit
  lv.exitX=(nC-4)*T;if(WORLDS[wi].exit==='boat'){for(let i=nC-3;i<nC;i++){set(i,10,' ');set(i,11,' ');lv.water.push(i)}}
+ if(L.i===0){lv.cages=[{x:5.2*T,fy:GY,n:2,open:0,kidsC:[0,3]}];lv.thugs=[];lv.lights=[];lv.cams=[]}
  lv.kidsTotal=lv.cages.reduce((a,c)=>a+c.n,0);lv.par=Math.round(18+nC*.75+lv.kidsTotal*5+lv.thugs.length*2);
  lv.thugs.forEach(t=>{t.x=lerp(t.x0,t.x1,r());t.sx=t.x;t.sf=t.f;t.meter=0;t.down=0;t.wait=0;t.gait=new K.Gait({leg:29,walk:55,run:115,arm:.9})});
  return lv}
@@ -282,11 +283,12 @@ function drawPlay(){const W=K.W,H=K.H,s=K.safe,w=WORLDS[G.wi],sc=viewScale(),vw=
  if(G.state==='caught'){X.fillStyle='rgba(160,0,0,'+(.25+.1*Math.sin(RT*10))+')';X.fillRect(0,0,W,H);K.text(G.bossLose?'KNOCKED OUT!':G.hero.y>NR*T?'SPLASH!':'SPOTTED!',W/2,H*.4,44,'#fff',{stroke:'#7a0000',lw:8})}
  if(G.banner>0&&G.state!=='caught'){X.globalAlpha=Math.min(1,G.banner*2);const L=G.L;const bw=Math.min(W-40,520),by=K.land?s.t+66:s.t+120;X.fillStyle='rgba(15,15,30,.82)';K.rr(W/2-bw/2,by,bw,96,18);X.fill();X.strokeStyle=w.acc;X.lineWidth=3;X.stroke();
   K.text(L.boss?'BOSS: '+w.boss:'LEVEL '+L.label,W/2,by+30,28,'#fff',{stroke:'#000',lw:5,max:bw-20});K.text(L.boss?'Tap to punch when he\'s dizzy!':'Free '+G.lv.kidsTotal+(G.lv.kidsTotal>1?' kids':' kid')+' and reach the exit!',W/2,by+68,20,'#ffd700',{max:bw-20});X.globalAlpha=1}
- const hint=hintText();if(hint&&G.state==='play'){const bw=Math.min(W-30,560);const lines=K.wrap(hint,bw-30,19);const bh=lines.length*24+18;const by=K.land?H-s.b-bh-10:oy+NR*T*sc+12;X.fillStyle='rgba(10,10,25,.78)';K.rr(W/2-bw/2,Math.min(by,H-s.b-bh-6),bw,bh,14);X.fill();K.para(hint,W/2,Math.min(by,H-s.b-bh-6)+20,bw-30,19,'#fff',{lh:1.25,w:700})}
+ const hint=hintText();if(hint&&G.state==='play'){const bw=Math.min(W-30,560);const lines=K.wrap(hint,bw-30,19);const bh=lines.length*24+18;const by=K.land?H-s.b-bh-10:oy+NR*T*sc+12;const top=Math.min(by,H-s.b-bh-6);X.fillStyle='rgba(10,10,25,.78)';K.rr(W/2-bw/2,top,bw,bh,14);X.fill();K.para(hint,W/2,top+20,bw-30,19,'#fff',{lh:1.25,w:700})}
+ drawPlayButtons();
  if(G.state==='pause')drawPause()}
 function hintText(){const H=G.hero,L=G.L;if(L.boss){return G.t<5?'Swipe up to jump the charges. Back away when you see "!" and TAP to punch while he\'s dizzy.':null}
  if(L.i!==0&&!(L.li===0&&G.t<5))return null;if(L.i!==0)return WORLDS[L.w].tip;
- if(G.t<6)return 'Drag right to walk. Drag farther to run. Swipe up to jump.';
+ if(G.t<6)return 'Swipe and hold to walk. Swipe farther to run. Orange JUMP, or swipe up. Green ACTION, or tap, to bonk or free a kid.';
  const t=G.lv.thugs.find(t=>!t.down&&t.x>H.x-40&&t.x-H.x<300&&Math.abs(t.fy-H.y)<10);if(t&&!H.hidden&&Math.sign(H.x-t.x)===t.f)return 'Goon ahead! Stand in a bush and drag DOWN to hide until he turns away.';
  if(t&&Math.sign(H.x-t.x)!==t.f&&!actTarget())return 'He\'s facing away. WALK up behind him (running is noisy!) and TAP to bonk.';
  if(H.x>G.lv.exitX-200&&G.kidsFreed<G.lv.kidsTotal)return 'Free every kid before you leave! Tap a cage when you\'re next to it.';return null}
@@ -297,14 +299,20 @@ function drawHUD(){const W=K.W,s=K.safe;const y=s.t+12;X.fillStyle='rgba(10,10,2
  else{K.text('KIDS '+G.kidsFreed+'/'+G.lv.kidsTotal,x,y+20,20,G.kidsFreed>=G.lv.kidsTotal?'#9be05a':'#fff',{align:'left',stroke:'#000',lw:3});x+=118;K.text(G.L.label,x,y+20,18,'#ffd700',{align:'left'})}
  if(!G.L.boss&&G.sus>.05){const bw=120,bx=W/2-bw/2,by=y+56;X.fillStyle='rgba(0,0,0,.5)';K.rr(bx,by,bw,12,6);X.fill();X.fillStyle=G.sus>.6?'#ff4a4a':'#ffd400';K.rr(bx,by,bw*Math.min(1,G.sus),12,6);X.fill()}
  K.button('pause',W-s.r-62,s.t+8,54,54,'II',{color:'#4a4f6a',px:24,nofocus:1,cb:()=>Play.pause()})}
+function drawPlayButtons(){if(!G||(G.state!=='play'&&G.state!=='ready'))return;const W=K.W,H=K.H,s=K.safe,land=K.land;
+ const big=land?Math.round(K.clamp(H*0.2,68,92)):Math.round(K.clamp(Math.min(W*0.22,H*0.14),78,100));
+ const r=Math.round(big/2),gap=land?14:16,cy=H-s.b-(land?10:12)-r,ax=W-s.r-(land?12:14)-r,bx=ax-big-gap-r;
+ K.button('act',bx-r,cy-r,big,big,'ACTION',{r:r,color:'#2f9a3a',px:Math.max(12,Math.round(r*.32)),nofocus:1,cb:()=>{btnAct=1}});
+ K.button('jump',ax-r,cy-r,big,big,'JUMP',{r:r,color:'#ff8a1a',px:Math.max(13,Math.round(r*.38)),nofocus:1,cb:()=>{btnJump=1}})}
 function drawPause(){const W=K.W,H=K.H;X.fillStyle='rgba(5,5,20,.7)';X.fillRect(0,0,W,H);K.text('PAUSED',W/2,H*.2,40,'#fff',{stroke:'#000',lw:6});const bw=Math.min(300,W-60),bh=56;let y=H*.3;
  K.button('resume',W/2-bw/2,y,bw,bh+6,'▶ RESUME',{color:'#2fae4a',px:24,cb:()=>Play.resume()});y+=bh+18;
  K.button('restart',W/2-bw/2,y,bw,bh,'↻ RESTART',{color:'#3a7ac8',px:22,cb:()=>startLevel(G.L.i)});y+=bh+12;
  K.button('quit',W/2-bw/2,y,bw,bh,'◀ MAP',{color:'#4a4f6a',px:22,cb:()=>{G=null;K.go(Map)}});y+=bh+12;
  K.button('snd',W/2-bw/2,y,bw,bh,AU.muted?'🔇 SOUND OFF':'🔊 SOUND ON',{color:'#6a4fd0',px:20,cb:()=>{AU.muted=!AU.muted;AU.apply();save.muted=AU.muted;persist()}})}
 /* ---------- input ---------- */
-let TP=null;
+let TP=null,btnJump=0,btnAct=0;
 function readInput(){let dir=0,run=0,down=0,up=0;
+ if(btnJump){IN.jump=1;btnJump=0}if(btnAct){tapAction();btnAct=0}
  if(TP){const p=TP.p;const dx=p.x-TP.ax,dy=p.y-TP.ay;if(Math.abs(dx)>16)dir=Math.sign(dx);if(Math.abs(dx)>62)run=1;if(dy>34&&dy>Math.abs(dx)*.7)down=1;if(dy<-30&&-dy>Math.abs(dx)*.7)up=1}
  const k=K.keys;if(k.ArrowLeft||k.KeyA)dir=-1;if(k.ArrowRight||k.KeyD)dir=1;if(k.ShiftLeft||k.ShiftRight)run=1;if(k.ArrowDown||k.KeyS)down=1;if(k.ArrowUp||k.KeyW)up=1;
  const P=K.pad;if(P.on){const ax=P.ax.x;if(Math.abs(ax)>.25){dir=Math.sign(ax);if(Math.abs(ax)>.75)run=1}if(P.held.left)dir=-1;if(P.held.right)dir=1;if(P.held.rb||P.held.rt)run=1;if(P.held.down||P.held.b||P.ax.y>.6)down=1;if(P.held.up||P.ax.y<-.6)up=1;

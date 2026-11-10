@@ -516,7 +516,7 @@ function drawNativity(ctx,o2={}){withCtx(ctx,()=>{ctx.setTransform(SCS,0,0,SCS,0
 
 // ===================== gameplay =====================
 let H=null,parts=[],floats=[],bubbles=[],camX=0,camY=0,shake=0,hearts=3,maxHearts=3,ST=null,trail=[],exitMsgT=0,finT=-1,nearAct=null;
-const SPD=66,JV=-222,GRAV=560;
+const SPD=78,JV=-320,GRAV=520;
 function startLevel(n){level=clamp(n,1,NL);const L=Lv();song=L.song;step=0;W=build(level);
   maxHearts=EASY?5:3;hearts=maxHearts;parts=[];floats=[];bubbles=[];exitMsgT=0;finT=-1;ST={t:0};for(const ob of L.obj)ST[ob.id]=0;
   H={x:W.start.x,y:W.start.y,vx:0,vy:0,f:1,onG:true,inv:0,ph:0,look:LOOKS[L.hero],safe:{x:W.start.x,y:W.start.y},coy:0,jb:0,kx:0};
@@ -938,6 +938,8 @@ function render(){menuBtns=[];MINFONT=99;g.setTransform(DPR,0,0,DPR,0,0);g.image
   if(state!=='play'){drawToast();if(state==='title'){const b=LY.tb[1];rr(b.x,b.y,b.w,b.h,10);g.fillStyle='rgba(255,255,255,.12)';g.fill();txt(muted?'🔇':'🔊',b.x+b.w/2,b.y+b.h/2+1,20,'#fff','center',{st:0});menuBtns.push({id:'tb_mute',x:b.x,y:b.y,w:b.w,h:b.h,fn:()=>setMute(!muted)})}}}
 addEventListener('resize',()=>layout());
 layout();requestAnimationFrame(frame);
+window.__PTM=function(){var Lvl=null;try{Lvl=Lv()}catch(e){}
+ return {state:state,level:level,x:H?Math.round(H.x):0,y:H?Math.round(H.y):0,onG:!!(H&&H.onG),vy:H?Math.round(H.vy):0,lamps:ST&&ST.lamp||0,need:Lvl&&Lvl.obj&&Lvl.obj[0]?Lvl.obj[0].n:0,hearts:hearts,near:nearAct?nearAct.k:null,goal:W&&W.goal?Math.round(W.goal.x):0,segs:W?W.segs:null,spots:W?W.spots.filter(function(s){return !s.done}).map(function(s){return {x:Math.round(s.x),y:Math.round(s.y),k:s.k}}):null,thorns:W?W.thorns.map(function(t){return Math.round(t.x)}):null,J:LY?LY.J:null,A:LY?LY.A:null,btns:menuBtns.map(function(b){return {id:b.id,x:b.x,y:b.y,w:b.w,h:b.h}})}};
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 
 // ===================== test-only hooks (inert unless a test sets window.__QA) =====================
