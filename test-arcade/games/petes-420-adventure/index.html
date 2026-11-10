@@ -77,42 +77,36 @@ body[data-screen="play"] #hud { display: flex; }
   display: none;
   position: fixed;
   z-index: 5;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  gap: 8px;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
-  background: #120a16;
-  border-top: 4px solid #fcd858;
-}
-body[data-screen="play"] #controls { display: flex; }
-#controls button {
-  width: var(--btn);
-  height: var(--btn);
-  min-width: 64px;
-  min-height: 64px;
-  flex: 0 0 auto;
-  border: 3px solid #fcfcfc;
-  border-radius: 16px;
-  background: #1a3a28;
-  color: #fcfcfc;
-  font: bold 22px/1 "Courier New", monospace;
-  box-shadow: 0 4px 0 #000;
+  right: calc(18px + env(safe-area-inset-right));
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  width: 96px;
+  height: 96px;
   padding: 0;
+  background: none;
+  border: 0;
+  pointer-events: none;
 }
-#controls button.on, #controls button:active { transform: translateY(2px); box-shadow: 0 2px 0 #000; filter: brightness(1.12); }
+body[data-screen="play"] #controls { display: block; }
+#controls button { display: none; }
 #controls #btnA {
-  background: #f83838;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  width: 92px;
+  height: 92px;
+  min-width: 92px;
+  min-height: 92px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  background: radial-gradient(circle at 35% 30%, #d8ffd0, #1e8a32);
   color: #fff;
-  font-size: 13px;
-  letter-spacing: .5px;
-  width: auto;
-  min-width: 76px;
-  padding: 0 10px;
+  font: bold 13px/1.05 "Courier New", monospace;
+  text-shadow: 0 2px 0 #0a3a12;
+  box-shadow: 0 4px 0 #041208;
+  padding: 6px;
 }
+#controls #btnA.on, #controls #btnA:active { transform: translateY(2px); box-shadow: 0 2px 0 #041208; }
 
 #toast {
   display: none;
@@ -340,7 +334,7 @@ body[data-screen="end"] #endScreen {
     <p class="tag">Adults-only cartoon. Connect the pieces. Meet the right people.</p>
     <p class="fine">Nothing here has a price. No real brands. Just a chill puzzle.</p>
     <button id="startBtn" type="button">START</button>
-    <p class="keys">Arrows or W A S D to walk. E to use the thing in front of you. On a phone, use the big buttons.</p>
+    <p class="keys">Swipe anywhere to step. Green ACTION uses what is in front of Pete. There is no jump in this story. Keys: arrows or WASD, E to use.</p>
   </div>
 </div>
 

@@ -136,38 +136,56 @@
   #touch {
     position: fixed;
     z-index: 5;
-    left: 0; right: 0; bottom: 0;
+    inset: 0;
     display: none;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
     pointer-events: none;
   }
-  #touch .cluster { display: flex; gap: 8px; align-items: flex-end; pointer-events: auto; }
-  #touch button { pointer-events: auto; font-size: 16px; }
-  #btn-swap { background: var(--sun); }
-  #btn-jump { background: #9fd7ef; }
-  #btn-act { background: #b7e38a; min-width: 76px; }
-  @media (max-width: 820px) {
-    #touch { display: flex; flex-wrap: wrap; }
-    #touch .cluster { flex: 1 1 100%; justify-content: space-between; }
-    #touch button { flex: 1 1 0; min-width: 0; }
-    #obj { font-size: 14px; }
-    #toast { top: 156px; }
-    #dialog { bottom: calc(150px + env(safe-area-inset-bottom)); }
+  #touch:not([hidden]) { display: block; }
+  #touch button {
+    pointer-events: auto;
+    position: absolute;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    line-height: 1.05;
   }
-  @media (max-height: 520px) {
-    #touch {
-      display: flex;
-      flex-wrap: nowrap;
-      padding-bottom: calc(6px + env(safe-area-inset-bottom));
-    }
-    #touch .cluster { flex: 0 1 auto; }
-    #touch button { flex: 0 0 auto; min-height: 48px; min-width: 64px; font-size: 14px; padding: 6px 8px; }
+  #btn-jump {
+    background: radial-gradient(circle at 35% 30%, #ffe0b0, #ff8a1a);
+    color: #fff;
+    border-color: #fff;
+    text-shadow: 0 2px 0 #7a3200;
+  }
+  #btn-act {
+    background: radial-gradient(circle at 35% 30%, #d8ffd0, #1e8a32);
+    color: #fff;
+    border-color: #fff;
+    text-shadow: 0 2px 0 #0a3a12;
+  }
+  #btn-swap {
+    background: var(--sun);
+    border-radius: 16px;
+    width: 76px;
+    height: 48px;
+    min-width: 76px;
+    min-height: 48px;
+    font-size: 14px;
+  }
+  @media (orientation: portrait) {
+    #btn-jump, #btn-act { width: 92px; height: 92px; min-width: 92px; min-height: 92px; font-size: 13px; bottom: calc(16px + env(safe-area-inset-bottom)); }
+    #btn-jump { right: calc(12px + env(safe-area-inset-right)); }
+    #btn-act { right: calc(116px + env(safe-area-inset-right)); }
+    #btn-swap { left: calc(12px + env(safe-area-inset-left)); bottom: calc(28px + env(safe-area-inset-bottom)); }
+    #dialog { bottom: calc(124px + env(safe-area-inset-bottom)); }
+  }
+  @media (orientation: landscape) {
+    #btn-jump, #btn-act { width: 74px; height: 74px; min-width: 74px; min-height: 74px; font-size: 12px; bottom: calc(10px + env(safe-area-inset-bottom)); }
+    #btn-jump { right: calc(10px + env(safe-area-inset-right)); }
+    #btn-act { right: calc(94px + env(safe-area-inset-right)); }
+    #btn-swap { left: calc(10px + env(safe-area-inset-left)); bottom: calc(12px + env(safe-area-inset-bottom)); }
     #hud { padding-top: calc(4px + env(safe-area-inset-top)); }
-    #who-chip, #cans, #obj { padding: 4px 8px; }
     #dialog { bottom: calc(8px + env(safe-area-inset-bottom)); width: min(480px, 62%); }
-    #toast { top: 52px; }
   }
   @media (prefers-reduced-motion: reduce) {
     * { scroll-behavior: auto; }
@@ -197,7 +215,7 @@
 <div id="start-screen">
   <button id="btn-continue" type="button" hidden>Continue</button>
   <button id="btn-start" type="button">Start Chapter 1</button>
-  <p class="hint">Arrows or WASD move · Space jump · X act · C swap · P pause</p>
+  <p class="hint">Swipe anywhere and hold to move. Orange JUMP, green ACTION. SWAP changes who you are. Keys: arrows, Space, X, C.</p>
   <p class="note">Cartoon trash-digging. In real life, ask a grown-up first.</p>
 </div>
 
@@ -227,16 +245,9 @@
 </div>
 
 <div id="touch" hidden>
-  <div class="cluster">
-    <button id="btn-up" type="button" aria-label="Up or climb">UP</button>
-    <button id="btn-left" type="button" aria-label="Left">LEFT</button>
-    <button id="btn-right" type="button" aria-label="Right">RIGHT</button>
-  </div>
-  <div class="cluster">
-    <button id="btn-jump" type="button">JUMP</button>
-    <button id="btn-act" type="button">ACT</button>
-    <button id="btn-swap" type="button">SWAP</button>
-  </div>
+  <button id="btn-swap" type="button">SWAP</button>
+  <button id="btn-act" type="button" aria-label="Action">ACTION</button>
+  <button id="btn-jump" type="button">JUMP</button>
 </div>
 
 <script src="logic.js"></script>

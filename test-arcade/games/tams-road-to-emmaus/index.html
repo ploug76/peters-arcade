@@ -821,6 +821,39 @@ GamepadSupport.init({
 </script>
 <!-- gamepad:end -->
 <script src="studio-logo.js?v=1" data-src="studio-logo-boh.webp" data-alt="Book of Heaven" data-when="state==='title'" data-corner="br" data-cornerl="br" data-h="54" data-hl="46"></script>
+<div id="paEctl" hidden>
+  <button id="paEact" type="button">ACTION</button>
+  <button id="paEjump" type="button">JUMP</button>
+</div>
+<style>
+#paEctl{position:fixed;z-index:40;inset:0;pointer-events:none}
+#paEctl[hidden]{display:none!important}
+#paEctl button{pointer-events:auto;position:absolute;border-radius:50%;border:3px solid #fff;color:#fff;font:700 13px/1.05 "Trebuchet MS",sans-serif;bottom:calc(14px + env(safe-area-inset-bottom))}
+#paEjump{right:calc(12px + env(safe-area-inset-right));width:92px;height:92px;background:radial-gradient(circle at 35% 30%,#ffe0b0,#e07010);text-shadow:0 2px 0 #7a3200}
+#paEact{right:calc(116px + env(safe-area-inset-right));width:84px;height:84px;background:radial-gradient(circle at 35% 30%,#d8ffd0,#1e8a32);text-shadow:0 2px 0 #0a3a12}
+@media (orientation:landscape){
+  #paEjump{width:74px;height:74px}
+  #paEact{width:68px;height:68px;right:calc(96px + env(safe-area-inset-right))}
+}
+</style>
+<script>
+(function(){
+  const box=document.getElementById('paEctl'), act=document.getElementById('paEact'), jump=document.getElementById('paEjump');
+  function api(){return window.__T}
+  setInterval(function(){const T=api();const g=T&&T.get&&T.get();box.hidden=!(g&&g.state==='walk'&&!g.mini)},250);
+  function press(el, fn){
+    el.addEventListener('pointerdown', function(e){e.preventDefault();e.stopPropagation();fn()});
+    ['pointerup','pointercancel','click'].forEach(function(ev){el.addEventListener(ev, function(e){e.stopPropagation()})});
+  }
+  press(jump, function(){const T=api();if(T&&T.jump)T.jump()});
+  press(act, function(){
+    const T=api();if(!T||!T.get)return;
+    const g=T.get();
+    if(g.dlg && g.dlg!=='q' && T.closeDlg)T.closeDlg();
+    else if(g.mini){const m=T.getMini&&T.getMini();if(m&&m.tap)m.tap(0,0)}
+  });
+})();
+</script>
 <a id="paTestBack" class="review" href="../../" aria-label="Back to Test Arcade. Review build."><b>← Arcade</b></a>
 <style>
 #paTestBack{position:fixed;z-index:100000;left:max(6px,env(safe-area-inset-left));top:max(6px,env(safe-area-inset-top));display:inline-flex;align-items:center;text-decoration:none;background:#ffe14a;color:#14120c;border:2px solid #14120c;border-radius:999px;padding:6px 10px;font:700 13px/1 "Courier New",ui-monospace,monospace;touch-action:manipulation;white-space:nowrap}

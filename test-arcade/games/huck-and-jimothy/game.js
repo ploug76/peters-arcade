@@ -11,6 +11,8 @@
 
   const state = HG.createState();
   const held = { left: false, right: false, up: false, down: false };
+  const keys = { left: false, right: false, up: false, down: false };
+  const swipe = { left: false, right: false, up: false, down: false };
   const pressed = { jump: false, action: false, swap: false, pause: false, start: false };
   const pointers = new Map();
 
@@ -155,20 +157,17 @@
 
   function touchHeight() {
     if (!ui.touch || ui.touch.hidden) return 0;
-    const r = ui.touch.getBoundingClientRect();
-    if (window.innerHeight > window.innerWidth && r.height > 40) return r.height;
+    if (window.innerHeight > window.innerWidth) return 118;
     return 0;
   }
 
-  function refreshHeld() {
-    held.left = held.right = held.up = held.down = false;
-    pointers.forEach(function (key) {
-      if (key === 'left') held.left = true;
-      if (key === 'right') held.right = true;
-      if (key === 'up') held.up = true;
-      if (key === 'down') held.down = true;
-    });
+  function syncHeld() {
+    held.left = keys.left || swipe.left;
+    held.right = keys.right || swipe.right;
+    held.up = keys.up || swipe.up;
+    held.down = keys.down || swipe.down;
   }
+  function refreshHeld() { syncHeld(); }
 
   function bindHold(btn, key) {
     if (!btn) return;
@@ -194,9 +193,6 @@
     btn.addEventListener('pointercancel', up);
   }
 
-  bindHold(document.getElementById('btn-left'), 'left');
-  bindHold(document.getElementById('btn-right'), 'right');
-  bindHold(document.getElementById('btn-up'), 'up');
   bindHold(document.getElementById('btn-jump'), 'jump');
   bindHold(document.getElementById('btn-act'), 'action');
   bindHold(document.getElementById('btn-swap'), 'swap');
@@ -204,36 +200,89 @@
   document.addEventListener('keydown', function (e) {
     if (e.repeat) return;
     const k = e.key;
-    if (k === 'ArrowLeft' || k === 'a' || k === 'A') { held.left = true; e.preventDefault(); }
-    else if (k === 'ArrowRight' || k === 'd' || k === 'D') { held.right = true; e.preventDefault(); }
-    else if (k === 'ArrowUp' || k === 'w' || k === 'W') { held.up = true; e.preventDefault(); }
-    else if (k === 'ArrowDown' || k === 's' || k === 'S') { held.down = true; e.preventDefault(); }
+    if (k === 'ArrowLeft' || k === 'a' || k === 'A') { keys.left = true; e.preventDefault(); }
+    else if (k === 'ArrowRight' || k === 'd' || k === 'D') { keys.right = true; e.preventDefault(); }
+    else if (k === 'ArrowUp' || k === 'w' || k === 'W') { keys.up = true; e.preventDefault(); }
+    else if (k === 'ArrowDown' || k === 's' || k === 'S') { keys.down = true; e.preventDefault(); }
     else if (k === ' ' || k === 'z' || k === 'Z') { pressed.jump = true; e.preventDefault(); }
     else if (k === 'x' || k === 'X' || k === 'Enter') { pressed.action = true; e.preventDefault(); }
     else if (k === 'c' || k === 'C' || k === 'q' || k === 'Q') { pressed.swap = true; e.preventDefault(); }
     else if (k === 'p' || k === 'P' || k === 'Escape') { pressed.pause = true; e.preventDefault(); }
+    syncHeld();
   });
   document.addEventListener('keyup', function (e) {
     const k = e.key;
-    if (k === 'ArrowLeft' || k === 'a' || k === 'A') held.left = false;
-    else if (k === 'ArrowRight' || k === 'd' || k === 'D') held.right = false;
-    else if (k === 'ArrowUp' || k === 'w' || k === 'W') held.up = false;
-    else if (k === 'ArrowDown' || k === 's' || k === 'S') held.down = false;
+    if (k === 'ArrowLeft' || k === 'a' || k === 'A') keys.left = false;
+    else if (k === 'ArrowRight' || k === 'd' || k === 'D') keys.right = false;
+    else if (k === 'ArrowUp' || k === 'w' || k === 'W') keys.up = false;
+    else if (k === 'ArrowDown' || k === 's' || k === 'S') keys.down = false;
+    syncHeld();
   });
   window.addEventListener('blur', function () {
-    held.left = held.right = held.up = held.down = false;
+    keys.left = keys.right = keys.up = keys.down = false;
+    fingers.clear();
+    recomputeSwipe();
     pointers.clear();
   });
 
-  document.getElementById('btn-start').addEventListener('click', function () {
-    pressed.start = true;
+  const fingers = new Map();
+  function dirsOf(ox, oy, x, y) {
+    const dx = x - ox, dy = y - oy, out = { left: false, right: false, up: false, down: false };
+    if (Math.hypot(dx, dy) < 16) return out;
+    const s = Math.round(Math.atan2(dy, dx) / (Math.PI / 4));
+    if (s === 0 || s === 1 || s === -1) out.right = true;
+    if (s === 4 || s === -4 || s === 3 || s === -3) out.left = true;
+    if (s === 2 || s === 1 || s === 3) out.down = true;
+    if (s === -2 || s === -1 || s === -3) out.up = true;
+    return out;
+  }
+  function recomputeSwipe() {
+    swipe.left = swipe.right = swipe.up = swipe.down = false;
+    fingers.forEach(function (f) {
+      const d = dirsOf(f.ox, f.oy, f.x, f.y);
+      if (d.left) swipe.left = true;
+      if (d.right) swipe.right = true;
+      if (d.up) swipe.up = true;
+      if (d.down) swipe.down = true;
+    });
+    syncHeld();
+  }
+  function playingNow() { return state.mode === 'play' || state.mode === 'tow'; }
+  canvas.addEventListener('pointerdown', function (e) {
+    if (!playingNow()) return;
+    if (e.target.closest && e.target.closest('button, a')) return;
+    fingers.set(e.pointerId, { ox: e.clientX, oy: e.clientY, x: e.clientX, y: e.clientY });
+    try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+    recomputeSwipe();
   });
+  canvas.addEventListener('pointermove', function (e) {
+    const f = fingers.get(e.pointerId);
+    if (!f) return;
+    f.x = e.clientX;
+    f.y = e.clientY;
+    recomputeSwipe();
+  });
+  function endFinger(e) {
+    if (!fingers.has(e.pointerId)) return;
+    fingers.delete(e.pointerId);
+    recomputeSwipe();
+  }
+  canvas.addEventListener('pointerup', endFinger);
+  canvas.addEventListener('pointercancel', endFinger);
+
+  function arm(el, flag) {
+    function go(e) {
+      if (e.pointerType && e.button) return;
+      pressed[flag] = true;
+    }
+    el.addEventListener('pointerup', go);
+    el.addEventListener('click', go);
+  }
+  arm(document.getElementById('btn-start'), 'start');
   ui.continueBtn.addEventListener('click', function () {
     loadSave();
   });
-  document.getElementById('btn-next').addEventListener('click', function () {
-    pressed.action = true;
-  });
+  arm(document.getElementById('btn-next'), 'action');
   ui.dialog.addEventListener('pointerdown', function () {
     pressed.action = true;
   });
@@ -299,15 +348,9 @@
       ui.dlgText.textContent = line ? line.text : '';
     }
     if (state.mode === 'tow') {
-      ui.left.textContent = 'FAR';
-      ui.right.textContent = 'NEAR';
-      ui.up.textContent = 'FAR';
       ui.jump.textContent = 'HONK';
       ui.act.textContent = 'HONK';
     } else {
-      ui.left.textContent = 'LEFT';
-      ui.right.textContent = 'RIGHT';
-      ui.up.textContent = 'UP';
       ui.jump.textContent = 'JUMP';
       ui.act.textContent = HG.contextLabel(state);
     }

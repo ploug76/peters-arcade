@@ -528,11 +528,39 @@
 
   bindTap($('startBtn'), startGame, false);
   bindTap($('replayBtn'), startGame, false);
-  bindTap($('btnL'), function () { move(-1, 0); }, true);
-  bindTap($('btnR'), function () { move(1, 0); }, true);
-  bindTap($('btnU'), function () { move(0, -1); }, true);
-  bindTap($('btnD'), function () { move(0, 1); }, true);
   bindTap($('btnA'), doAction, false);
+  var swipeId = null, swipe0 = null, swipeTimer = 0;
+  function endSwipe(e) {
+    if (swipeId == null || (e && e.pointerId !== swipeId)) return;
+    clearInterval(swipeTimer);
+    clearTimeout(swipeTimer);
+    swipeTimer = 0;
+    swipeId = null;
+    swipe0 = null;
+  }
+  function stepSwipe(dx, dy) {
+    if (Math.hypot(dx, dy) < 22) return null;
+    return Math.abs(dx) >= Math.abs(dy) ? [Math.sign(dx), 0] : [0, Math.sign(dy)];
+  }
+  $('view').addEventListener('pointerdown', function (e) {
+    if (state.screen !== 'play') return;
+    if (e.target.closest && e.target.closest('button, a')) return;
+    endSwipe();
+    swipeId = e.pointerId;
+    swipe0 = { x: e.clientX, y: e.clientY, dir: null };
+  });
+  $('view').addEventListener('pointermove', function (e) {
+    if (e.pointerId !== swipeId || !swipe0 || swipe0.dir) return;
+    var dir = stepSwipe(e.clientX - swipe0.x, e.clientY - swipe0.y);
+    if (!dir) return;
+    swipe0.dir = dir;
+    move(dir[0], dir[1]);
+    swipeTimer = setTimeout(function () {
+      swipeTimer = setInterval(function () { move(dir[0], dir[1]); }, 170);
+    }, 280);
+  });
+  $('view').addEventListener('pointerup', endSwipe);
+  $('view').addEventListener('pointercancel', endSwipe);
   bindTap($('puzzleBack'), closePuzzle, false);
   bindTap($('talkNext'), talkNext, false);
   bindTap($('talkOk'), talkClose, false);
@@ -546,7 +574,7 @@
   addEventListener('contextmenu', function (e) { e.preventDefault(); });
 
   function fit() {
-    var panel = state.screen === 'play' ? controls.offsetHeight : 0;
+    var panel = 0;
     document.documentElement.style.setProperty('--panel-h', panel + 'px');
     var view = $('view');
     var w = view.clientWidth;
