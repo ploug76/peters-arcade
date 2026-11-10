@@ -985,4 +985,5 @@
   drawEnding();
   setScreen('title');
   requestAnimationFrame(frame);
+  window.__P420 = { get: function () { return { screen: state.screen, area: state.area, x: state.x, y: state.y, puzzle: prog().puzzleDone, met: prog().met, bag: state.bag.map(function (i) { return i.name; }), talk: !!state.talk, talkI: state.talk && state.talk.i, talkN: state.talk && state.talk.lines && state.talk.lines.length }; } };
 })();

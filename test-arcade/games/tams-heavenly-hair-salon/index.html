@@ -136,7 +136,7 @@ const UPG=[
 ];
 const NLEV=24;
 function levelCfg(L){// L from 1
- const n=Math.min(6+L,22),gap=Math.max(6.6,12-L*.22),pat=Math.max(.8,1.08-L*.014);
+ const n=L<2?4:Math.min(6+L,22),gap=Math.max(6.6,12-L*.22),pat=Math.max(.8,1.08-L*.014);
  const steps=L<3?[2]:L<6?[2,3]:L<10?[2,3,3,4]:[3,3,4,4];
  const curl=L>=3,types=CTYPES.filter((t,i)=>i<Math.min(CTYPES.length,3+Math.floor(L/2)));
  const goal=Math.round(n*(30+L*1.5)*.7),expert=Math.round(goal*1.3);return{n,gap,pat,steps,curl,types,goal,expert}}
@@ -499,7 +499,7 @@ let lastT=0;function frame(now){requestAnimationFrame(frame);const dt=Math.min(.
  if(state=='play'){if(!paused&&!panelOpen)update(dt);render()}else drawMenu()}
 resizeCanvas();chrome(true);
 if(QS.has('level')){const l=CL(parseInt(QS.get('level')),1,NLEV);if(QS.has('play'))setTimeout(()=>startLevel(l),50);else save.lev=Math.max(save.lev,l)}
-window.__cust=()=>cust;window.__tam=()=>tam;window.__T={layout:()=>{const L_=layoutCards();return{cards:L_.cards,statics:L_.statics,sprites:[...cust.filter(c=>c.st!='gone').map(c=>({x:c.x-20,y:c.y-(sittingC(c)?6:0)-80,w:40,h:86})),tam?{x:tam.x-22,y:tam.y-90,w:44,h:96}:null].filter(Boolean),SC,OXs,OYs,VW,VH,SAFE}},get:()=>({state,L,money,cust:cust.map(c=>({st:c.st,order:c.order,step:c.step,pat:+c.pat.toFixed(2),x:c.x|0,y:c.y|0})),queue:queue.length,tam:{x:tam&&tam.x,y:tam&&tam.y},spawned,happy,lost,cfg}),startLevel,stations:()=>stations,custAt,moveTo,enqueue,levelCfg,setSpeed:k=>speedMul=k,update:dt=>update(dt),save:()=>save,BURDENS,VERSES:()=>VERSES};
+window.__cust=()=>cust;window.__tam=()=>tam;window.__T={layout:()=>{const L_=layoutCards();return{cards:L_.cards,statics:L_.statics,sprites:[...cust.filter(c=>c.st!='gone').map(c=>({x:c.x-20,y:c.y-(sittingC(c)?6:0)-80,w:40,h:86})),tam?{x:tam.x-22,y:tam.y-90,w:44,h:96}:null].filter(Boolean),SC,OXs,OYs,VW,VH,SAFE}},get:()=>({state,L,money,verse:!!verseCard,cust:cust.map(c=>({st:c.st,order:c.order,step:c.step,pat:+c.pat.toFixed(2),x:c.x|0,y:c.y|0})),queue:queue.length,tam:{x:tam&&tam.x,y:tam&&tam.y},spawned,happy,lost,cfg}),startLevel,stations:()=>stations,custAt,moveTo,enqueue,levelCfg,setSpeed:k=>speedMul=k,update:dt=>update(dt),save:()=>save,BURDENS,VERSES:()=>VERSES};
 requestAnimationFrame(t=>{lastT=t;frame(t)});
 
 </script>

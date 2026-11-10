@@ -93,6 +93,7 @@ function genLevel(L){const r=rng(L.i*7919+101+(L.seedAdd||0)),wi=L.w,li=L.li;
   else if(ch.k==='cam'){for(let i=c+2;i<=c+9;i++)set(i,7,'=');ladder(c+2,7,9);lv.cams.push({x:(c+6)*T,y:8*T+4,per:5+r()*2,ph:r()*TAU,fy:GY});bush(c+4,GY);set(c+8,9,'C');if(wi>=3)thug(c+3.5,c+9,7*T);if(hasCage)cage(c+8.4,7*T)}}
  // exit
  lv.exitX=(nC-4)*T;if(WORLDS[wi].exit==='boat'){for(let i=nC-3;i<nC;i++){set(i,10,' ');set(i,11,' ');lv.water.push(i)}}
+ if(L.i===0){lv.cages=[{x:5.2*T,fy:GY,n:2,open:0,kidsC:[0,3]}];lv.thugs=[];lv.lights=[];lv.cams=[]}
  lv.kidsTotal=lv.cages.reduce((a,c)=>a+c.n,0);lv.par=Math.round(18+nC*.75+lv.kidsTotal*5+lv.thugs.length*2);
  lv.thugs.forEach(t=>{t.x=lerp(t.x0,t.x1,r());t.sx=t.x;t.sf=t.f;t.meter=0;t.down=0;t.wait=0;t.gait=new K.Gait({leg:29,walk:55,run:115,arm:.9})});
  return lv}

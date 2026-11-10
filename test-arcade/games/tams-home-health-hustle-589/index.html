@@ -198,7 +198,7 @@ function update(dt){GT+=dt;for(const tm of timers)tm.t-=dt;const due=timers.filt
  const sp=HYP(car.vx,car.vy);if(Math.floor(clock*8)!=Math.floor((clock-dt)*8)&&sp>10)tone(60+sp*.5,.12,'sawtooth',.025);
  if(tileAt(car.x,car.y)!=1&&sp>40&&R()<dt*20)parts.push({x:car.x,y:car.y,vx:(R()-.5)*20,vy:(R()-.5)*20,t:0,l:.6,col:'rgba(180,150,100,.5)',r:4});
  // arrival
- if(cur){const d=HYP(car.x-cur.sx,car.y-cur.sy);if(d<30&&sp<55){car.vx*=.8;car.vy*=.8;if(sp<25)startVisit(cur)}}
+ if(cur){const d=HYP(car.x-cur.sx,car.y-cur.sy);if(d<100){const spNow=HYP(car.vx,car.vy),cap=d<56?24:70;if(spNow>cap){car.vx*=cap/spNow;car.vy*=cap/spNow}}if(d<64&&HYP(car.vx,car.vy)<40)startVisit(cur)}
  if(clock>=DAYLEN&&!dayEndT){dayEndT=1;floats.push({x:car.x,y:car.y-40,t:0,s:"Overtime! Keep going, Tam!",dur:2})}}
 const DAYLEN=600;// game "minutes" from 8:00 (shown as clock); 1 real second = 1 minute while driving
 function clockStr(m){const tot=8*60+m,h=Math.floor(tot/60)%24,mm=Math.floor(tot%60);return((h+11)%12+1)+':'+String(mm).padStart(2,'0')+(h<12?' AM':' PM')}
