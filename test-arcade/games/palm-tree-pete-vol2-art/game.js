@@ -282,7 +282,8 @@ function drawPlay(){const W=K.W,H=K.H,s=K.safe,w=WORLDS[G.wi],sc=viewScale(),vw=
  if(G.state==='caught'){X.fillStyle='rgba(160,0,0,'+(.25+.1*Math.sin(RT*10))+')';X.fillRect(0,0,W,H);K.text(G.bossLose?'KNOCKED OUT!':G.hero.y>NR*T?'SPLASH!':'SPOTTED!',W/2,H*.4,44,'#fff',{stroke:'#7a0000',lw:8})}
  if(G.banner>0&&G.state!=='caught'){X.globalAlpha=Math.min(1,G.banner*2);const L=G.L;const bw=Math.min(W-40,520),by=K.land?s.t+66:s.t+120;X.fillStyle='rgba(15,15,30,.82)';K.rr(W/2-bw/2,by,bw,96,18);X.fill();X.strokeStyle=w.acc;X.lineWidth=3;X.stroke();
   K.text(L.boss?'BOSS: '+w.boss:'LEVEL '+L.label,W/2,by+30,28,'#fff',{stroke:'#000',lw:5,max:bw-20});K.text(L.boss?'Tap to punch when he\'s dizzy!':'Free '+G.lv.kidsTotal+(G.lv.kidsTotal>1?' kids':' kid')+' and reach the exit!',W/2,by+68,20,'#ffd700',{max:bw-20});X.globalAlpha=1}
- const hint=hintText();if(hint&&G.state==='play'){const bw=Math.min(W-30,560);const lines=K.wrap(hint,bw-30,19);const bh=lines.length*24+18;const by=K.land?H-s.b-bh-10:oy+NR*T*sc+12;X.fillStyle='rgba(10,10,25,.78)';K.rr(W/2-bw/2,Math.min(by,H-s.b-bh-6),bw,bh,14);X.fill();K.para(hint,W/2,Math.min(by,H-s.b-bh-6)+20,bw-30,19,'#fff',{lh:1.25,w:700})}
+ const hint=hintText();if(hint&&G.state==='play'){const bw=Math.min(W-30,560);const lines=K.wrap(hint,bw-30,19);const bh=lines.length*24+18;const by=K.land?H-s.b-bh-10:oy+NR*T*sc+12;const top=Math.min(by,H-s.b-bh-6);X.fillStyle='rgba(10,10,25,.78)';K.rr(W/2-bw/2,top,bw,bh,14);X.fill();K.para(hint,W/2,top+20,bw-30,19,'#fff',{lh:1.25,w:700})}
+ drawPlayButtons();
  if(G.state==='pause')drawPause()}
 function hintText(){const H=G.hero,L=G.L;if(L.boss){return G.t<5?'Swipe up to jump the charges. Back away when you see "!" and TAP to punch while he\'s dizzy.':null}
  if(L.i!==0&&!(L.li===0&&G.t<5))return null;if(L.i!==0)return WORLDS[L.w].tip;
@@ -296,12 +297,12 @@ function drawHUD(){const W=K.W,s=K.safe;const y=s.t+12;X.fillStyle='rgba(10,10,2
  if(G.L.boss){const B=G.boss;const bw=K.land?150:Math.min(140,W-90-x-60);K.text(G.L.label,x+18,y+20,18,'#fff',{align:'left'});const bx=x+58;X.fillStyle='rgba(0,0,0,.5)';K.rr(bx,y+12,bw,16,8);X.fill();X.fillStyle='#ff4a6a';K.rr(bx,y+12,bw*Math.max(0,B.hp)/B.mx,16,8);X.fill()}
  else{K.text('KIDS '+G.kidsFreed+'/'+G.lv.kidsTotal,x,y+20,20,G.kidsFreed>=G.lv.kidsTotal?'#9be05a':'#fff',{align:'left',stroke:'#000',lw:3});x+=118;K.text(G.L.label,x,y+20,18,'#ffd700',{align:'left'})}
  if(!G.L.boss&&G.sus>.05){const bw=120,bx=W/2-bw/2,by=y+56;X.fillStyle='rgba(0,0,0,.5)';K.rr(bx,by,bw,12,6);X.fill();X.fillStyle=G.sus>.6?'#ff4a4a':'#ffd400';K.rr(bx,by,bw*Math.min(1,G.sus),12,6);X.fill()}
- K.button('pause',W-s.r-62,s.t+8,54,54,'II',{color:'#4a4f6a',px:24,nofocus:1,cb:()=>Play.pause()});
- if(G.state==='play'||G.state==='ready'){const land=K.land,big=land?Math.round(K.clamp(H*0.2,68,92)):Math.round(K.clamp(Math.min(W*0.24,H*0.16),84,112));
-  const r=Math.round(big/2),gap=land?14:16,cy=H-s.b-(land?10:16)-r,ax=W-s.r-(land?12:14)-r,bx=ax-big-gap-r;
-  K.button('act',bx-r,cy-r,big,big,'ACTION',{r:r,color:'#2f9a3a',px:Math.max(12,Math.round(r*.36)),nofocus:1,cb:()=>{btnAct=1}});
-  K.button('jump',ax-r,cy-r,big,big,'JUMP',{r:r,color:'#ff8a1a',px:Math.max(13,Math.round(r*.42)),nofocus:1,cb:()=>{btnJump=1}});
- }}
+ K.button('pause',W-s.r-62,s.t+8,54,54,'II',{color:'#4a4f6a',px:24,nofocus:1,cb:()=>Play.pause()})}
+function drawPlayButtons(){if(!G||(G.state!=='play'&&G.state!=='ready'))return;const W=K.W,H=K.H,s=K.safe,land=K.land;
+ const big=land?Math.round(K.clamp(H*0.2,68,92)):Math.round(K.clamp(Math.min(W*0.22,H*0.14),78,100));
+ const r=Math.round(big/2),gap=land?14:16,cy=H-s.b-(land?10:12)-r,ax=W-s.r-(land?12:14)-r,bx=ax-big-gap-r;
+ K.button('act',bx-r,cy-r,big,big,'ACTION',{r:r,color:'#2f9a3a',px:Math.max(12,Math.round(r*.32)),nofocus:1,cb:()=>{btnAct=1}});
+ K.button('jump',ax-r,cy-r,big,big,'JUMP',{r:r,color:'#ff8a1a',px:Math.max(13,Math.round(r*.38)),nofocus:1,cb:()=>{btnJump=1}})}
 function drawPause(){const W=K.W,H=K.H;X.fillStyle='rgba(5,5,20,.7)';X.fillRect(0,0,W,H);K.text('PAUSED',W/2,H*.2,40,'#fff',{stroke:'#000',lw:6});const bw=Math.min(300,W-60),bh=56;let y=H*.3;
  K.button('resume',W/2-bw/2,y,bw,bh+6,'▶ RESUME',{color:'#2fae4a',px:24,cb:()=>Play.resume()});y+=bh+18;
  K.button('restart',W/2-bw/2,y,bw,bh,'↻ RESTART',{color:'#3a7ac8',px:22,cb:()=>startLevel(G.L.i)});y+=bh+12;

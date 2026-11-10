@@ -36,6 +36,6 @@ body.playing:not(.portrait) #bLasso{left:108px;bottom:148px}
 body.playing:not(.portrait) #bSwitch{left:108px;bottom:76px}
 body.playing:not(.portrait) #pad #bPunch{right:118px;bottom:18px;width:100px;height:100px;min-width:100px;min-height:100px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#d8ffd0,#1e8a32);color:#fff}
 body.playing:not(.portrait) #pad #bJump{right:14px;bottom:18px;width:100px;height:100px;min-width:100px;min-height:100px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe0b0,#e07010);color:#fff}
-body.portrait #pad #bPunch,body.portrait #pad #bJump{border-radius:50%;min-height:88px}
+body.portrait #pad #bPunch,body.portrait #pad #bJump{width:132px;height:132px;min-width:132px;min-height:132px;border-radius:50%;justify-self:center;align-self:center}
 body.portrait #pad #bPunch{background:radial-gradient(circle at 35% 30%,#d8ffd0,#1e8a32);color:#fff}
 body.portrait #pad #bJump{background:radial-gradient(circle at 35% 30%,#ffe0b0,#e07010);color:#fff}
