@@ -1,39 +1,222 @@
 <!doctype html>
-<html lang="en"><head><meta name="robots" content="noindex, nofollow">
+<html lang="en">
+<head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#12305a">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>Palm Tree Pete — Release the Files</title>
-<meta name="description" content="Volume 3. A fictional cartoon island adventure. Free the kids, follow the camera cables, and release the files.">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Release the Files">
-<link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
-<link rel="preload" href="fonts/lilita.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/ptp-anton.woff" as="font" type="font/woff" crossorigin>
 <style>
-@font-face{font-family:'Lilita One';src:url(fonts/lilita.woff2) format('woff2');font-display:swap}
-@font-face{font-family:'PTP Anton';src:url(fonts/ptp-anton.woff) format('woff');font-display:swap}
-html,body{margin:0;height:100%;overflow:hidden;background:#071018;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
-canvas{position:fixed;inset:0;display:block;touch-action:none}
-#sp{position:fixed;visibility:hidden;pointer-events:none;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
-</style></head><body>
-<canvas id="cv" aria-label="Palm Tree Pete — Release the Files, Volume 3"></canvas>
-<div id="sp"></div>
-<script>window.addEventListener('error',function(e){(window.__ERR=window.__ERR||[]).push(String(e.message));});</script>
-<script src="logic.js?v=1"></script>
-<script src="kit.js?v=1"></script>
-<script src="art.js?v=1"></script>
-<script src="game.js?v=1"></script>
-<script>
-if('serviceWorker' in navigator && location.protocol==='https:')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).catch(function(){});
-</script>
-<a id="paTestBack" class="review" href="../../" aria-label="Back to Test Arcade. Review build."><b>← Arcade</b></a>
-<style>
-#paTestBack{position:fixed;z-index:100000;left:max(6px,env(safe-area-inset-left));top:max(6px,env(safe-area-inset-top));display:inline-flex;align-items:center;text-decoration:none;background:#ffe14a;color:#14120c;border:2px solid #14120c;border-radius:999px;padding:6px 10px;font:700 13px/1 "Courier New",ui-monospace,monospace;touch-action:manipulation;white-space:nowrap}
-#paTestBack.adult{background:#ffb4b4;left:auto;right:max(6px,env(safe-area-inset-right));top:calc(60px + env(safe-area-inset-top))}
-#paTestBack.prototype{background:#ffd59a}
+html,body{margin:0;height:100%;background:#07101c;overflow:hidden;touch-action:none}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
+#paTestBack{position:fixed;z-index:5;left:max(8px,env(safe-area-inset-left));top:max(8px,env(safe-area-inset-top));
+  color:#14120c;background:#ffe14a;border:2px solid #14120c;border-radius:999px;text-decoration:none;
+  font:700 13px/1 "Courier New",monospace;padding:6px 10px}
 </style>
-</body></html>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<a id="paTestBack" href="../../">← Arcade</a>
+<script>
+/* Three short shores. Walk, jump one gap, ACTION on the file and the kid, then the boat. */
+const SAVE = 'pa-test-vol3-v2';
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+const SHORES = ['Cable Beach', 'Jungle Wire', 'The Dock'];
+const WORLD = 1100, GY = 250, GAP = {x0:460, x1:530}, FILE = 260, KID = 720, BOAT = 980;
+let save = {shore:0};
+try { save = Object.assign(save, JSON.parse(localStorage.getItem(SAVE) || '{}')); } catch (e) {}
+function persist() { try { localStorage.setItem(SAVE, JSON.stringify(save)); } catch (e) {} }
+let mode = 'title';
+let shore = Math.min(2, save.shore || 0);
+let gotFile = false, gotKid = false;
+let hero = {x:80, y:GY, vx:0, vy:0, on:true};
+let cam = 0, toast = '', toastT = 0;
+const keys = {};
+const ptrs = new Map();
+let jumpEdge = false;
+
+function size() {
+  const dpr = Math.min(2, devicePixelRatio || 1);
+  cv.width = Math.round(innerWidth * dpr);
+  cv.height = Math.round(innerHeight * dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+function view() {
+  const s = Math.min(innerWidth / 520, innerHeight / 320);
+  return {s, ox:(innerWidth - 520 * s) / 2, oy:(innerHeight - 320 * s) / 2};
+}
+function toScreen(x, y) {
+  const v = view();
+  return {x: v.ox + (x - cam) * v.s, y: v.oy + y * v.s};
+}
+function buttons() {
+  const land = innerWidth > innerHeight;
+  const s = land ? 78 : 100;
+  const jump = {x: innerWidth - 16 - s / 2, y: innerHeight - 16 - s / 2, r: s / 2};
+  const act = {x: jump.x - s - 16, y: jump.y, r: s / 2};
+  return {act, jump};
+}
+function hitBtn(x, y) {
+  const b = buttons();
+  if (Math.hypot(x - b.act.x, y - b.act.y) <= b.act.r + 8) return 'act';
+  if (Math.hypot(x - b.jump.x, y - b.jump.y) <= b.jump.r + 8) return 'jump';
+  return null;
+}
+function startRect() { return {x: innerWidth / 2 - 110, y: innerHeight * 0.62, w: 220, h: 64}; }
+function begin() { mode = 'play'; gotFile = false; gotKid = false; hero = {x:80, y:GY, vx:0, vy:0, on:true}; cam = 0; }
+function say(t) { toast = t; toastT = 1.6; }
+function doJump() { if (mode === 'play' && hero.on) { hero.vy = -560; hero.on = false; } }
+function doAction() {
+  if (mode === 'title') { begin(); return; }
+  if (mode !== 'play') return;
+  if (!gotFile && Math.abs(hero.x - FILE) < 50 && hero.on) { gotFile = true; say('File bagged'); return; }
+  if (!gotKid && Math.abs(hero.x - KID) < 50 && hero.on) { gotKid = true; say('Kid is safe'); return; }
+  if (Math.abs(hero.x - BOAT) < 56 && hero.on) {
+    if (!gotFile || !gotKid) { say('Bag the file and free the kid first'); return; }
+    if (shore >= 2) { mode = 'end'; save.shore = 0; persist(); return; }
+    shore++; save.shore = shore; persist(); begin();
+  }
+}
+addEventListener('pointerdown', e => {
+  if (e.target.closest && e.target.closest('a')) return;
+  const b = hitBtn(e.clientX, e.clientY);
+  if (b) { ptrs.set(e.pointerId, {btn:b}); if (b === 'act') doAction(); else doJump(); return; }
+  if (mode === 'title') {
+    const r = startRect();
+    if (e.clientX >= r.x && e.clientX <= r.x + r.w && e.clientY >= r.y && e.clientY <= r.y + r.h) begin();
+    return;
+  }
+  ptrs.set(e.pointerId, {ox:e.clientX, oy:e.clientY, x:e.clientX, y:e.clientY, jumped:false});
+});
+addEventListener('pointermove', e => {
+  const p = ptrs.get(e.pointerId);
+  if (!p || p.btn) return;
+  if (!p.jumped && p.oy - e.clientY > 36 && Math.abs(e.clientY - p.oy) > Math.abs(e.clientX - p.ox)) { p.jumped = true; doJump(); }
+  p.x = e.clientX; p.y = e.clientY;
+});
+function endPtr(e) { ptrs.delete(e.pointerId); }
+addEventListener('pointerup', endPtr);
+addEventListener('pointercancel', endPtr);
+addEventListener('keydown', e => {
+  keys[e.key] = true;
+  if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) e.preventDefault();
+  if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W' || e.key === 'k' || e.key === 'K') { if (!jumpEdge) { doJump(); jumpEdge = true; } }
+  if (e.key === 'e' || e.key === 'E' || e.key === ' ' || e.key === 'Enter' || e.key === 'j' || e.key === 'J') doAction();
+});
+addEventListener('keyup', e => { keys[e.key] = false; if (['ArrowUp','w','W','k','K'].includes(e.key)) jumpEdge = false; });
+addEventListener('resize', size);
+size();
+function dir() {
+  let d = (keys.ArrowRight || keys.d || keys.D ? 1 : 0) - (keys.ArrowLeft || keys.a || keys.A ? 1 : 0);
+  for (const p of ptrs.values()) {
+    if (p.btn) continue;
+    const dx = p.x - p.ox;
+    if (Math.abs(dx) > 16) d += Math.sign(dx);
+  }
+  return Math.max(-1, Math.min(1, d));
+}
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000 || 0);
+  last = now;
+  if (toastT > 0) toastT -= dt;
+  if (mode === 'play') {
+    hero.vx = dir() * 190;
+    hero.x += hero.vx * dt;
+    hero.vy += 1100 * dt;
+    hero.y += hero.vy * dt;
+    const over = hero.x > GAP.x0 && hero.x < GAP.x1;
+    if (!over && hero.vy >= 0 && hero.y >= GY) { hero.y = GY; hero.vy = 0; hero.on = true; }
+    else hero.on = false;
+    if (hero.y > 340) { hero.x = Math.max(40, GAP.x0 - 50); hero.y = GY; hero.vy = 0; hero.on = true; }
+    hero.x = Math.max(30, Math.min(WORLD - 30, hero.x));
+    cam += ((Math.max(0, Math.min(WORLD - 520, hero.x - 180))) - cam) * Math.min(1, dt * 8);
+  }
+  draw();
+  publish();
+  requestAnimationFrame(frame);
+}
+function round(btn, label, c0, c1) {
+  ctx.beginPath(); ctx.arc(btn.x, btn.y, btn.r, 0, 7);
+  const g = ctx.createRadialGradient(btn.x - btn.r * 0.3, btn.y - btn.r * 0.35, 4, btn.x, btn.y, btn.r);
+  g.addColorStop(0, c0); g.addColorStop(1, c1);
+  ctx.fillStyle = g; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = '#fff'; ctx.stroke();
+  ctx.fillStyle = '#fff'; ctx.font = '700 ' + Math.max(12, btn.r * 0.26) + 'px sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(label, btn.x, btn.y);
+}
+function heroDraw(x, y) {
+  ctx.fillStyle = '#1d4e89'; ctx.fillRect(x - 11, y - 28, 22, 22);
+  for (let i = 0; i < 4; i++) { ctx.fillStyle = i % 2 ? '#fff' : '#d1302f'; ctx.fillRect(x - 11, y - 28 + i * 5, 22, 5); }
+  ctx.fillStyle = '#e0b090'; ctx.beginPath(); ctx.arc(x, y - 40, 9, 0, 7); ctx.fill();
+  ctx.fillStyle = '#5c3317'; ctx.fillRect(x - 10, y - 50, 20, 6);
+}
+function draw() {
+  const W = innerWidth, H = innerHeight, v = view();
+  ctx.fillStyle = '#071422'; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = '#123055'; ctx.fillRect(0, v.oy + 40 * v.s, W, 120 * v.s);
+  ctx.save(); ctx.translate(v.ox, v.oy); ctx.scale(v.s, v.s); ctx.translate(-cam, 0);
+  ctx.fillStyle = '#0c4a6e'; ctx.fillRect(0, GY + 8, WORLD, 80);
+  ctx.fillStyle = '#e7d3a1'; ctx.fillRect(0, GY, GAP.x0, 16);
+  ctx.fillRect(GAP.x1, GY, WORLD - GAP.x1, 16);
+  ctx.fillStyle = '#14324a';
+  for (let i = 0; i < 6; i++) {
+    const x = 80 + i * 180;
+    ctx.beginPath(); ctx.moveTo(x, GY); ctx.lineTo(x - 28, GY - 50); ctx.lineTo(x + 8, GY - 36); ctx.lineTo(x + 30, GY - 64); ctx.lineTo(x + 40, GY); ctx.fill();
+  }
+  if (!gotFile) { ctx.fillStyle = '#ffe14a'; ctx.fillRect(FILE - 12, GY - 28, 24, 18); ctx.fillStyle = '#222'; ctx.font = '11px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('FILE', FILE, GY - 34); }
+  if (!gotKid) { ctx.fillStyle = '#f2c14e'; ctx.fillRect(KID - 10, GY - 36, 20, 28); ctx.fillStyle = '#fff'; ctx.font = '11px sans-serif'; ctx.fillText('KID', KID, GY - 44); }
+  ctx.fillStyle = '#d8d0c4'; ctx.fillRect(BOAT - 28, GY - 16, 56, 14);
+  ctx.fillStyle = '#8a1d1d'; ctx.beginPath(); ctx.moveTo(BOAT + 20, GY - 16); ctx.lineTo(BOAT + 20, GY - 48); ctx.lineTo(BOAT + 40, GY - 28); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.font = '12px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('BOAT', BOAT, GY - 58);
+  heroDraw(hero.x, hero.y);
+  ctx.restore();
+  if (mode === 'title') {
+    ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#ffe14a'; ctx.font = '700 30px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('Release the Files', W / 2, H * 0.32);
+    ctx.fillStyle = '#fff'; ctx.font = '18px sans-serif';
+    ctx.fillText('Three shores. Bag the file, free the kid, reach the boat.', W / 2, H * 0.4);
+    const r = startRect();
+    ctx.fillStyle = '#d1302f'; roundRect(r.x, r.y, r.w, r.h, 16); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = '700 22px sans-serif'; ctx.fillText('PLAY', W / 2, r.y + 34);
+    return;
+  }
+  if (mode === 'end') {
+    ctx.fillStyle = 'rgba(0,0,0,.55)'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#ffe14a'; ctx.font = '700 34px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('Files released', W / 2, H * 0.4);
+    ctx.fillStyle = '#fff'; ctx.font = '18px sans-serif';
+    ctx.fillText('Beach, jungle, and dock are clear.', W / 2, H * 0.48);
+    return;
+  }
+  ctx.fillStyle = '#fff'; ctx.font = '700 16px sans-serif'; ctx.textAlign = 'left';
+  ctx.fillText(SHORES[shore] + '  ·  ' + (shore + 1) + '/3   File ' + (gotFile ? 1 : 0) + '/1   Kid ' + (gotKid ? 1 : 0) + '/1', 12, 26);
+  if (toastT > 0) { ctx.textAlign = 'center'; ctx.fillStyle = '#ffe14a'; ctx.fillText(toast, W / 2, 56); }
+  const b = buttons();
+  round(b.act, 'ACTION', '#d8ffd0', '#1e8a32');
+  round(b.jump, 'JUMP', '#ffe0b0', '#e07010');
+}
+function roundRect(x, y, w, h, r) {
+  ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+function publish() {
+  const targetX = !gotFile ? FILE : !gotKid ? KID : BOAT;
+  const hs = toScreen(hero.x, hero.y - 30);
+  const ts = toScreen(targetX, GY - 30);
+  const b = buttons();
+  const r = startRect();
+  window.__G = {
+    mode, shore, gotFile, gotKid, done: mode === 'end',
+    hero: {sx: hs.x, sy: hs.y, x: hero.x},
+    next: {sx: ts.x, sy: ts.y},
+    near: (targetX === FILE && Math.abs(hero.x - FILE) < 50) || (targetX === KID && Math.abs(hero.x - KID) < 50) || (targetX === BOAT && Math.abs(hero.x - BOAT) < 56),
+    jump: hero.on && hero.x > GAP.x0 - 130 && hero.x < GAP.x0 - 12,
+    btn: {act:{x:b.act.x, y:b.act.y}, jump:{x:b.jump.x, y:b.jump.y}},
+    start: {x: r.x + r.w / 2, y: r.y + r.h / 2}
+  };
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
