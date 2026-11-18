@@ -406,6 +406,34 @@
         "The node test file was left out. The game does not load it.",
         "noindex and a back link to this shelf."
       ]
+    },
+    {
+      "id": "hopes-angels",
+      "title": "Constable Duncan & Hope's Angels",
+      "kind": "review",
+      "tag": "Review build",
+      "blurb": "Duncan and Hope's angels light the lane through Flemingsburg. Swap heroes. Each angel has her own gift. The original Constable Duncan game was not copied.",
+      "controls": "Swipe and hold anywhere to move. A long swipe runs. Swipe up or JUMP. ACTION uses that hero's gift. SWAP changes who leads.",
+      "warn": "",
+      "playLabel": "Play this build",
+      "href": "games/hopes-angels/",
+      "cover": "games/hopes-angels/art/cover.webp",
+      "source": {
+        "repo": "ploug76/constable-duncan",
+        "pr": 3,
+        "url": "https://github.com/ploug76/constable-duncan/pull/3",
+        "branch": "cursor/hopes-angels-5ede",
+        "sha": "6672278df0999ec428d312804f8b36d19105b4c0",
+        "path": "hopes-angels"
+      },
+      "integrationEdits": [
+        "Only the hopes-angels folder was copied, plus the parent title art, level pictures, icon, and Lilita font that folder already loaded.",
+        "Those files now live inside this folder. The stylesheet, icon, and pictures point at fonts/, icon-192.png, and art/ instead of the parent repo.",
+        "The title card picture, art/cover.webp, is the tile box art.",
+        "No service worker in this build.",
+        "Save keys pa-test-ha_stars and pa-test-ha_sound.",
+        "noindex and a back link to this shelf."
+      ]
     }
   ],
   "notSeparateGames": [
