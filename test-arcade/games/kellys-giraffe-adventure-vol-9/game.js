@@ -101,6 +101,7 @@ const QS=new URLSearchParams(location.search);
 const SAVE_KEY='pa-test-kga9_save';let save={};try{save=JSON.parse(localStorage.getItem(SAVE_KEY)||'{}')||{}}catch(e){save={}}
 save.reached=save.reached||0;save.stars=save.stars||{};save.best=save.best||0;
 function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(e){}}
+save.sides=save.sides||{};save.quests=save.quests||{};
 AU.muted=!!save.muted;
 let W=0,H=0,DPR=1,S=1,VV=400,viewW=800,gameH=400,portrait=false,SAFE={t:0,r:0,b:0,l:0};
 let state='boot',G=null,frame=0,SIM=0;
@@ -140,7 +141,7 @@ function swipeDir(t){const dx=t.x-t.ax,dy=t.y-t.ay,d=Math.hypot(dx,dy),o={};if(d
  const s=Math.round(Math.atan2(dy,dx)/(Math.PI/4));if(s===0||s===1||s===-1)o.R=1;if(s===4||s===-4||s===3||s===-3)o.L=1;if(s===2||s===1||s===3)o.D=1;if(s===-2||s===-1||s===-3)o.U=1;return o}
 function tStart(id,x,y){AU.unlock();TOUCH.set(id,{x,y,ax:x,ay:y,z:{}})}
 function tMove(id,x,y){const t=TOUCH.get(id);if(!t)return;t.x=x;t.y=y;const before=t.z.U;t.z=swipeDir(t);if(t.z.U&&!before)swipeJump=1}
-function tEnd(id){TOUCH.delete(id)}
+function tEnd(id){const t=TOUCH.get(id);if(t&&state==='side'&&Math.hypot(t.x-t.ax,t.y-t.ay)<22)window.__sideTap={x:t.x,y:t.y};TOUCH.delete(id)}
 function clearInput(){TOUCH.clear();for(const k in K)K[k]=0;for(const k in KP)KP[k]=0;VIRT.jump=VIRT.act=VIRTP.jump=VIRTP.act=0;swipeJump=0;document.querySelectorAll('#pad .big.on').forEach(b=>b.classList.remove('on'))}
 function bindSurface(el){el.addEventListener('touchstart',e=>{if(state!=='play')return;e.preventDefault();for(const t of e.changedTouches)tStart(t.identifier,t.clientX,t.clientY)},{passive:false});
  el.addEventListener('touchmove',e=>{if(state!=='play')return;e.preventDefault();for(const t of e.changedTouches)tMove(t.identifier,t.clientX,t.clientY)},{passive:false});
@@ -210,7 +211,10 @@ const ROWS=12,LVH=ROWS*TS;
 const WORLDS=[
  {name:'Dusk Meadow',bg:'bg1',ter:'ter1',top:'#e8c56a',top2:'#c4843a',edge:'#5a3818',plank:'#c48a44',song:'w1',amb:'petals',sky:'#f0a06a',fog:'rgba(255,190,140,.08)',liq:1,lc:['rgba(120,180,220,.9)','rgba(40,80,140,.95)','rgba(255,230,190,.75)']},
  {name:'Willow Night',bg:'bg2',ter:'ter2',top:'#3e7a52',top2:'#1c4030',edge:'#0c1c14',plank:'#6a4a2a',song:'w2',amb:'fireflies',sky:'#14183a',fog:'rgba(40,30,80,.16)',liq:1,lc:['rgba(40,90,140,.9)','rgba(8,20,50,.97)','rgba(180,220,255,.55)']},
- {name:'Moon Gate',bg:'bg3',ter:'ter3',top:'#d8d0ee',top2:'#8a78aa',edge:'#2a2044',plank:'#7a5a88',song:'w3',amb:'lanterns',sky:'#16102c',fog:'rgba(160,140,220,.12)',liq:1,lc:['rgba(90,80,160,.9)','rgba(20,16,50,.97)','rgba(220,210,255,.6)']}];
+ {name:'Moon Gate',bg:'bg3',ter:'ter3',top:'#d8d0ee',top2:'#8a78aa',edge:'#2a2044',plank:'#7a5a88',song:'w3',amb:'lanterns',sky:'#16102c',fog:'rgba(160,140,220,.12)',liq:1,lc:['rgba(90,80,160,.9)','rgba(20,16,50,.97)','rgba(220,210,255,.6)']},
+ {name:'Lantern Village',bg:'bg3',ter:'ter1',top:'#f0d090',top2:'#c48848',edge:'#4a3018',plank:'#b07840',song:'w4',amb:'lanterns',sky:'#241848',fog:'rgba(255,180,120,.1)',liq:1,lc:['rgba(90,80,160,.9)','rgba(20,16,50,.97)','rgba(255,220,170,.6)']},
+ {name:'Night Woods',bg:'bg2',ter:'ter2',top:'#2f6a48',top2:'#143828',edge:'#0c1c14',plank:'#5a4024',song:'w5',amb:'fireflies',sky:'#101428',fog:'rgba(20,20,40,.18)',liq:1,lc:['rgba(30,70,110,.9)','rgba(6,16,40,.97)','rgba(180,220,255,.5)']},
+ {name:'Night Meadow',bg:'bg1',ter:'ter3',top:'#d8b0e0',top2:'#8a6898',edge:'#3a2848',plank:'#7a5878',song:'w3',amb:'petals',sky:'#2a1848',fog:'rgba(180,140,200,.1)',liq:1,lc:['rgba(120,90,160,.9)','rgba(30,16,50,.96)','rgba(255,220,240,.55)']}];
 const BOSSES=[
  {k:'tusk',name:'GUST THE GUSTY HERON',hp:5},
  {k:'bab',name:'PUDDLE THE BULLFROG',hp:6},
@@ -224,15 +228,26 @@ const FRIENDS=[
  {k:'lilac',c:'#c49bff',n:'THE LILAC LANTERN'},
  {k:'gold',c:'#ffe56a',n:'THE GOLD LANTERN'}];
 const LEVELS=[
- {name:'Dusk Path',w:0,ch:['start','sign:A big breeze blew out Lantern Lake! Swipe and hold to run. Swipe up or tap JUMP to jump.','flat','sign:Tap ACTION for a HEAD BONK. Tap it twice fast for a NECK RAM! Honking geese can be stomped or rammed.','hyena','steps*','pit','friend','sign:A lantern lit! It floats behind you all the way to the moon picnic.','sign:Spiky pinecone pups poke! Never stomp them. RAM them instead.','porc','beetle','cp','plat*','bee','water','feast*','end']},
- {name:"Heron's Bridge",w:0,ch:['start','sign:Tap ACTION near moonberries and moths to slurp them with your long giraffe tongue!','bee','swing1*','cp','friend','sign:Golden ring? Jump, then tap ACTION to SWING. JUMP lets go!','hyena','logs','feast*','sign:Gust the Heron charges! Jump over him, then RAM or STOMP when he is dizzy.','boss:0']},
- {name:'Willow Night',w:1,ch:['start','sign:Willow Night glows with fireflies. Light the lantern and keep going!','flat','bee*','water','vult','cp','friend','porc','steps','hyena','feast*','end']},
- {name:'Lily Pad Pond',w:1,ch:['start','sign:Ledge too tall? Jump at it and hold UP to NECK GRAB the edge!','ledge*','monkey','cp','friend','swing1','armad','feast*','sign:Puddle the Bullfrog throws lily pads! When he hops down and gets dizzy, RAM or STOMP him.','boss:1']},
- {name:'Bamboo Steps',w:2,ch:['start','sign:In the air, hold DOWN and tap ACTION to NECK POUND through cracked blocks!','bricks*','vult','cp','friend','cliff','bee','mound*','armad','feast*','end']},
- {name:'Moon Picnic',w:2,ch:['start','sign:The moon picnic is just ahead. Light the last lantern!','hyena','swing2*','cp','friend','beetle','ledge','vult','feast','sign:Nimbus the Cloud Ram is blocking the picnic! RAM or STOMP him when he is dizzy. Watch his wind puffs!','boss:2']}];
+ {name:'Dusk Path',w:0,mission:'collect',blurb:'Light the rose lantern and reach the flag.',ch:['start','sign:A big breeze blew the lanterns out! Swipe and hold to run. Swipe up or JUMP to jump.','flat','hyena','steps*','friend','sign:Each lantern joins your string. Houses along the way hide side games. Press ACTION at a door.','bee','feast*','end']},
+ {name:"Heron's Bridge",w:0,mission:'boss',blurb:'Dizzy Gust, then ram or stomp him.',ch:['start','bee','swing1*','friend','sign:Gust the Heron charges! Jump him, then RAM or STOMP when he is dizzy.','boss:0']},
+ {name:'Glow House',w:0,mission:'side',blurb:'Play Jewel Glow inside the house, then reach the flag.',ch:['start','flat','door:jewel','sign:Match 3 gems inside. ACTION at the door.','friend','steps','feast*','end']},
+ {name:'Willow Rescue',w:1,mission:'rescue',blurb:'Break the cage, light the lantern, reach the flag.',ch:['start','sign:Someone is stuck in a wooden cage. Bonk it until it opens.','flat','cage','friend','water','vult','feast*','end']},
+ {name:'Tree Hollow',w:1,mission:'side',blurb:'Snatch fruit in Tree Crunch, then light the gate.',ch:['start','bee*','door:crunch','friend','porc','door:lights:1','steps','end']},
+ {name:'Lily Pad Pond',w:1,mission:'boss',blurb:'Beat Puddle the Bullfrog.',ch:['start','ledge*','friend','swing1','sign:Puddle hops down and gets dizzy. RAM or STOMP him then.','boss:1']},
+ {name:'Parcel Path',w:1,mission:'deliver',blurb:'Carry the spare lantern to the flag.',ch:['start','sign:Pick up the spare lantern and carry it all the way to the flag.','parcel','door:memory:1','flat','hyena','friend','steps*','end']},
+ {name:'Stack House',w:3,mission:'side',blurb:'Clear rows in Lantern Stack, then cross the village.',ch:['start','door:stack','friend','plat*','beetle','feast','end']},
+ {name:'Timed Meadow',w:5,mission:'timed',time:110,blurb:'Reach the flag before the glow fades.',ch:['start','sign:The meadow glow is fading! Reach the flag before the timer ends.','flat','steps','friend','pit','bee','end']},
+ {name:'Memory Grove',w:4,mission:'side',blurb:'Match the lantern pairs, then leave the grove.',ch:['start','door:memory','vult','friend','water','feast*','end']},
+ {name:'Escort Woods',w:4,mission:'escort',blurb:'Keep the lantern with you to the flag.',ch:['start','sign:The lantern follows you. Slow down if it falls behind.','friend','door:crunch:1','cliff','hyena','cp','mound*','end']},
+ {name:'Fish Dock',w:1,mission:'side',blurb:'Catch fish at the dock, then continue.',ch:['start','logs','door:fish','friend','bee','end']},
+ {name:'Light Gate',w:2,mission:'side',blurb:'Solve Light the Gate, then climb to the moon.',ch:['start','door:lights','bricks*','friend','ledge','end']},
+ {name:'Village Run',w:3,mission:'collect',blurb:'Gather the village lantern and the stars you can reach.',ch:['start','door:stack:1','plat*','hyena','friend','swing1','feast*','end']},
+ {name:'Heron Again',w:5,mission:'boss',blurb:'Gust is back. Wait for the dizzy spin.',ch:['start','bee','friend','sign:Gust came back angrier. Same trick: dodge the charge, then hit him while he is dizzy.','boss:0']},
+ {name:'Woods Door',w:4,mission:'side',blurb:'A harder Jewel Glow, then fishing, then the flag.',ch:['start','door:jewel:2','door:fish:2','porc','friend','steps','end']},
+ {name:'Moon Picnic',w:2,mission:'boss',blurb:'Beat Nimbus and light the picnic.',ch:['start','sign:Kelly and Peter are waiting. Nimbus is blocking the picnic! RAM or STOMP him when he is dizzy.','swing1','friend','feast','boss:2']}];
 /* tiles: 0 air/* tiles: 0 air, 1 ground, 2 one-way plank, 3 cracked brick, 4 rock block, 5 thorns, 6 water */
 function buildLevel(li){const L=LEVELS[li],R=rng(1000+li*77),cols=[];let x=0,h=9;
- const T=[],ents=[],signs=[],hooks=[],gems=[],stars=[],cps=[];let boss=null,cage=null,goal=null,fr=null;
+ const T=[],ents=[],signs=[],hooks=[],gems=[],stars=[],cps=[],doors=[];let boss=null,cage=null,goal=null,fr=null,parcel=null;
  const col=(top,kind=1)=>{const a=new Array(ROWS).fill(0);if(top<ROWS)for(let y=top;y<ROWS;y++)a[y]=kind;T.push(a);return T.length-1};
  const flat=n=>{for(let i=0;i<n;i++)col(h)};
  const pit=(n,water)=>{for(let i=0;i<n;i++){const a=new Array(ROWS).fill(0);if(water){a[ROWS-1]=6;a[ROWS-2]=6}T.push(a)}};
@@ -275,6 +290,8 @@ function buildLevel(li){const L=LEVELS[li],R=rng(1000+li*77),cols=[];let x=0,h=9
   case 'bee':flat(5);foe('bee',T.length-2,h-2);flat(5);arc(x0+3,h-4,4);if(st)star(x0+6,h-6);break;
   case 'ledge':{flat(3);const up=h>=7?5:3;gem(T.length-2,h-1);h-=up;flat(6);gem(T.length-4,h-1);gem(T.length-3,h-1);if(st)star(T.length-3,h-3);foe('beetle',T.length-2,h);h+=up;flat(4);break}
   case 'friend':flat(3);fr={x:T.length*TS+TS/2,y:h*TS,i:li,t:0};flat(7);break;
+  case 'door':{flat(4);const bits=String(arg||'jewel').split(':');doors.push({id:bits[0]||'jewel',hard:+bits[1]||0,x:(T.length-2)*TS+TS/2,y:h*TS,used:0});flat(3);break}
+  case 'parcel':flat(3);parcel={x:(T.length-1)*TS,y:h*TS,got:0};flat(4);break;
   case 'cage':flat(6);cage={x:(T.length-2)*TS,y:h*TS,hp:3};flat(10);break;
   case 'end':flat(5);goal={x:(T.length-2)*TS,y:h*TS};flat(8);break;
   case 'boss':{flat(2);const a=T.length;h=9;flat(26);
@@ -286,7 +303,7 @@ function buildLevel(li){const L=LEVELS[li],R=rng(1000+li*77),cols=[];let x=0,h=9
    flat(6);break}
   default:flat(4)}
  }
- return{T,ents,signs,hooks,gems,stars,cps,boss,cage,goal,fr,cols:T.length,W:T.length*TS}}
+ return{T,ents,signs,hooks,gems,stars,cps,doors,boss,cage,goal,fr,parcel,cols:T.length,W:T.length*TS}}
 function tileAt(tx,ty){if(tx<0)return 1;if(!G||tx>=G.L.cols)return 1;if(ty<0)return 0;if(ty>=ROWS)return 0;return G.L.T[tx][ty]}
 const solidK=k=>k===1||k===3||k===4;
 
@@ -445,7 +462,10 @@ function updItems(dt){const p=G.p;if(p.dead)return;const pb=bx(p);const pad=p.mo
  for(const cp of G.L.cps){if(!cp.on&&p.x>cp.x-10){cp.on=true;G.cp=cp;AU.fx('cp');ftxt(cp.x,cp.y-110,'CHECKPOINT!','#7aff7a',1);burst(cp.x,cp.y-90,12,['#ff5050','#ffe060','#fff'],200,0.6,3)}}
  G.sign=null;for(const s of G.L.signs){if(Math.abs(p.x-s.x)<120){G.sign=s;s.seen=1}}
  if(G.L.fr&&!G.L.fr.got&&Math.abs(p.x-G.L.fr.x)<50&&Math.abs(p.y-G.L.fr.y)<260)gatherFriend(G.L.fr);
- if(G.L.goal&&!G.won&&p.x>G.L.goal.x-20)levelClear();
+ if(G.L.parcel&&!G.L.parcel.got&&Math.abs(p.x-G.L.parcel.x)<48){G.L.parcel.got=1;G.carry=1;AU.fx('gem');ftxt(G.L.parcel.x,G.L.parcel.y-80,'LANTERN IN TOW!','#ffe56a',1)}
+ if(G.escort&&!p.dead){const e=G.escort,tx=p.x-p.face*64;e.x+=(tx-e.x)*Math.min(1,dt*1.35);e.y+=(p.y-e.y)*Math.min(1,dt*2.2);e.far=Math.abs(p.x-e.x)>200}
+ if(G.L.goal&&!G.won&&p.x>G.L.goal.x-20){const ms=LEVELS[G.li].mission;if(ms==='deliver'&&!G.carry)G.sign={text:'Bring the spare lantern to the flag before the level can end.'};else if(ms==='escort'&&G.escort&&Math.abs(p.x-G.escort.x)>170)G.sign={text:'The lantern is still catching up. Wait for it at the flag.'};else levelClear()}
+ if(G.L.doors)for(const d of G.L.doors){if(Math.abs(p.x-d.x)<50&&Math.abs(p.y-d.y)<80){G.sign={text:(d.used?'Play again? ':'A painted door. ')+'Press ACTION to go inside.'};if(inp.actP&&!window.__BOT)enterSide(d)}}
  if(G.L.cage&&!G.L.cage.open){const cg=G.L.cage,cb={x:cg.x-50,y:cg.y-100,w:100,h:100};if(p.atk>0&&!p.atkHit.has(cg)&&ovr(attackBox(p),cb)){p.atkHit.add(cg);cg.hp--;cg.sh=0.3;AU.fx('crack');shake(5);burst(cg.x,cg.y-50,10,['#c8a060','#8a6a30'],220,0.6,4,1200);if(cg.hp<=0)openCage()}
   if(p.x>cb.x-p.w/2+6){p.x=cb.x-p.w/2+6;p.vx=Math.min(0,p.vx)}}}
 
@@ -516,7 +536,7 @@ function updBoss(dt){const b=G.boss,p=G.p,A=G.arena;if(!b)return;b.t+=dt;b.inv=M
   if(bossOpen(b)){p.x+=sgn(p.x-b.x)*4;return}hurtPlayer(p,b.x)}}
 function bossBeaten(){const b=G.boss;save.bosses=save.bosses||{};save.bosses[b.i]=1;persist();if(b.k==='cak'){G.finale=1;const A=G.arena,p=G.p,d=p.x<(A.x0+A.x1)/2?1:-1,gy=G.L.boss.y+2;
  const C=clamp(p.x+d*70,A.x0+300,A.x1-300),px=C+d*70,cx=C;p.x=C-d*70;p.vx=0;p.face=d;G.finC=C;G.cakeX=cx;G.cakeY=gy;
- G.fin=[{n:'peter',x:px,y:gy,fl:d>0,sc:1.05}];
+ G.fin=[];
  const SL=[[-70,0],[70,0],[-130,0],[130,0],[-190,0],[190,0]];
  G.finCrew=G.crew.map((fi,j)=>{const sl=SL[j%6];return{fi,x:Math.max(A.x0-60,C-viewW/2-40)-j*42,tx:clamp(C+sl[0],A.x0+30,A.x1-30),y:gy,back:0,face:1,ph:j*1.3}});
  AU.fx('free');ftxt(px,gy-210,'THE LANTERNS ARE LIT!','#ffe56a',1);ftxt(px,gy-176,'MOON PICNIC TIME!','#fff6d0',1)}levelClear()}
@@ -598,9 +618,9 @@ function lanternDraw(x,y,col,sc,glow){sc=sc||1;const w=22*sc,h=28*sc;
  c.strokeStyle='rgba(70,36,16,.9)';c.lineWidth=2;c.stroke();
  c.strokeStyle='rgba(255,255,255,.55)';c.beginPath();c.moveTo(x,y-h+4*sc);c.lineTo(x,y-4*sc);c.stroke();
  c.strokeStyle='#6a4020';c.beginPath();c.moveTo(x,y-2);c.lineTo(x,y+7*sc);c.stroke()}
-function drawFriend(fi,x,y){const F=FRIENDS[fi];if(!F||!G)return;const bob=Math.sin(G.t*2.2+fi)*7,yy=y-70+bob;
+function drawFriend(fi,x,y){const F=FRIENDS[((fi%FRIENDS.length)+FRIENDS.length)%FRIENDS.length];if(!F||!G)return;const bob=Math.sin(G.t*2.2+fi)*7,yy=y-70+bob;
  c.strokeStyle='rgba(255,226,170,.8)';c.lineWidth=1.5;c.beginPath();c.moveTo(x,yy+16);c.lineTo(x,y-8);c.stroke();lanternDraw(x,yy,F.c,0.85,true)}
-function drawWaitingFriend(f){const F=FRIENDS[f.i];c.fillStyle='#6a4424';c.fillRect(f.x-4,f.y-78,8,80);lanternDraw(f.x,f.y-78,F?F.c:'#ffe56a',1.15,true);
+function drawWaitingFriend(f){const F=FRIENDS[((f.i%FRIENDS.length)+FRIENDS.length)%FRIENDS.length];c.fillStyle='#6a4424';c.fillRect(f.x-4,f.y-78,8,80);lanternDraw(f.x,f.y-78,F?F.c:'#ffe56a',1.15,true);
  if(G.p&&Math.abs(G.p.x-f.x)<340){const ty=f.y-138-Math.sin(G.t*3)*3;c.textAlign='center';c.font='16px "Lilita One",sans-serif';const t='LIGHT ME!';const tw=c.measureText(t).width+22;
   c.fillStyle='rgba(255,248,230,.96)';rr(f.x-tw/2,ty-20,tw,28,12);c.fill();c.strokeStyle='#8a5a2a';c.lineWidth=2;c.stroke();c.fillStyle='#5a2a10';c.fillText(t,f.x,ty-2)}}
 function drawCrew(){const tl=G.trail;if(!tl||!G.crew||!G.crew.length||!G.p)return;const p=G.p,SP=14,n=G.crew.length;
@@ -610,7 +630,7 @@ function drawFinCrew(){if(!G.finCrew)return;for(const f of G.finCrew)drawFriend(
 function drawLanternString(x,y){const cols=['#ff5a7a','#ffb03a','#5ddea0','#6ec8ff','#c49bff','#ffe56a','#ff9ad0'];
  c.strokeStyle='rgba(255,230,180,.85)';c.lineWidth=2;c.beginPath();c.moveTo(x-160,y-168);c.quadraticCurveTo(x,y-132,x+160,y-168);c.stroke();
  for(let i=0;i<7;i++){const bx0=x-150+i*50+Math.sin(G.t*1.4+i)*4,by0=y-140+Math.sin(G.t*2+i)*5+((i%2)?10:0);lanternDraw(bx0,by0,cols[i],0.7,true)}}
-function gatherFriend(f){f.got=1;if(!G.crew.includes(f.i))G.crew.push(f.i);const F=FRIENDS[f.i];AU.fx('free');addScore(1000,f.x,f.y-90,false);burst(f.x,f.y-80,24,['#ff6aa8','#ffd23a','#7ad0ff','#7aff7a','#fff'],260,0.9,5,400);
+function gatherFriend(f){f.got=1;if(!G.crew.includes(f.i))G.crew.push(f.i);const F=FRIENDS[((f.i%FRIENDS.length)+FRIENDS.length)%FRIENDS.length];AU.fx('free');addScore(1000,f.x,f.y-90,false);burst(f.x,f.y-80,24,['#ff6aa8','#ffd23a','#7ad0ff','#7aff7a','#fff'],260,0.9,5,400);
  G.joinT=2.4;G.joinN=F.n;ftxt(f.x,f.y-140,'LANTERN LIT!','#ffe56a',1)}
 function drawShot(s){if(s.k==='coconut'){c.save();c.translate(s.x,s.y);c.rotate(s.rot||0);c.fillStyle='#3aaa50';c.beginPath();c.ellipse(0,0,16,11,0,0,TAU);c.fill();c.strokeStyle='#1d6a30';c.lineWidth=2;c.beginPath();c.moveTo(-10,0);c.lineTo(10,0);c.stroke();c.restore()}
  else if(s.k==='bone'){c.save();c.translate(s.x,s.y);c.globalAlpha=0.92;c.fillStyle='#fff';c.beginPath();c.arc(0,0,12,0,TAU);c.arc(-10,2,8,0,TAU);c.arc(9,3,7,0,TAU);c.fill();c.restore()}
@@ -620,6 +640,8 @@ function drawShot(s){if(s.k==='coconut'){c.save();c.translate(s.x,s.y);c.rotate(
 function drawWorld(){const L=G.L,cm=G.cam;c.save();c.translate(-cm.x,-cm.y);
  const vx0=cm.x-80,vx1=cm.x+viewW+80,vis=x=>x>vx0&&x<vx1;
  for(const s of L.signs)if(vis(s.x))spr('sign',s.x,s.y+2,0.8);
+ for(const d of L.doors||[])if(vis(d.x)){c.fillStyle='#6a3a22';rr(d.x-22,d.y-78,44,78,8);c.fill();c.fillStyle=d.used?'#7d6a48':'#ffd27a';rr(d.x-12,d.y-58,24,36,4);c.fill();c.fillStyle='#3a2010';c.fillRect(d.x+8,d.y-40,4,18);lanternDraw(d.x,d.y-86,'#ffb03a',0.7,!d.used)}
+ if(L.parcel&&!L.parcel.got&&vis(L.parcel.x))lanternDraw(L.parcel.x,L.parcel.y-10,'#ffe56a',1.1,true);
  for(const cp of L.cps)if(vis(cp.x)){if(cp.on)spr('flag',cp.x,cp.y+2,0.9,false,1,Math.sin(G.t*3)*0.03);else sprT('flag','rgba(60,60,70,1)',cp.x,cp.y+2,0.9,false,0.55)}
  if(L.goal&&vis(L.goal.x)){spr('flag',L.goal.x,L.goal.y+2,1.6,false,1,Math.sin(G.t*3)*0.04);if(Math.random()<0.2)stars(L.goal.x+rand(-30,30),L.goal.y-rand(40,140),1)}
  if(L.cage&&vis(L.cage.x)){const cg=L.cage;cg.sh=Math.max(0,(cg.sh||0)-0.016);const sh=cg.sh>0?Math.sin(G.t*80)*4:0;if(!cg.open){spr('cage',cg.x+sh,cg.y+4,1);spr('jinxy',cg.x+sh,cg.y-8,0.82,false,1,Math.sin(G.t*3)*0.04);for(let i=0;i<4;i++){const bx0=cg.x+sh-34+i*22;c.fillStyle='#8a5a22';rr(bx0-3,cg.y-92,7,86,3);c.fill();c.fillStyle='rgba(255,220,150,.5)';c.fillRect(bx0-1,cg.y-90,2,80)}if(G.p&&Math.abs(G.p.x-cg.x)<260){c.textAlign='center';c.font='18px "Lilita One",sans-serif';c.lineWidth=4;c.strokeStyle='#3a1a00';c.strokeText('PUNCH THE CAGE!',cg.x,cg.y-112);c.fillStyle='#fff';c.fillText('PUNCH THE CAGE!',cg.x,cg.y-112)}}}
@@ -634,6 +656,8 @@ function drawWorld(){const L=G.L,cm=G.cam;c.save();c.translate(-cm.x,-cm.y);
  if(G.finCrew)drawFinCrew();else drawCrew();
  drawBoss(G.boss);
  if(G.fin){for(const f of G.fin)spr(f.n,f.x,f.y,f.sc||1,f.fl)}
+ if(G.escort&&vis(G.escort.x)){lanternDraw(G.escort.x,G.escort.y-6,'#ffb03a',1.05,true);if(G.escort.far&&G.p){c.textAlign='center';c.font='16px "Lilita One",sans-serif';c.fillStyle='#fff';c.fillText('WAIT FOR ME',G.escort.x,G.escort.y-78)}}
+ if(G.carry&&G.p)lanternDraw(G.p.x-G.p.face*30,G.p.y-G.p.h*0.42,'#ffe56a',0.72,true);
  if(G.p)drawPlayer(G.p);
  for(const s of G.shots)drawShot(s);
  for(const q of G.parts){const a=clamp(q.l/q.m,0,1);c.globalAlpha=a;if(q.ring){c.strokeStyle=q.c;c.lineWidth=q.w*a;c.beginPath();c.arc(q.x,q.y,q.s*(1.2-a),0,TAU);c.stroke()}else{c.fillStyle=q.c;if(q.puff){c.beginPath();c.arc(q.x,q.y,q.s*(1.5-a*0.5),0,TAU);c.fill()}else c.fillRect(q.x-q.s/2,q.y-q.s/2,q.s,q.s)}}c.globalAlpha=1;
@@ -658,7 +682,7 @@ function drawHUD(){const p=G.p,x=10+SAFE.l,y=8+SAFE.t;c.textAlign='left';
  const t1='x'+G.lives;c.strokeText(t1,x+64+p.maxhp*18,y+24);c.fillText(t1,x+64+p.maxhp*18,y+24);
  spr('gem',x+78,y+52,0.45);const t2=String(G.gems).padStart(2,'0');c.strokeText(t2,x+88,y+52);c.fillText(t2,x+88,y+52);
  for(let i=0;i<3;i++){if(G.lvStars[i])spr('star',x+126+i*19,y+53,0.42);else{c.globalAlpha=0.35;spr('star',x+126+i*19,y+53,0.42);c.globalAlpha=1}}
- {const n=G.crew?G.crew.length:0;lanternDraw(x+pw-78,y+36,n?FRIENDS[G.crew[n-1]].c:'#8a8098',0.5,!!n);const tf=n+'/6';c.textAlign='right';c.strokeText(tf,x+pw-10,y+26);c.fillStyle='#ffe7a0';c.fillText(tf,x+pw-10,y+26);c.fillStyle='#fff'}
+ {const n=G.crew?G.crew.length:0;lanternDraw(x+pw-78,y+36,n?FRIENDS[G.crew[n-1]%FRIENDS.length].c:'#8a8098',0.5,!!n);const tf=n+'/'+LEVELS.length;if(G.timeLeft!=null){c.textAlign='left';c.fillStyle=G.timeLeft<15?'#ff8080':'#fff';c.fillText(Math.ceil(G.timeLeft)+'s',x+pw-78,y+18)}c.textAlign='right';c.strokeText(tf,x+pw-10,y+26);c.fillStyle='#ffe7a0';c.fillText(tf,x+pw-10,y+26);c.fillStyle='#fff'}
  const sc=String(G.score).padStart(6,'0');c.textAlign='right';c.strokeText(sc,x+pw-10,y+52);c.fillStyle='#ffe27a';c.fillText(sc,x+pw-10,y+52);
  HUDR={x,y,w:pw,h:ph};
  /* boss bar */
@@ -678,7 +702,8 @@ function drawHUD(){const p=G.p,x=10+SAFE.l,y=8+SAFE.t;c.textAlign='left';
 function wrapText(s,mw){const w=s.split(' '),out=[];let l='';for(const x of w){const t=l?l+' '+x:x;if(c.measureText(t).width>mw&&l){out.push(l);l=x}else l=t}if(l)out.push(l);return out}
 function drawPadBG(){if(!portrait)return;const g=c.createLinearGradient(0,gameH,0,H);g.addColorStop(0,'#3a2468');g.addColorStop(1,'#140c28');c.fillStyle=g;c.fillRect(0,gameH,W,H-gameH);c.fillStyle='#ffc860';c.fillRect(0,gameH,W,3);
  c.globalAlpha=0.07;c.fillStyle='#ffd27a';for(let i=0;i<14;i++){const y=gameH+((i*37)%(H-gameH));c.beginPath();c.ellipse((i*131)%W,y,40+(i%3)*20,10,0,0,TAU);c.fill()}c.globalAlpha=1}
-function render(){c.setTransform(DPR,0,0,DPR,0,0);c.clearRect(0,0,W,H);if(!G){c.fillStyle='#140c24';c.fillRect(0,0,W,H);return}
+function render(){const hint=$('swipeHint');if(hint)hint.style.visibility=state==='side'?'hidden':'';c.setTransform(DPR,0,0,DPR,0,0);c.clearRect(0,0,W,H);if(!G){c.fillStyle='#140c24';c.fillRect(0,0,W,H);return}
+ if(state==='side'&&G.side&&window.SideGames){const bg=IMG[WORLDS[LEVELS[G.li||0].w].bg];if(bg)c.drawImage(bg,0,0,W,H);else{c.fillStyle='#140c24';c.fillRect(0,0,W,H)}SideGames.draw(c,G.side,W,portrait?gameH:H);drawPadBG();c.fillStyle='#ffe7a0';c.font='14px "Lilita One",sans-serif';c.textAlign='center';c.fillText('Arrows move  ·  ACTION confirms  ·  II leaves',W/2,H-18);return}
  c.save();c.beginPath();c.rect(0,0,W,gameH);c.clip();drawBG();
  const sx=G.shake>0?rand(-G.shake,G.shake):0,sy=G.shake>0?rand(-G.shake,G.shake):0;c.save();c.translate(sx,sy);c.scale(S,S);drawWorld();c.restore();
  ambient(G.dtR||0.016);if(G.flash&&G.flash.a>0){c.globalAlpha=G.flash.a;c.fillStyle=G.flash.c;c.fillRect(0,0,W,gameH);c.globalAlpha=1}
@@ -773,13 +798,13 @@ function refreshCtlHint(){const h=document.querySelector('#ui .ctl');if(h)h.inne
 function titleScreen(){state='title';AU.music('title');const cont=save.reached>0;
  show(`<div class="logo"><div class="l1">KELLY'S</div><div class="l2">GIRAFFE ADVENTURE</div><div class="l3">VOL. 9 · LANTERN LAKE</div></div>
  <div class="tbtns"><button class="btn go" data-a="play">▶ ${cont?'CONTINUE':'PLAY'}</button>${cont?'<button class="btn alt" data-a="new">NEW GAME</button>':''}
- <button class="btn alt" data-a="levels">LEVELS</button><button class="btn alt2" data-a="how">HOW TO PLAY</button><button class="btn dim" data-a="scores">SCORES</button></div>
- <p class="tag">Light 6 lanterns, cross 6 levels and bonk 3 night bosses so Peter's moon picnic can begin!</p>${save.best?'<p class="sub">Best score: '+save.best.toLocaleString()+'</p>':''}<p class="ctl sub">${ctlLine()}</p><p class="sub">A five8nine game</p>`,'title')}
+ <button class="btn alt" data-a="levels">LEVELS</button><button class="btn alt" data-a="missions">MISSIONS</button><button class="btn alt2" data-a="sides">SIDE GAMES</button><button class="btn alt2" data-a="how">HOW TO PLAY</button><button class="btn dim" data-a="scores">SCORES</button></div>
+ <p class="tag">Light the lanterns across 16 levels so Kelly's moon picnic can begin!</p>${save.best?'<p class="sub">Best score: '+save.best.toLocaleString()+'</p>':''}<p class="ctl sub">${ctlLine()}</p><p class="sub">A five8nine game</p>`,'title')}
 const STORY=[
- {img:'story1',t:'<b>Moon picnic night!</b> Peter set a blanket by <b>Lantern Lake</b>. Kelly the giraffe was on her way with a string of paper lanterns when a big breeze whooshed through and blew every flame out.'},
- {img:'story2',t:'<b>The lake is dark!</b> Run from the dusk meadow, through Willow Night and up to the Moon Gate. <b>Light a lantern</b> in every place. Gust the Heron, Puddle the Bullfrog and Nimbus the Cloud Ram would rather keep it windy.'},
- {img:'story2',t:'<b>Halfway there!</b> The meadow lanterns are glowing and Willow Night is waking up. Bamboo Steps and the Moon Gate are still dark. Peter is waiting with the picnic basket. Keep going, Kelly!'},
- {img:'story3',t:'<b>THE LANTERNS ARE LIT!</b> Nimbus huffed his last little cloud. Kelly, Peter and six glowing lanterns share the moon picnic under the round gate. <b>What a bright night!</b>'}];
+ {img:'story1',t:'<b>Moon picnic night!</b> Kelly is waiting by <b>Lantern Lake</b> with Peter. Her giraffe was bringing the paper lanterns when a big breeze blew every flame out.'},
+ {img:'story2',t:'<b>The lake is dark!</b> Cross the meadow, the willows, the woods and the lantern village. Light a lantern in every place, and step through painted doors for side games. Gust, Puddle and Nimbus would rather keep it windy.'},
+ {img:'story2',t:'<b>Halfway there!</b> The first lanterns are glowing. Kelly and Peter are still waiting at the Moon Gate. Keep going!'},
+ {img:'story3',t:'<b>THE LANTERNS ARE LIT!</b> Nimbus huffed his last little cloud. Kelly, Peter and the giraffe share the moon picnic under the round gate. <b>What a bright night!</b>'}];
 function storyScreen(i,next,skip){state='story';const S=STORY[i-1];
  show(`<img class="story" src="art/${S.img}.webp?v=${VERSION}" alt=""><p class="big">${S.t}</p><div class="tbtns srow"><button class="btn go" data-a="${next}">${i===4?'THE END':'NEXT ▶'}</button><button class="btn dim skip" data-a="${skip||next}">SKIP ▶▶</button></div>`,'menu');AU.music(i===4?'win':'title')}
 function levelsScreen(){state='levels';let h='<h2>LEVELS</h2><div class="lvls">';LEVELS.forEach((L,i)=>{const lock=i>save.reached;const st=save.stars[i]||[];const sn=[0,1,2].map(k=>st[k]?'★':'☆').join('');const bs=L.ch.find(x=>x.startsWith('boss:'));
@@ -787,7 +812,8 @@ function levelsScreen(){state='levels';let h='<h2>LEVELS</h2><div class="lvls">'
  show(h+'</div><button class="btn alt" data-a="back">◀ BACK</button>','menu')}
 function howScreen(){state='how';show(`<h2>HOW TO PLAY</h2><ul class="how">
  <li><b>Move:</b> swipe and hold anywhere (let go to stop). <b>Swipe up</b> or tap <b>JUMP</b> to jump. Hold JUMP to go higher.</li>
- <li><b>Light the lanterns:</b> one paper lantern is waiting in every level. Run up to it and it joins your <b>lantern string</b> all the way to the moon picnic!</li>
+ <li><b>Light the lanterns:</b> one paper lantern waits in every level and joins your string. Painted doors open side games. Press <b>ACTION</b> to go inside, then come back with a reward.</li>
+ <li><b>Missions:</b> some paths are timed, some ask you to carry a lantern to the flag, some hide a boss. Open MISSIONS to see the list. Side games can be replayed from SIDE GAMES after you find them.</li>
  <li>Tap <b>ACTION</b> for a <b>HEAD BONK</b>, double-tap for a <b>NECK RAM</b> (smashes cracked blocks and bad guys). Hold UP + ACTION to ram up.</li>
  <li>Ledge too tall? Jump at it and hold <b>UP</b> (or keep pushing toward it) to <b>NECK GRAB</b> the edge.</li>
  <li>In the air, hold DOWN + ACTION to <b>NECK POUND</b> through cracked blocks.</li>
@@ -797,16 +823,21 @@ function howScreen(){state='how';show(`<h2>HOW TO PLAY</h2><ul class="how">
  <li><b>Bosses:</b> wait till they are dizzy, then RAM or STOMP for big damage.</li>
  <li>🎮 <b>Controllers</b> (USB or Bluetooth, phone or computer): stick or D-pad to move, A jump, X or B action, Y ram, Start pause, Select sound.</li>
  <li>Keys: arrows/WASD, Z or Space jump, X action, C ram, P pause, M sound.</li></ul><button class="btn alt" data-a="back">◀ BACK</button>`,'menu')}
-function pauseGame(){if(state!=='play')return;state='pause';clearInput();show(`<h2>PAUSED</h2><p>${LEVELS[G.li].name}</p><button class="btn go" data-a="resume">▶ RESUME</button><button class="btn alt" data-a="restart">RESTART LEVEL</button><button class="btn alt2" data-a="how2">HOW TO PLAY</button><button class="btn dim" data-a="quit">QUIT TO TITLE</button>`)}
+function enterSide(d){if(!window.SideGames){toast('Side games are still loading');return}const id=d.id;save.sides[id]=save.sides[id]||{found:1,best:0,plays:0};const diff=Math.min(5,Math.max(d.hard|0,save.sides[id].plays||0));G.side=SideGames.create(id,diff);G.sideDoor=d.menu?null:d;G.sideFromMenu=!!d.menu;G.sideWait=1.15;G.sideHold=0.2;G._pl=G._pr=G._pu=G._pd=0;save.sides[id].found=1;persist();hideUI();state='side';clearInput()}
+function finishSide(abort){const s=G&&G.side;if(!s){state=G&&G.p?'play':'title';return}const id=s.id;const rec=save.sides[id]=save.sides[id]||{found:1,best:0,plays:0};rec.found=1;if(!abort&&s.won){rec.plays=(rec.plays||0)+1;rec.best=Math.max(rec.best||0,s.score||0);const rw=SideGames.rewardOf(s);if(!G.sideFromMenu){G.score=(G.score||0)+rw;G.gems=(G.gems||0)+8;if(G.p)ftxt(G.p.x,G.p.y-90,'+'+rw,'#ffe56a',1)}if(G.sideDoor)G.sideDoor.used=1;save.quests[id]=(save.quests[id]||0)+1;toast((SideGames.CATALOG.find(x=>x.id===id)||{name:id}).name+' complete!')}persist();const menu=G.sideFromMenu;G.side=null;G.sideDoor=null;G.sideFromMenu=0;clearInput();if(menu){state='title';G=null;sideScreen();return}state='play';hideUI()}
+function sideStep(dt){const s=G.side;if(!s)return;if(s.won||s.over){G.sideWait-=dt;if(G.sideWait<=0||inp.actP)finishSide(!s.won);return}const edgeL=inp.L&&!G._pl,edgeR=inp.R&&!G._pr,edgeU=inp.U&&!G._pu,edgeD=inp.D&&!G._pd;G._pl=inp.L;G._pr=inp.R;G._pu=inp.U;G._pd=inp.D;if(s.id==='stack')SideGames.stackTick(s,(inp.D||inp.jump)?dt*8:dt);if(s.id==='fish')SideGames.fishTick(s,dt);const tap=window.__sideTap;window.__sideTap=null;const hit=tap?SideGames.cellAt(s,tap.x,tap.y):null;if(G.sideHold>0)G.sideHold-=dt;const move=G.sideHold<=0&&(edgeL||edgeR||edgeU||edgeD);if(move||inp.actP||inp.jumpP||hit){SideGames.press(s,{L:!!(edgeL&&move),R:!!(edgeR&&move),U:!!(edgeU&&move),D:!!(edgeD&&move),act:inp.actP,jump:inp.jumpP,tap:hit},0);if(move)G.sideHold=0.16}}
+function missionScreen(){let h='<h2>MISSIONS</h2><p class="sub">'+LEVELS.length+' main levels. Stars and side quests save on this device.</p><div class="lvls">';LEVELS.forEach((L,i)=>{const lock=i>(save.reached||0)&&!save.won;const st=save.stars[i]||[];const sn=[0,1,2].map(k=>st[k]?'★':'☆').join('');h+=`<button class="btn lv ${lock?'dim':''}" data-a="${lock?'locked':'lvl'}" data-v="${i}"><span class="n">Level ${i+1}</span> ${L.name}<br><small>${L.blurb||L.mission||''}</small><span class="st">${lock?'🔒':sn}</span></button>`});h+='</div><h2>SIDE QUESTS</h2>';(window.SideGames?SideGames.CATALOG:[]).forEach(g=>{const rec=save.sides[g.id];h+=`<p class="sub"><b>${g.name}</b> — ${rec&&rec.found?('found · best '+(rec.best||0)+' · played '+(rec.plays||0)):'not found yet'}<br>${g.blurb}</p>`});show(h+'<button class="btn alt" data-a="back">◀ BACK</button>','menu')}
+function sideScreen(){let h='<h2>SIDE GAMES</h2><p class="sub">Found along the lake. A little harder each time you play.</p><div class="lvls">';(window.SideGames?SideGames.CATALOG:[]).forEach(g=>{const rec=save.sides[g.id];if(!rec||!rec.found)h+=`<button class="btn lv dim" data-a="locked">${g.name}<br><small>Find its door first</small></button>`;else h+=`<button class="btn lv" data-a="sidego" data-v="${g.id}">${g.name}<br><small>${g.blurb} · best ${rec.best||0}</small></button>`});show(h+'</div><button class="btn alt" data-a="back">◀ BACK</button>','menu')}
+function pauseGame(){if(state==='side'){finishSide(true);return}if(state!=='play')return;state='pause';clearInput();show(`<h2>PAUSED</h2><p>${LEVELS[G.li].name}</p><p class="sub">${LEVELS[G.li].blurb||''}</p><button class="btn go" data-a="resume">▶ RESUME</button><button class="btn alt" data-a="restart">RESTART LEVEL</button><button class="btn alt2" data-a="missions">MISSIONS</button><button class="btn dim" data-a="quit">QUIT TO TITLE</button>`)}
 function resumeGame(){hideUI();state='play';clearInput();AU.music(G.boss&&G.boss.st!=='dead'?'boss':WORLDS[LEVELS[G.li].w].song)}
-function crewRow(){return '<div class="crew">'+(G.crew||[]).map(i=>`<i class="lan" style="background:${FRIENDS[i].c};box-shadow:0 0 10px ${FRIENDS[i].c}"></i>`).join('')+'</div>'}
-function clearScreen(){state='clear';const L=LEVELS[G.li],n=G.lvStars.filter(Boolean).length;AU.music('win');const F=FRIENDS[G.li];
- show(`<h2>${G.L.boss?'BOSS BEATEN!':'LEVEL CLEAR!'}</h2><p class="big">${L.name}</p>${crewRow()}<p class="sub">${G.crew.includes(G.li)?F.n+' is glowing on your string!':'Keep an eye out for the lantern.'} Lanterns: ${G.crew.length} / 6</p><table class="st"><tr><td>Gems</td><td>${G.lvGems}</td></tr><tr><td>Gold stars</td><td>${'★'.repeat(n)}${'☆'.repeat(3-n)}</td></tr><tr><td>Score</td><td>${G.score.toLocaleString()}</td></tr></table>
+function crewRow(){return '<div class="crew">'+(G.crew||[]).map(i=>{const F=FRIENDS[i%FRIENDS.length];return `<i class="lan" style="background:${F.c};box-shadow:0 0 10px ${F.c}"></i>`}).join('')+'</div>'}
+function clearScreen(){state='clear';const L=LEVELS[G.li],n=G.lvStars.filter(Boolean).length;AU.music('win');const F=FRIENDS[G.li%FRIENDS.length];
+ show(`<h2>${G.L.boss?'BOSS BEATEN!':'LEVEL CLEAR!'}</h2><p class="big">${L.name}</p><p class="sub">${L.blurb||''}</p>${crewRow()}<p class="sub">${G.crew.includes(G.li)?F.n+' is on your string.':''} Lanterns: ${G.crew.length} / ${LEVELS.length}</p><table class="st"><tr><td>Gems</td><td>${G.lvGems}</td></tr><tr><td>Gold stars</td><td>${'★'.repeat(n)}${'☆'.repeat(3-n)}</td></tr><tr><td>Score</td><td>${G.score.toLocaleString()}</td></tr></table>
  <button class="btn go" data-a="next">NEXT ▶</button><button class="btn dim" data-a="quit">TITLE</button>`)}
 function overScreen(){state='over';AU.stop();AU.fx('over');if(G.score>save.best){save.best=G.score;persist()}
  show(`<h2>GAME OVER</h2><p class="big">Score: ${G.score.toLocaleString()}</p><p>The lanterns are still waiting. Try this level again?</p><button class="btn go" data-a="retry">TRY AGAIN</button><button class="btn dim" data-a="quit">TITLE</button>`)}
 function winScreen(){state='win';AU.music('win');if(G.score>save.best){save.best=G.score;persist()}save.won=1;persist();
- show(`<h2>THE LAKE IS LIT!</h2><p class="big">Moon picnic time!</p>${crewRow()}<img class="story" src="art/story3.webp?v=${VERSION}" alt="Kelly and Peter at the moon picnic"><p class="big">Final score: ${G.score.toLocaleString()}</p><p>Gold stars: ${Object.values(save.stars).reduce((a,s)=>a+(s||[]).filter(Boolean).length,0)} / 18</p><button class="btn go" data-a="again">PLAY AGAIN</button><button class="btn alt" data-a="levels">LEVELS</button><button class="btn dim" data-a="quit">TITLE</button>`,'menu')}
+ show(`<h2>THE LAKE IS LIT!</h2><p class="big">Kelly's moon picnic!</p>${crewRow()}<img class="story" src="art/story3.webp?v=${VERSION}" alt="Kelly at the moon picnic with her giraffe"><p class="big">Final score: ${G.score.toLocaleString()}</p><p>Gold stars: ${Object.values(save.stars).reduce((a,s)=>a+(s||[]).filter(Boolean).length,0)} / ${LEVELS.length*3}</p><button class="btn go" data-a="again">PLAY AGAIN</button><button class="btn alt" data-a="levels">LEVELS</button><button class="btn dim" data-a="quit">TITLE</button>`,'menu')}
 function act(a,v){
  if(a==='play'){if(save.reached>0)newGame(save.reached);else{storyScreen(1,'intro2','start1')}}
  else if(a==='new'){save.reached=0;persist();storyScreen(1,'intro2','start1')}
@@ -817,7 +848,10 @@ function act(a,v){
  else if(a==='lvl')newGame(+v);else if(a==='locked')toast('Beat the level before it to unlock!');
  else if(a==='resume')resumeGame();else if(a==='restart'){hideUI();startLevel(G.li,G.levelStart)}
  else if(a==='quit'){G=null;titleScreen()}
- else if(a==='next'){if(G.li===2&&!G.storyDone)storyScreen(3,'next2');else if(G.finale)storyScreen(4,'win');else if(G.li+1<LEVELS.length)startLevel(G.li+1);else winScreen()}
+ else if(a==='next'){if(G.li===7&&!G.storyDone)storyScreen(3,'next2');else if(G.finale)storyScreen(4,'win');else if(G.li+1<LEVELS.length)startLevel(G.li+1);else winScreen()}
+ else if(a==='missions')missionScreen();
+ else if(a==='sides')sideScreen();
+ else if(a==='sidego'){if(!G)G={score:0,gems:0,lives:6,li:0};enterSide({id:v,menu:1})}
  else if(a==='next2'){G.storyDone=1;startLevel(G.li+1)}
  else if(a==='win')winScreen();
  else if(a==='retry'){G.lives=6;G.score=G.levelStart.score;startLevel(G.li,G.levelStart)}
@@ -829,8 +863,8 @@ $('bMute').addEventListener('click',e=>{e.stopPropagation();AU.unlock();toggleMu
 /* ===== game flow + loop ===== */
 function newGame(li){G={score:0,lives:6,gems:0,deaths:0};startLevel(li)}
 function startLevel(li,snap){const keep=G||{score:0,lives:6,gems:0,deaths:0};if(snap){keep.score=snap.score;keep.gems=snap.gems}
- const L=buildLevel(li);G=Object.assign({},{score:keep.score,lives:keep.lives,gems:keep.gems,deaths:keep.deaths||0,storyDone:keep.storyDone||li>2},{li,L,t:0,ents:[],shots:[],parts:[],texts:[],cam:{x:0,y:0},shake:0,hs:0,flash:null,boss:null,arena:null,cp:null,won:0,lvGems:0,lvStars:[0,0,0],banner:2.6,camDx:0,slow:0,finale:0});
- G.levelStart={score:G.score,gems:G.gems};const lv=LEVELS[li];G.p=newPlayer(3*TS,9*TS,'ride');G.p.hp=G.p.maxhp=lv.w>=2?4:3;G.crew=[...Array(li).keys()];G.trail=[];G.trailN=0;G.joinT=0;spawnEnts();camUpdate(0,true);
+ const L=buildLevel(li);G=Object.assign({},{score:keep.score,lives:keep.lives,gems:keep.gems,deaths:keep.deaths||0,storyDone:keep.storyDone||li>7},{li,L,t:0,ents:[],shots:[],parts:[],texts:[],cam:{x:0,y:0},shake:0,hs:0,flash:null,boss:null,arena:null,cp:null,won:0,lvGems:0,lvStars:[0,0,0],banner:2.6,camDx:0,slow:0,finale:0});
+ G.levelStart={score:G.score,gems:G.gems};const lv=LEVELS[li];G.p=newPlayer(3*TS,9*TS,'ride');G.p.hp=G.p.maxhp=lv.w>=2?4:3;G.crew=[...Array(li).keys()];G.trail=[];G.trailN=0;G.joinT=0;G.carry=0;G.escort=lv.mission==='escort'?{x:2*TS,y:9*TS,far:0}:null;G.timeLeft=lv.time||null;spawnEnts();camUpdate(0,true);
  hideUI();state='play';clearInput();AU.music(WORLDS[lv.w].song)}
 function openCage(){const cg=G.L.cage;cg.open=1;AU.fx('free');burst(cg.x,cg.y-60,30,['#c8a060','#8a6a30','#ffe060'],320,0.9,5,900);shake(10);G.free={x:cg.x,y:cg.y,face:-1};G.cut=2.4;ftxt(cg.x,cg.y-150,'YOUR GIRAFFE IS FREE!','#7aff7a',1)}
 function levelClear(){if(G.won)return;G.won=1;G.wonT=G.finale?6.5:G.L.boss?0.6:1.4;AU.fx('clear');const st=save.stars[G.li]||[];G.lvStars.forEach((v,i)=>{if(v)st[i]=1});save.stars[G.li]=st;save.reached=Math.max(save.reached,Math.min(LEVELS.length-1,G.li+1));if(G.score>save.best)save.best=G.score;persist();
@@ -838,7 +872,7 @@ function levelClear(){if(G.won)return;G.won=1;G.wonT=G.finale?6.5:G.L.boss?0.6:1
 function respawn(){G.lives--;if(G.lives<=0){G.lives=0;overScreen();return}const p=G.p,cp=G.cp;const mode=p.mode;const np=newPlayer(cp?cp.x:3*TS,cp?cp.y:9*TS,mode);np.maxhp=p.maxhp;np.hp=p.maxhp;np.inv=2;
  if(G.boss&&G.boss.st!=='dead'){np.x=G.arena.x0+60;np.y=G.L.boss.y;G.shots.length=0;const b=G.boss;if(b.k!=='vex'&&b.k!=='bab'){b.st='idle';b.y=b.gy;b.vy=0;b.x=G.arena.x1-160}b.t=0}
  G.p=np;G.trail=[];G.shots=G.shots.filter(s=>Math.abs(s.x-np.x)>300);camUpdate(0,true)}
-function update(dt){G.t+=dt;frame++;const p=G.p;G.banner=Math.max(0,G.banner-dt);G.bossIntro=Math.max(0,(G.bossIntro||0)-dt);G.shake=Math.max(0,G.shake-dt*30);if(G.flash)G.flash.a-=dt*2;G.combo=Math.max(0,(G.combo||0)-dt);
+function update(dt){G.t+=dt;frame++;const p=G.p;if(G.timeLeft!=null&&!G.won&&p&&!p.dead){G.timeLeft-=dt;if(G.timeLeft<=0){G.timeLeft=0;killPlayer(p,'time')}}G.banner=Math.max(0,G.banner-dt);G.bossIntro=Math.max(0,(G.bossIntro||0)-dt);G.shake=Math.max(0,G.shake-dt*30);if(G.flash)G.flash.a-=dt*2;G.combo=Math.max(0,(G.combo||0)-dt);
  if(G.cut){G.cut-=dt;const f=G.free;if(f){f.x+=(p.x-f.x)*dt*1.5;f.face=sgn(p.x-f.x)}if(G.cut<=0.8&&p.mode==='foot'){setMode(p,'ride');p.hp=p.maxhp=3;G.free=null;stars(p.x,p.y-60,20);AU.fx('star');ftxt(p.x,p.y-130,'HOP ON, KELLY!','#ffe060',1)}if(G.cut<=0){G.cut=0;levelClear()}}
  if(!G.won||G.wonT>0)updatePlayer(p,dt);
  G.joinT=Math.max(0,(G.joinT||0)-dt);
@@ -854,7 +888,7 @@ function update(dt){G.t+=dt;frame++;const p=G.p;G.banner=Math.max(0,G.banner-dt)
  if(G.won){G.wonT-=dt;if(G.wonT<=0&&state==='play'){clearScreen()}}}
 let last=performance.now(),acc=0;
 function loop(now){requestAnimationFrame(loop);let dt=Math.min(0.05,(now-last)/1000);last=now;if(window.__FIXDT)dt=window.__FIXDT;
- if(state==='play'&&G){for(let k=0;k<(window.__SPEED||1)&&state==='play';k++){readInput();let d=dt;if(G.hs>0){G.hs-=dt;d=0}if(G.slow>0){G.slow-=dt;d*=0.35}const n=d>1/60?2:1;for(let i=0;i<n;i++)update(d/n);G.dtR=dt}}else if(state!=='play')pollPad();
+ if(state==='play'&&G){for(let k=0;k<(window.__SPEED||1)&&state==='play';k++){readInput();let d=dt;if(G.hs>0){G.hs-=dt;d=0}if(G.slow>0){G.slow-=dt;d*=0.35}const n=d>1/60?2:1;for(let i=0;i<n;i++)update(d/n);G.dtR=dt}}else if(state==='side'&&G&&G.side){readInput();sideStep(dt)}else if(state!=='play')pollPad();
  render();try{window.state=state;window.G=G;window.muted=!!AU.muted}catch(e){}}
 
 /* physics look-ahead planner for the QA bot: simulates the real player code with candidate inputs */

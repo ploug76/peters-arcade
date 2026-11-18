@@ -1,8 +1,8 @@
 # Kelly's Giraffe Adventure Vol. 9: Lantern Lake
 
-A big breeze blew out every paper lantern around Lantern Lake on the night of Peter's moon picnic. Kelly the giraffe runs from the dusk meadow, through Willow Night and up to the Moon Gate, lighting one lantern in each place. Gust the Heron, Puddle the Bullfrog and Nimbus the Cloud Ram would rather keep it windy.
+A big breeze blew out every paper lantern around Lantern Lake on the night of Kelly's moon picnic. Kelly the giraffe runs the dusk meadow, Willow Night, the lantern village and the night woods, lighting one lantern in each place. Kelly and Peter wait at the picnic. Gust the Heron, Puddle the Bullfrog and Nimbus the Cloud Ram would rather keep it windy.
 
-6 levels, 3 silly bosses, a score, gold stars and a win screen. Kelly uses the same giraffe sprites as the earlier volumes. The lake, the night animals and the lanterns are new.
+17 levels with collect, rescue, deliver, escort, timed and boss goals. Painted doors open side games (jewel match, lantern stack, tree crunch, memory, light-the-gate, lake fishing). The mission list, stars and side-game scores save on the device. Kelly uses the same giraffe sprites as Vol. 7.
 
 Play from this folder: open `index.html`. On the arcade site, after this folder is published, it lives at `games/kellys-giraffe-adventure-vol-9/`. The live arcade hub is unchanged.
 

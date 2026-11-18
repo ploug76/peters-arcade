@@ -331,7 +331,7 @@
       "title": "Kelly's Giraffe Adventure Vol. 9: Lantern Lake",
       "kind": "review",
       "tag": "Review build",
-      "blurb": "Kelly lights Lantern Lake for Peter's moon picnic. Six levels and three night bosses.",
+      "blurb": "17 levels, side games, and a mission log. New Kelly and Peter likenesses. Kelly lights Lantern Lake for the moon picnic.",
       "controls": "Swipe and hold anywhere to move. Swipe up or JUMP. ACTION bonks, rams, and grabs. Keys: arrows or WASD, Z or Space jump, X action.",
       "warn": "",
       "playLabel": "Play this build",
@@ -342,13 +342,15 @@
         "pr": 4,
         "url": "https://github.com/ploug76/kellys-arcade/pull/4",
         "branch": "cursor/lantern-lake-vol-9-f7d4",
-        "sha": "b4227859adf3d58ab6351d1800db37fbc7fb8837",
+        "sha": "120461277b086ac9a9beacd805026591c10a6792",
         "path": "games/kellys-giraffe-adventure-vol-9"
       },
       "integrationEdits": [
+        "Replaced the earlier shelf copy from b422785 with review head 1204612: 17 levels, side games, mission log, and the new likenesses.",
         "Cache prefix pa-test-kga9-. Activate deletes only that prefix. The review head deleted every other cache on the origin.",
         "Fetch handler ignores URLs outside this folder.",
         "Save key pa-test-kga9_save. Shared leaderboard keys prefixed pa-test-.",
+        "The node test file was left out. The game does not load it.",
         "noindex was already on this game. A back link was added."
       ]
     },
