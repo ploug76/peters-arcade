@@ -1,0 +1,7 @@
+{
+  "name": "petes-420-adventure",
+  "private": true,
+  "scripts": {
+    "test": "node --test test/rules.test.js"
+  }
+}
