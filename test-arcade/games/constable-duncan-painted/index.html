@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Constable Duncan of Flemingsburg</title>
+<meta name="theme-color" content="#2a1d3a">
+<meta name="description" content="Constable Duncan keeps Flemingsburg safe from sneaky umbrellas, Antifa and commies! Bust crooks on foot, clear the road in the Jeep, fight fires, rescue flood victims by boat and more. Free to play!">
+<meta property="og:title" content="Constable Duncan of Flemingsburg">
+<meta property="og:description" content="Duncan keeps Flemingsburg safe from sneaky umbrellas, Antifa and commies! Bust crooks, clear the road in the Jeep and fight fires. Free to play!">
+<meta property="og:image" content="https://ploug76.github.io/constable-duncan/share-v2.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://ploug76.github.io/constable-duncan/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Constable Duncan of Flemingsburg">
+<meta name="twitter:description" content="Duncan keeps Flemingsburg safe from sneaky umbrellas, Antifa and commies! Free to play!">
+<meta name="twitter:image" content="https://ploug76.github.io/constable-duncan/share-v2.jpg">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="style.css?v=3">
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="pad" hidden><div id="swipeHint">SWIPE &amp; HOLD ANYWHERE TO MOVE<br>SWIPE UP TO JUMP</div><button id="bJump" class="big" type="button" aria-label="Jump">JUMP</button><button id="bAct" class="big" type="button" aria-label="Action">ACTION</button></div>
+<div id="ui">
+ <div id="loading"><div class="ldT">Constable Duncan<span>of Flemingsburg</span></div><div class="ldBar"><i id="ldFill"></i></div></div>
+ <section id="title" class="screen" hidden>
+  <div id="titleBtns">
+   <button id="bPlay" class="big">&#9654; PLAY</button>
+   <button id="bLevels">LEVELS</button>
+   <button id="bSound" class="small">Sound: On</button>
+  </div>
+ </section>
+ <section id="levels" class="screen" hidden>
+  <div class="lvHead"><button id="bLvBack" class="small">&#8592; Back</button><h2>Levels</h2></div>
+  <div id="lvList"></div>
+ </section>
+ <section id="story" class="screen" hidden>
+  <div id="storyBox">
+   <div class="stTop"><img id="portrait" alt=""><div id="spk"></div></div>
+   <div id="txt"></div>
+   <div class="row"><button id="bSkip" class="skip">Skip &#9193;</button><button id="bNext">Next &#9654;</button></div>
+  </div>
+ </section>
+ <section id="howto" class="screen card" hidden>
+  <div class="cardIn"><div id="htNum"></div><h2 id="htTitle"></h2><p id="htText"></p><div id="htKeys"></div><button id="bStart" class="big">&#9654; START</button></div>
+ </section>
+ <div id="hud" hidden><span id="hudLv"></span><span id="hudInfo"></span><button id="bPause" aria-label="Pause">II</button></div>
+ <section id="pause" class="screen card" hidden>
+  <div class="cardIn"><h2>Paused</h2><button id="bResume" class="big">Resume</button><button id="bRestart">Restart level</button><button id="bSkipLv">Skip this level</button><button id="bPLevels">Levels</button><button id="bPSound" class="small">Sound: On</button></div>
+ </section>
+ <section id="result" class="screen card" hidden>
+  <div class="cardIn"><h2 id="rsTitle"></h2><div id="rsStars"><i>&#9733;</i><i>&#9733;</i><i>&#9733;</i></div><p id="rsText"></p><button id="bContinue" class="big">Continue &#9654;</button><button id="bRetry">&#8635; Play again</button></div>
+ </section>
+ <div id="toast"></div>
+</div>
+<script src="js/duncan-sprites.js?v=1"></script>
+<script src="js/game.js?v=11"></script>
+<script>;(function(){/*swup v1: check for updates on every open*/if(window.__swup)return;window.__swup=1;var S=navigator.serviceWorker;if(!S||!/^https?:$/.test(location.protocol))return;var ARC=0,BUSY=0,had=!!S.controller,inp=0,K='swup:'+location.pathname;['pointerdown','keydown','touchstart','wheel'].forEach(function(t){addEventListener(t,function(){inp=1},{capture:true,passive:true})});function chk(){try{S.getRegistration().then(function(r){if(r)r.update().catch(function(){})},function(){})}catch(e){}}addEventListener('load',function(){setTimeout(chk,800)});document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){if(ARC)inp=0;chk()}});addEventListener('pageshow',function(e){if(e.persisted){if(ARC)inp=0;chk()}});function pill(){if(document.getElementById('swupPill'))return;var b=document.createElement('button');b.id='swupPill';b.type='button';b.textContent='Update ready \u2013 tap to refresh';b.style.cssText='position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 8px);transform:translateX(-50%);z-index:2147483647;padding:8px 14px;border:0;border-radius:999px;background:#ffd23f;color:#111;font:600 14px system-ui,sans-serif;box-shadow:0 2px 10px rgba(0,0,0,.45);cursor:pointer';b.addEventListener('click',function(){location.reload()});(document.body||document.documentElement).appendChild(b)}S.addEventListener('controllerchange',function(){if(!had){had=true;return}var n=Date.now(),l=0,busy=false;try{l=+sessionStorage.getItem(K)||0}catch(e){}try{busy=!!(BUSY&&BUSY())}catch(e){}if(inp||busy||n-l<15000||document.visibilityState!=='visible'){pill();return}try{sessionStorage.setItem(K,String(n))}catch(e){}location.reload()})})();if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js',{updateViaCache:'none'});</script>
+<a id="paTestBack" class="review" href="../../" aria-label="Back to Test Arcade. Review build."><b>← Arcade</b></a>
+<style>
+#paTestBack{position:fixed;z-index:100000;left:max(6px,env(safe-area-inset-left));top:max(6px,env(safe-area-inset-top));display:inline-flex;align-items:center;text-decoration:none;background:#ffe14a;color:#14120c;border:2px solid #14120c;border-radius:999px;padding:6px 10px;font:700 13px/1 "Courier New",ui-monospace,monospace;touch-action:manipulation;white-space:nowrap}
+#paTestBack.adult{background:#ffb4b4;left:auto;right:max(6px,env(safe-area-inset-right));top:calc(60px + env(safe-area-inset-top))}
+#paTestBack.prototype{background:#ffd59a}
+</style>
+</body>
+</html>
