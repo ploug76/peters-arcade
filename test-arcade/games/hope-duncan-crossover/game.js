@@ -1,4 +1,4 @@
-import { TIMING, controlLayout } from './mechanics.js';
+import { TIMING, buttonLayout, controlLayout } from './mechanics.js';
 import { createTapCombo } from './tap.js';
 import { beginForgiveness, createWorld, goals, goalsMet, queuePunches, stepWorld } from './world.js';
 import { drawFrame, syncGait } from './draw.js';
@@ -30,25 +30,83 @@ function fresh() {
 }
 fresh();
 
-function resize() {
+function viewWH() {
   const vv = window.visualViewport;
-  let w = innerWidth, h = innerHeight;
-  if (vv) { w = Math.min(w, vv.width); h = Math.min(h, vv.height); }
-  w = Math.max(1, Math.round(w));
-  h = Math.max(1, Math.round(h));
+  const de = document.documentElement;
+  let w = innerWidth || de.clientWidth, h = innerHeight || de.clientHeight;
+  if (de.clientHeight > 0) h = Math.min(h, de.clientHeight);
+  if (vv && vv.scale > 0.99 && vv.scale < 1.01) {
+    w = Math.min(w, vv.width) || w;
+    h = Math.min(h, vv.height) || h;
+  }
+  return [Math.max(1, Math.round(w)), Math.max(1, Math.round(h))];
+}
+function placeBtn(el, box) {
+  el.style.position = 'absolute';
+  el.style.left = box.x + 'px';
+  el.style.top = box.y + 'px';
+  el.style.width = box.w + 'px';
+  el.style.height = box.h + 'px';
+  el.style.minHeight = box.h + 'px';
+  el.style.right = 'auto';
+  el.style.bottom = 'auto';
+  el.style.margin = '0';
+  el.style.padding = '0';
+  el.style.borderRadius = box.round ? '50%' : '16px';
+  el.style.touchAction = 'none';
+  el.style.pointerEvents = 'auto';
+}
+function applyPad(w, h) {
+  const b = buttonLayout(w, h);
+  const pad = $('pad');
+  pad.style.top = '0px';
+  pad.style.height = h + 'px';
+  pad.style.left = '0';
+  pad.style.right = '0';
+  pad.style.bottom = 'auto';
+  pad.style.pointerEvents = 'none';
+  pad.style.border = '0';
+  pad.style.background = b.portrait
+    ? 'linear-gradient(#ffd23f,#ffd23f) 0 ' + b.canvasH + 'px / 100% 3px no-repeat, linear-gradient(#2a1d3a,#140c1e) 0 ' + b.canvasH + 'px / 100% ' + b.panelH + 'px no-repeat'
+    : 'transparent';
+  placeBtn($('bJump'), b.jump);
+  placeBtn($('bPunch'), b.act);
+  for (const box of b.hope) placeBtn($(box.id), box);
+  const hint = $('hint');
+  hint.style.display = b.portrait ? 'block' : 'none';
+  if (b.portrait) {
+    hint.style.position = 'absolute';
+    hint.style.left = '8px';
+    hint.style.right = '8px';
+    hint.style.top = (b.canvasH + 6) + 'px';
+    hint.style.height = 'auto';
+  }
+}
+function resize() {
+  const [w, h] = viewWH();
   const lay = controlLayout(w, h);
   land = !lay.portrait;
   dpr = Math.min(2, devicePixelRatio || 1);
   const ch = lay.split && mode === 'play' ? Math.round(h * lay.canvasFrac) : h;
-  document.body.classList.toggle('portrait', lay.portrait);
+  document.body.classList.toggle('portrait', lay.portrait && mode === 'play');
   syncChrome();
   cv.style.height = ch + 'px';
   cv.width = Math.round(w * dpr);
   cv.height = Math.round(ch * dpr);
+  applyPad(w, h);
 }
-addEventListener('resize', resize);
-if (window.visualViewport) visualViewport.addEventListener('resize', resize);
-resize();
+let sized = [0, 0];
+function resizeIfNeeded() {
+  const next = viewWH();
+  if (next[0] === sized[0] && next[1] === sized[1]) return;
+  sized = next;
+  resize();
+}
+addEventListener('resize', resizeIfNeeded);
+addEventListener('orientationchange', () => setTimeout(resizeIfNeeded, 120));
+if (window.visualViewport) visualViewport.addEventListener('resize', resizeIfNeeded);
+setInterval(resizeIfNeeded, 400);
+resizeIfNeeded();
 
 function swipeDir(t) {
   const dx = t.x - t.ax, dy = t.y - t.ay, d = Math.hypot(dx, dy), o = {};
