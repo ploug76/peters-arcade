@@ -426,8 +426,8 @@
       "title": "Constable Duncan & Hope's Angels",
       "kind": "review",
       "tag": "Review build",
-      "blurb": "Duncan and Hope's angels light the lane through Flemingsburg. Swap heroes. Each angel has her own gift.",
-      "controls": "Swipe and hold anywhere to move. A long swipe runs. Swipe up or JUMP. ACTION uses that hero's gift. SWAP changes who leads.",
+      "blurb": "Duncan and Hope's angels light the lane through Flemingsburg. Hope is redrawn, and movement matches Duncan. SWAP changes who leads.",
+      "controls": "Swipe and hold anywhere to move. A long swipe runs. Swipe up or JUMP. The green button is that hero's gift. SWAP on the HUD changes who leads.",
       "warn": "",
       "playLabel": "Play this build",
       "href": "games/hopes-angels/",
@@ -437,10 +437,11 @@
         "pr": 3,
         "url": "https://github.com/ploug76/constable-duncan/pull/3",
         "branch": "cursor/hopes-angels-5ede",
-        "sha": "6672278df0999ec428d312804f8b36d19105b4c0",
+        "sha": "0eb4e05346af5a07e45b2ef69ae3e81fa813ef6c",
         "path": "hopes-angels"
       },
       "integrationEdits": [
+        "Replaced the earlier shelf copy with review head 0eb4e05: new controls and the redesigned Hope.",
         "Only the hopes-angels folder was copied, plus the parent title art, level pictures, icon, and Lilita font that folder already loaded.",
         "Those files now live inside this folder. The stylesheet, icon, and pictures point at fonts/, icon-192.png, and art/ instead of the parent repo.",
         "The title card picture, art/cover.webp, is the tile box art.",

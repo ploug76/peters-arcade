@@ -70,4 +70,4 @@ body.padmode #pad{pointer-events:auto;background:radial-gradient(ellipse at 50% 
 body.land #pad .big{opacity:.8}
 #swipeHint{position:absolute;font:15px Lilita,system-ui,sans-serif;letter-spacing:1px;color:#ffe8c0cc;text-shadow:0 1px 3px #000;line-height:1.5;pointer-events:none}
 
-#bSwap{background:radial-gradient(circle at 35% 30%,#f0e4ff,#8a5ad0 55%,#3a2068);box-shadow:0 0 18px #c9a6ff99,inset 0 -6px 12px #0006;font-size:18px!important}
+#hud #bSwap{position:fixed;left:10px;top:calc(env(safe-area-inset-top,0px) + 48px);z-index:6;pointer-events:auto;width:58px;height:58px;min-height:58px;padding:0;border-radius:50%;font-size:13px!important;letter-spacing:.4px;color:#fff;border:3px solid #ffffffcc;background:radial-gradient(circle at 35% 30%,#f0e4ff,#8a5ad0 55%,#3a2068);box-shadow:0 0 14px #c9a6ff88,inset 0 -5px 10px #0006;text-shadow:0 1px 0 #000}
