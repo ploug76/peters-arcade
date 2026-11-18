@@ -13,7 +13,7 @@
 </head>
 <body>
 <canvas id="cv"></canvas>
-<div id="pad" hidden><div id="swipeHint">SWIPE &amp; HOLD ANYWHERE TO MOVE<br>SWIPE UP TO JUMP</div><button id="bSwap" class="big" type="button" aria-label="Swap hero">SWAP</button><button id="bJump" class="big" type="button" aria-label="Jump">JUMP</button><button id="bAct" class="big" type="button" aria-label="Power">ACTION</button></div>
+<div id="pad" hidden><div id="swipeHint">SWIPE &amp; HOLD ANYWHERE TO MOVE<br>SWIPE UP TO JUMP</div><button id="bJump" class="big" type="button" aria-label="Jump">JUMP</button><button id="bAct" class="big" type="button" aria-label="Power">ACTION</button></div>
 <div id="ui">
  <div id="loading"><div class="ldT">Constable Duncan<span>&amp; Hope's Angels</span></div><div class="ldBar"><i id="ldFill"></i></div></div>
  <section id="title" class="screen" hidden>
@@ -37,7 +37,7 @@
  <section id="howto" class="screen card" hidden>
   <div class="cardIn"><div id="htNum"></div><h2 id="htTitle"></h2><p id="htText"></p><div id="htKeys"></div><button id="bStart" class="big">&#9654; START</button></div>
  </section>
- <div id="hud" hidden><span id="hudLv"></span><span id="hudInfo"></span><button id="bPause" aria-label="Pause">II</button></div>
+ <div id="hud" hidden><span id="hudLv"></span><button id="bSwap" type="button" aria-label="Swap hero">SWAP</button><span id="hudInfo"></span><button id="bPause" aria-label="Pause">II</button></div>
  <section id="pause" class="screen card" hidden>
   <div class="cardIn"><h2>Paused</h2><button id="bResume" class="big">Resume</button><button id="bRestart">Restart level</button><button id="bSkipLv">Skip this level</button><button id="bPLevels">Levels</button><button id="bPSound" class="small">Sound: On</button></div>
  </section>
@@ -46,7 +46,7 @@
  </section>
  <div id="toast"></div>
 </div>
-<script src="js/game.js"></script>
+<script src="js/game.js?v=2"></script>
 <a id="paTestBack" class="review" href="../../" aria-label="Back to Test Arcade. Review build."><b>← Arcade</b></a>
 <style>
 #paTestBack{position:fixed;z-index:100000;left:max(6px,env(safe-area-inset-left));top:max(6px,env(safe-area-inset-top));display:inline-flex;align-items:center;text-decoration:none;background:#ffe14a;color:#14120c;border:2px solid #14120c;border-radius:999px;padding:6px 10px;font:700 13px/1 "Courier New",ui-monospace,monospace;touch-action:manipulation;white-space:nowrap}
