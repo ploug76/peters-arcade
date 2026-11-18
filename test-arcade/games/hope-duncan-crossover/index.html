@@ -4,57 +4,53 @@
 <meta name="robots" content="noindex, nofollow">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<link rel="icon" href="data:,">
-<title>Hope &amp; Constable Duncan — crossover prototype</title>
+<title>Hope &amp; Constable Duncan</title>
+<meta name="theme-color" content="#2a1d3a">
+<meta name="description" content="Hope and Constable Duncan. The same Flemingsburg game, with Hope along for the story.">
+<link rel="icon" href="icon-192.png">
 <link rel="stylesheet" href="crossover.css">
 </head>
 <body>
 <canvas id="cv"></canvas>
-<div id="hud" hidden>
-  <div id="who"></div>
-  <div id="goals"></div>
-  <div id="phase"></div>
-  <div id="keys"></div>
-</div>
-<section id="title">
-  <div class="card">
-    <h1>Hope &amp; Constable Duncan<span>Isolated crossover prototype. The main game is unchanged.</span></h1>
-    <p class="note">Hope wears a fitted black long-sleeve shirt, black baseball cap, black aviator sunglasses, and blue jeans. Her long brown ponytail catches criminals, swings the ravine, and strikes with forgiveness.</p>
-    <p>Save the world from evil. Switch between Hope and Constable Duncan. Duncan keeps the on-foot actions verified in the original game: walk, run, jump, and ACTION to bust. He wears the same khaki shirt, tartan kilt, sporran, black boots, rectangular glasses, and black cap as the original game.</p>
-    <ul>
-      <li><b>Move:</b> ← → or A D. Hold Shift, or hold a direction, to run. Swipe and hold anywhere. A long swipe runs.</li>
-      <li><b>Jump:</b> ↑, W, or K, or swipe up, or JUMP. A run-jump does not cross the ravine.</li>
-      <li><b>Switch:</b> C or SWITCH.</li>
-      <li><b>Hope punch:</b> Space or J, or PUNCH. One tap punches. Two taps punch twice. Three taps inside 0.45s coil the ponytail, then unroll it. Contact is a blast of forgiveness, and it does not also fire the punches.</li>
-      <li><b>Hope prayer:</b> Q or PRAY. A prayer blast knocks evil aside.</li>
-      <li><b>Hope grace:</b> E or GRACE. Grace Abounding knocks evil aside in a wide wave.</li>
-      <li><b>Hope lasso:</b> F or LASSO. The brown ponytail catches a criminal, or swings her across the ravine from the near edge.</li>
-      <li><b>Duncan action:</b> Space, J, or ACTION. Busts a crook within 90 and folds a closed umbrella within 84. Running into a fleeing crook within 38 nabs him.</li>
-    </ul>
-    <button id="bStart" class="big" type="button">Start</button>
+<div id="pad" hidden><div id="swipeHint">SWIPE &amp; HOLD ANYWHERE TO MOVE<br>SWIPE UP TO JUMP</div><button id="bJump" class="big" type="button" aria-label="Jump">JUMP</button><button id="bAct" class="big" type="button" aria-label="Action">ACTION</button></div>
+<div id="ui">
+ <div id="loading"><div class="ldT">Hope &amp; Constable Duncan<span>of Flemingsburg</span></div><div class="ldBar"><i id="ldFill"></i></div></div>
+ <section id="title" class="screen" hidden>
+  <div id="titleBtns">
+   <button id="bPlay" class="big">&#9654; PLAY</button>
+   <button id="bLevels">LEVELS</button>
+   <button id="bSound" class="small">Sound: On</button>
   </div>
-</section>
-<section id="win" hidden>
-  <div class="card">
-    <h1>The world is saved<span id="winText"></span></h1>
-    <button id="bAgain" class="big" type="button">Play again</button>
+ </section>
+ <section id="levels" class="screen" hidden>
+  <div class="lvHead"><button id="bLvBack" class="small">&#8592; Back</button><h2>Levels</h2></div>
+  <div id="lvList"></div>
+ </section>
+ <section id="story" class="screen" hidden>
+  <div id="storyBox">
+   <div class="stTop"><img id="portrait" alt=""><div id="spk"></div></div>
+   <div id="txt"></div>
+   <div class="row"><button id="bSkip" class="skip">Skip &#9193;</button><button id="bNext">Next &#9654;</button></div>
   </div>
-</section>
-<div id="pad" hidden>
-  <div id="hint">SWIPE &amp; HOLD ANYWHERE TO MOVE<br>LONG SWIPE RUNS · SWIPE UP JUMPS</div>
-  <button id="bPray" type="button">PRAY</button>
-  <button id="bGrace" type="button">GRACE</button>
-  <button id="bLasso" type="button">LASSO</button>
-  <button id="bSwitch" type="button">SWITCH</button>
-  <button id="bPunch" type="button">PUNCH</button>
-  <button id="bJump" type="button">JUMP</button>
+ </section>
+ <section id="howto" class="screen card" hidden>
+  <div class="cardIn"><div id="htNum"></div><h2 id="htTitle"></h2><p id="htText"></p><div id="htKeys"></div><button id="bStart" class="big">&#9654; START</button></div>
+ </section>
+ <div id="hud" hidden><span id="hudLv"></span><span id="hudInfo"></span><button id="bSwap" type="button" aria-label="Switch character">SWAP</button><button id="bPause" aria-label="Pause">II</button></div>
+ <section id="pause" class="screen card" hidden>
+  <div class="cardIn"><h2>Paused</h2><button id="bResume" class="big">Resume</button><button id="bSwitch" type="button">Switch character</button><button id="bRestart">Restart level</button><button id="bSkipLv">Skip this level</button><button id="bPLevels">Levels</button><button id="bPSound" class="small">Sound: On</button></div>
+ </section>
+ <section id="result" class="screen card" hidden>
+  <div class="cardIn"><h2 id="rsTitle"></h2><div id="rsStars"><i>&#9733;</i><i>&#9733;</i><i>&#9733;</i></div><p id="rsText"></p><button id="bContinue" class="big">Continue &#9654;</button><button id="bRetry">&#8635; Play again</button></div>
+ </section>
+ <div id="toast"></div>
 </div>
 <script type="module" src="game.js"></script>
-<a id="paTestBack" class="prototype" href="../../" aria-label="Back to Test Arcade. Prototype, not finished."><b>← Arcade</b></a>
+<a id="paTestBack" class="review" href="../../" aria-label="Back to Test Arcade. Review build."><b>← Arcade</b></a>
 <style>
 #paTestBack{position:fixed;z-index:100000;left:max(6px,env(safe-area-inset-left));top:max(6px,env(safe-area-inset-top));display:inline-flex;align-items:center;text-decoration:none;background:#ffe14a;color:#14120c;border:2px solid #14120c;border-radius:999px;padding:6px 10px;font:700 13px/1 "Courier New",ui-monospace,monospace;touch-action:manipulation;white-space:nowrap}
 #paTestBack.adult{background:#ffb4b4;left:auto;right:max(6px,env(safe-area-inset-right));top:calc(60px + env(safe-area-inset-top))}
-#paTestBack.prototype{background:#ffd59a;left:auto;right:max(6px,env(safe-area-inset-right))}
+#paTestBack.prototype{background:#ffd59a}
 </style>
 </body>
 </html>
