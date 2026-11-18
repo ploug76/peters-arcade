@@ -1,14 +1,10 @@
-import { HOPE_HEAD, LAYOUT } from './mechanics.js';
+import { HOPE_HEAD, LAYOUT, viewOf } from './mechanics.js';
 import { currentHair } from './world.js';
 import { RH, clock, drawDuncan, pose } from './verified-rig.js';
 
 const TAU = Math.PI * 2;
 
-export function viewOf(W, H, land) {
-  const k = land ? H * 0.30 / 106 : Math.min(H * 0.36, W * 0.62) / 106;
-  const gY = land ? H * 0.80 : H * 0.82;
-  return {k, gY, vw: W / k};
-}
+export { viewOf };
 
 function rr(c, x, y, w, h, r) {
   c.beginPath();
@@ -369,6 +365,14 @@ function drawUmb(c, u, t) {
   void t;
 }
 
+function drawPrompts(c, w) {
+  const lip = w.p.x >= LAYOUT.lip && w.p.x <= LAYOUT.cliff0 && w.p.y > -40 && !w.crossed && !w.swing;
+  if (lip && w.who === 'hope') label(c, LAYOUT.cliff0 + 78, -78, 'LASSO ACROSS', '#f0d7a4');
+  if (!w.umb.folded && Math.abs(w.umb.x - w.p.x) < 84 && w.p.y > -40) {
+    label(c, w.umb.x, -186, w.who === 'duncan' ? 'ACTION' : 'SWITCH', '#fff');
+  }
+}
+
 function drawRival(c, r, t) {
   c.save();
   c.translate(r.x, r.forgiven ? 8 : 0);
@@ -501,6 +505,7 @@ export function drawFrame(c, w, W, H, land) {
   c.arc(LAYOUT.anchor.x, LAYOUT.anchor.y, 10, 0, TAU);
   c.stroke();
   label(c, LAYOUT.anchor.x, LAYOUT.anchor.y - 18, 'LASSO', '#f0d7a4');
+  drawPrompts(c, w);
   for (const e of w.evils) {
     c.save();
     c.translate(e.x, e.y);

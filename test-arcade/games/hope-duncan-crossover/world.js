@@ -13,7 +13,7 @@ export function createWorld() {
       {id: 'high', x: 292, y: -158, r: 22, home: 292, vx: 0, vy: 0, aside: false, knock: false, fade: 1}
     ],
     criminal: {x: 278, y: 0, r: 18, captured: false, busted: false, how: '', st: 'loiter', tm: 0, vx: 0},
-    umb: {x: 388, op: 0, st: 'creep', folded: false},
+    umb: {x: 332, op: 0, st: 'creep', folded: false},
     rival: {x: 900, y: 0, r: 20, forgiven: false, stagger: 0, vx: 0, flash: 0},
     prayers: [],
     graces: [],
@@ -105,7 +105,15 @@ function tryPray(w) {
   if (w.who !== 'hope' || w.cd.pray > 0 || w.swing) return false;
   w.cd.pray = TIMING.prayCd;
   w.stats.prayers += 1;
-  const face = w.p.face || 1;
+  let face = w.p.face || 1;
+  let best = null, bestD = 160;
+  for (const e of w.evils) {
+    if (e.aside || e.knock) continue;
+    const d = Math.hypot(e.x - w.p.x, e.y - (w.p.y - 64));
+    if (d < bestD) { bestD = d; best = e; }
+  }
+  if (best) face = Math.sign(best.x - w.p.x) || face;
+  w.p.face = face;
   w.prayers.push({
     x: w.p.x + face * 18,
     y: w.p.y - 64,
@@ -132,6 +140,7 @@ function tryLasso(w) {
   if (w.pony.phase === 'coil' || w.pony.phase === 'unroll' || w.pony.phase === 'punch') return false;
   const p = w.p;
   const c = w.criminal;
+  if (p.y > -40 && p.x >= LAYOUT.lip && p.x <= LAYOUT.cliff0) p.face = 1;
   const dx = (c.x - p.x) * p.face;
   const dist = Math.hypot(c.x - p.x, (c.y - 40) - (p.y - 70));
   const canCatch = !c.captured && !c.busted && dx > -48 && dist < LAYOUT.lassoCatch && p.y > -40;
@@ -196,6 +205,11 @@ function tryJump(w) {
 }
 
 function speedFor(w, input, dt) {
+  if (w.pony.phase === 'coil' || w.pony.phase === 'unroll') {
+    w.p.carryT = 0;
+    w.p.carry = 0;
+    return 0;
+  }
   let dir = input.dir || 0;
   if (dir) {
     w.p.carry = dir;

@@ -1,0 +1,22 @@
+{
+ "name": "Kelly's Giraffe Adventure Vol. 9: Lantern Lake",
+ "short_name": "Giraffe Adventure 9",
+ "start_url": "./",
+ "display": "fullscreen",
+ "orientation": "any",
+ "background_color": "#140c24",
+ "theme_color": "#140c24",
+ "icons": [
+  {
+   "src": "icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any maskable"
+  }
+ ]
+}

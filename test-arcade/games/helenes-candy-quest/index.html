@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Helene's Candy Quest</title>
+<meta name="description" content="Match the candies from Helene's treasure chest. Swap, line up 3 or more, and fill the chest across 18 levels.">
+<meta name="theme-color" content="#2a0d3a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Candy Quest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="manifest" href="manifest.json">
+<style>
+:root{--gold:#f4c34d;--ink:#2a0d3a}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:#2a0d3a;color:#fff;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+body{position:fixed;inset:0;overflow:hidden;touch-action:none;user-select:none}
+button,input{font-family:inherit}
+#app{position:absolute;inset:0}
+#bg{position:absolute;inset:0;background:linear-gradient(#ffd0ea,#fff4c8 55%,#e7c6ff);z-index:0}
+#boardWrap{display:none;position:absolute;z-index:1;touch-action:none}
+body[data-mode="play"] #boardWrap,body[data-mode="pause"] #boardWrap{display:block}
+#cv{touch-action:none;border-radius:16px;background:rgba(74,24,100,.55);box-shadow:0 8px 0 rgba(60,20,40,.25)}
+#hud{display:none;position:absolute;z-index:3;gap:8px;align-items:center;padding:8px;border-radius:18px;background:rgba(42,13,58,.88);border:3px solid var(--gold)}
+body[data-mode="play"] #hud,body[data-mode="pause"] #hud{display:flex}
+#host{width:72px;height:92px;object-fit:cover;object-position:50% 20%;border-radius:14px;border:3px solid var(--gold);flex:0 0 auto;background:#3a1860}
+#hudMain{flex:1;min-width:0}
+#lvlName{font-weight:800;font-size:15px;color:#ffe08a;line-height:1.2}
+.stats{display:flex;gap:12px;margin-top:2px}
+.stats div{display:flex;flex-direction:column;line-height:1}
+.stats b{font-size:26px;color:#fff}
+.stats span{font-size:11px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#ffd0ea}
+#goal{position:relative;margin-top:6px;height:28px;border-radius:14px;background:rgba(255,255,255,.12);overflow:hidden}
+#gFill{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(#ffe08a,#e7a020)}
+#gTxt{position:relative;z-index:1;font-size:15px;font-weight:800;line-height:28px;padding:0 8px;white-space:nowrap}
+.need{display:inline-flex;align-items:center;gap:3px;margin-right:8px}
+.need.done{opacity:.7}
+.gi{display:inline-block;width:24px;height:24px;background:url(art/gems.webp) 0 0/800% 100% no-repeat;vertical-align:middle}
+#btnPause,#bHint{width:48px;height:48px;border-radius:16px;border:3px solid #fff;background:#6a2a98;color:#fff;font-size:20px;flex:0 0 auto}
+#bubble{display:none;position:absolute;z-index:4;left:12px;right:12px;bottom:calc(8px + env(safe-area-inset-bottom));margin:0 auto;max-width:420px;padding:8px 12px;border-radius:16px;background:#fffaf0;border:3px solid var(--gold);color:#4a1767;font-weight:800;font-size:18px;text-align:center;pointer-events:none}
+body.land #bubble{left:auto;right:12px;width:min(320px,34vw);bottom:12px}
+#bubble.on{display:block}
+.scr{display:none;position:absolute;inset:0;z-index:5;overflow:auto;padding:calc(12px + env(safe-area-inset-top)) 12px calc(16px + env(safe-area-inset-bottom))}
+body[data-mode="title"] #title,body[data-mode="map"] #map{display:flex}
+.panel{margin:auto;width:min(520px,100%);text-align:center;background:linear-gradient(#4a1868ee,#2a0c3aee);border:4px solid var(--gold);border-radius:28px;padding:16px}
+.hero{width:min(240px,62vw);height:auto;border-radius:22px;border:4px solid var(--gold);object-fit:cover}
+h1{font-family:Georgia,serif;font-size:40px;line-height:.95;margin:10px 0 4px;color:#ffe08a}
+.tag{margin:0 0 10px;font-size:18px;font-weight:700;color:#ffe0f0}
+.btn{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;min-height:64px;margin-top:8px;border-radius:18px;border:3px solid #fff;background:#6a2a98;color:#fff;font-size:24px;font-weight:900;cursor:pointer;touch-action:manipulation}
+.btn small{font-size:16px;font-weight:800}
+.btn.gold{background:linear-gradient(#ffe08a,#e7a020);color:#3a1600;min-height:80px;font-size:30px}
+.btn.teal{background:linear-gradient(#3ecf9a,#16885c)}
+.btn.dim{background:#3a2a50}
+#bSet{position:fixed;top:calc(8px + env(safe-area-inset-top));right:10px;z-index:7;width:56px;height:56px;border-radius:50%;border:3px solid #fff3c4;background:rgba(60,18,80,.92);font-size:26px;display:none;color:#fff}
+body[data-mode="title"] #bSet{display:flex;align-items:center;justify-content:center}
+.maptop{display:flex;align-items:center;gap:8px}
+.maptop h2{flex:1;margin:0;text-align:left;font-family:Georgia,serif;color:#ffe08a;font-size:28px}
+.ib{width:48px;height:48px;border-radius:14px;border:3px solid #fff;background:#6a2a98;color:#fff;font-size:20px}
+#mapList{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.mbtn{display:flex;justify-content:space-between;align-items:center;min-height:60px;padding:8px 12px;border-radius:16px;border:3px solid #fff3c4;background:linear-gradient(#a24bd0,#6a1f93);color:#fff;font-size:18px;font-weight:800;text-align:left}
+.mbtn small{color:#ffe08a;letter-spacing:1px}
+.mbtn.cur{outline:4px solid #3dff8a}
+.mbtn:disabled{background:#3a2a48;color:#b7a8c4}
+.ov{display:none;position:absolute;inset:0;z-index:8;background:rgba(10,0,16,.55);align-items:center;justify-content:center;padding:12px}
+.ov.on{display:flex}
+.card{width:min(94vw,520px);max-height:calc(100% - 8px);overflow:hidden;display:flex;flex-direction:column;background:linear-gradient(#4a1863,#2a0c3a);border:4px solid var(--gold);border-radius:24px;padding:14px;text-align:center}
+.cbody{overflow:auto;min-height:0}
+.card h2{font-family:Georgia,serif;font-size:30px;color:#ffe08a;margin:6px 0}
+.card p,.card li{font-size:18px;line-height:1.35}
+.card ul{text-align:left;padding-left:20px}
+.card .face{width:84px;height:84px;border-radius:50%;border:4px solid var(--gold);margin:0 auto;background:url(art/face.webp) center/cover}
+.card .hero{width:min(180px,46vw)}
+.stars{font-size:40px;color:#ffd75e;letter-spacing:4px}
+.stars .off{color:#5c4572}
+.card .btns{flex:0 0 auto}
+.set{display:flex;justify-content:space-between;align-items:center;margin:8px 0;font-size:20px;font-weight:800}
+.set button{min-width:88px;height:48px;border-radius:12px;border:3px solid #fff;background:#4d3a5c;color:#fff;font-weight:800}
+.set button.on{background:linear-gradient(#3ddc84,#16924d)}
+#dock{display:none;position:fixed;left:0;right:0;bottom:max(8px,env(safe-area-inset-bottom));z-index:6;justify-content:center;gap:8px}
+body[data-mode="title"] #dock{display:flex}
+#dock .dk{height:46px;padding:0 14px;border-radius:23px;border:2px solid var(--gold);background:rgba(22,6,34,.92);color:#fff;font-weight:800;font-size:17px}
+#toast{position:fixed;left:50%;bottom:78px;transform:translateX(-50%);z-index:50;display:none;background:rgba(22,6,34,.95);border:2px solid var(--gold);border-radius:14px;padding:8px 12px;font-weight:800}
+#toast.on{display:block}
+body.land #host{width:100%;height:140px;max-width:220px}
+body.land #hud{flex-direction:column;align-items:stretch}
+@media (max-height:500px){
+  h1{font-size:30px}.hero{width:120px}.btn.gold{min-height:64px;font-size:24px}
+}
+</style>
+</head>
+<body data-mode="title">
+<div id="app">
+<div id="bg"></div>
+<div id="boardWrap"><canvas id="cv" width="320" height="320" aria-label="Candy board. Swipe to swap two candies."></canvas></div>
+<header id="hud">
+  <img id="host" src="art/helene.webp" alt="Helene holding her treasure chest full of colorful candies">
+  <div id="hudMain">
+    <div id="lvlName">Level 1</div>
+    <div class="stats">
+      <div><b id="score">0</b><span>score</span></div>
+      <div><b id="moves">0</b><span>moves</span></div>
+    </div>
+    <div id="goal"><div id="gFill"></div><div id="gTxt"></div></div>
+  </div>
+  <button id="bHint" type="button" aria-label="Hint">💡</button>
+  <button id="btnPause" type="button" aria-label="Pause">⏸</button>
+</header>
+<p id="bubble" role="status"></p>
+<section id="title" class="scr">
+  <div class="panel">
+    <img class="hero" src="art/helene.webp" alt="Helene, smiling, holding a chest of red, blue, green, gold, and purple candies">
+    <h1>Helene's<br>Candy Quest</h1>
+    <p class="tag">Match the candies from her chest.</p>
+    <button id="bPlay" class="btn gold" type="button"><span>▶ PLAY</span><small id="bPlaySub">Chest Opening</small></button>
+    <button id="bMap" class="btn teal" type="button">🗺️ LEVELS</button>
+    <p class="tag" id="bestLine">Match 3. Fill the chest.</p>
+  </div>
+</section>
+<section id="map" class="scr">
+  <div class="panel">
+    <div class="maptop">
+      <button id="mapHome" class="ib" type="button" aria-label="Home">🏠</button>
+      <h2>18 lands</h2>
+      <b id="mapStars">★ 0</b>
+    </div>
+    <div id="mapList"></div>
+  </div>
+</section>
+<div id="ov" class="ov"><div id="card" class="card"></div></div>
+<button id="bSet" type="button" aria-label="Settings">⚙️</button>
+<div id="dock">
+  <button id="shareBtn" class="dk" type="button">🔗 Share</button>
+  <button id="instBtn" class="dk" type="button">📲 Install</button>
+</div>
+<div id="toast" role="status"></div>
+</div>
+<script>
+window.PALB_CONFIG={backend:'firestore', firestore:{projectId:'peters-arcade-3ecb5', apiKey:'AIzaSyDF1az3jKEZFcT7FP5j1FzjslDxMGL2VmE'}};
+</script>
+<script src="js/logic.js?v=2"></script>
+<script src="js/levels.js?v=2"></script>
+<script src="js/audio.js?v=2"></script>
+<script src="js/game.js?v=2"></script>
+<script src="js/gamepad.js?v=2"></script>
+<script src="js/pad.js?v=2"></script>
+<script src="js/palb.js?v=2"></script>
+<script>
+PALB.init({
+  game:'helenes-candy-quest',
+  title:"Helene's Candy Quest",
+  order:'desc', unit:'pts', min:0, max:100000000,
+  boards:[{id:'quest', label:'Quest'}],
+  best:typeof journeyTotal==='function'?journeyTotal:null,
+  muted:typeof soundMuted==='function'?soundMuted:function(){return false},
+  bestDelay:4000
+});
+</script>
+<a id="paTestBack" class="review" href="../../" aria-label="Back to Test Arcade. Review build."><b>← Arcade</b></a>
+<style>
+#paTestBack{position:fixed;z-index:100000;left:max(6px,env(safe-area-inset-left));top:max(6px,env(safe-area-inset-top));display:inline-flex;align-items:center;text-decoration:none;background:#ffe14a;color:#14120c;border:2px solid #14120c;border-radius:999px;padding:6px 10px;font:700 13px/1 "Courier New",ui-monospace,monospace;touch-action:manipulation;white-space:nowrap}
+#paTestBack.adult{background:#ffb4b4;left:auto;right:max(6px,env(safe-area-inset-right));top:calc(60px + env(safe-area-inset-top))}
+#paTestBack.prototype{background:#ffd59a}
+</style>
+</body>
+</html>

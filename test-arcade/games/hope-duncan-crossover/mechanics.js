@@ -185,11 +185,63 @@ export function runJumpDistance() {
   return DUNCAN.run * air;
 }
 
+/** Same scale as Constable Duncan's on-foot side view (js/game.js SideGame.view).
+    W and H are the canvas, which in portrait is the top 62% of the phone. */
+export function viewOf(W, H, land) {
+  const k = land ? H * 0.235 / 106 : Math.min(H * 0.2, W * 0.4) / 106;
+  const gY = land ? H * 0.86 : H * 0.85;
+  return {k, gY, vw: W / k};
+}
+
 /** Phone and desktop controls. Portrait splits the screen so buttons sit below play.
     Landscape, including a Galaxy S25 Ultra turned sideways, keeps the full picture and overlays the buttons. */
 export function controlLayout(w, h) {
   const portrait = h > w;
   return {portrait, pad: true, split: portrait, canvasFrac: portrait ? 0.62 : 1};
+}
+
+/** On-screen buttons in CSS pixels, matching Constable Duncan's NES pad:
+    ACTION (or PUNCH) on the left, JUMP on the right, same size, round.
+    Portrait keeps them in the lower panel. Landscape keeps them on the picture,
+    with Hope's buttons in the sky so they do not cover the ground. */
+export function buttonLayout(W, H) {
+  const portrait = H > W;
+  const canvasH = portrait ? Math.round(H * 0.62) : H;
+  const panelH = H - (portrait ? canvasH : 0);
+  const bigBase = portrait ? clamp(panelH * 0.36, 92, 124) : clamp(H * 0.21, 72, 96);
+  let big = Math.round(bigBase * (portrait ? 0.84 : 0.82));
+  big = Math.max(68, Math.min(big, Math.floor((W - 48) / 2)));
+  const bot = portrait ? Math.round(clamp(panelH * 0.14, 18, 46)) + 8 : 12;
+  const right = portrait ? 16 : 14;
+  const gap = portrait ? 18 : 16;
+  const jump = {id: 'bJump', x: W - right - big, y: H - bot - big, w: big, h: big, round: true};
+  const act = {id: 'bPunch', x: jump.x - gap - big, y: jump.y, w: big, h: big, round: true};
+  const ids = ['bPray', 'bGrace', 'bLasso', 'bSwitch'];
+  let hope;
+  if (portrait) {
+    const hopeH = Math.max(64, Math.min(88, panelH - big - bot - 52));
+    const gapH = 8;
+    const hopeW = Math.max(64, Math.floor((W - 16 - gapH * 3) / 4));
+    const total = hopeW * 4 + gapH * 3;
+    let x = Math.max(8, Math.floor((W - total) / 2));
+    const y = canvasH + 44;
+    hope = ids.map(id => {
+      const b = {id, x, y, w: hopeW, h: hopeH, round: false};
+      x += hopeW + gapH;
+      return b;
+    });
+  } else {
+    const hopeH = Math.max(64, Math.min(72, Math.round(H * 0.18)));
+    const gapH = 8;
+    let x = 12;
+    const y = Math.max(64, Math.min(78, Math.round(H * 0.16)));
+    hope = ids.map(id => {
+      const b = {id, x, y, w: hopeH, h: hopeH, round: true};
+      x += hopeH + gapH;
+      return b;
+    });
+  }
+  return {portrait, canvasH, panelH, jump, act, hope};
 }
 
 export function onSolid(x) {

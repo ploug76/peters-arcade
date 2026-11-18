@@ -1,7 +1,7 @@
 {
   "name": "Peter's Test Arcade",
   "kind": "unlisted-review-shelf",
-  "updated": "2026-11-09",
+  "updated": "2026-11-18",
   "hostedPath": "/peters-arcade/test-arcade/",
   "notes": [
     "Unlisted review copies for play. This is not a release of the live arcade.",
@@ -93,10 +93,10 @@
       "title": "Hope and Constable Duncan",
       "kind": "prototype",
       "tag": "Prototype, not finished",
-      "blurb": "Crossover prototype only. The Constable Duncan game itself was not copied and was not changed.",
+      "blurb": "Crossover prototype only. This shelf copy is the later review head: the phone route is finished and Duncan wears his original uniform. The Constable Duncan game itself was not copied and was not changed.",
       "controls": "Swipe and hold to move. A long swipe runs. Swipe up or JUMP. Hope: PRAY, GRACE, LASSO, PUNCH. Duncan: ACTION. SWITCH changes character.",
-      "warn": "Prototype, not finished. Mobile play in this build was already incomplete.",
-      "limitations": "Missing files or buttons that never appear would be an integration fault, separate from the unfinished mobile mechanics. This shelf was not tested on a physical Galaxy S25 and was not played through to the end.",
+      "warn": "Prototype, not the finished Constable Duncan game. The phone route in this review head is the fixed one.",
+      "limitations": "This replaces the earlier shelf copy. It was checked to the title screen on a phone-sized viewport. It was not played through to the end and was not tested on a physical phone.",
       "playLabel": "Play prototype",
       "href": "games/hope-duncan-crossover/",
       "cover": "",
@@ -105,11 +105,11 @@
         "pr": 1,
         "url": "https://github.com/ploug76/constable-duncan/pull/1",
         "branch": "cursor/hope-duncan-crossover-967a",
-        "sha": "135751edf41e7f9708c0f0eb3ec3a32ede182c64",
+        "sha": "76cb3762a344014661016aa1028116c267069b99",
         "path": "crossover"
       },
       "integrationEdits": [
-        "Only the crossover folder was copied.",
+        "Only the crossover folder was copied, replacing the earlier shelf copy from 135751ed.",
         "The Lilita font file the prototype already used is copied beside it, and the stylesheet points at fonts/lilita.woff2 instead of the parent repo.",
         "No service worker and no save keys in this build.",
         "noindex, prototype label, and a back link to this shelf.",
@@ -296,6 +296,114 @@
         "Cache prefix pa-test-f589-tams-big-texas-hair-salon-589-.",
         "Fetch handler ignores URLs outside this folder.",
         "Save id pa-test-tams-big-texas-hair-salon-589. Shared keys prefixed pa-test-.",
+        "noindex and a back link to this shelf."
+      ]
+    },
+    {
+      "id": "helenes-candy-quest",
+      "title": "Helene's Candy Quest",
+      "kind": "review",
+      "tag": "Match-3 review",
+      "blurb": "Match the candies from Helene's chest. 18 levels. The treasure-chest games were not copied.",
+      "controls": "Swipe two neighboring candies to swap them. Lines of 3 or more clear. Arrows and Space work on a keyboard.",
+      "warn": "",
+      "playLabel": "Play this build",
+      "href": "games/helenes-candy-quest/",
+      "cover": "games/helenes-candy-quest/cover.png",
+      "source": {
+        "repo": "ploug76/kellys-arcade",
+        "pr": 3,
+        "url": "https://github.com/ploug76/kellys-arcade/pull/3",
+        "branch": "cursor/helenes-candy-quest-79cd",
+        "sha": "5c0661aa4076b396cdb4fc539932aadf82fc02a3",
+        "path": "games/helenes-candy-quest"
+      },
+      "integrationEdits": [
+        "Cache prefix pa-test-helenes-candy-quest-. Activate deletes only that prefix.",
+        "Fetch handler ignores URLs outside this folder.",
+        "Save key pa-test-hcq_save_v2. Shared leaderboard keys prefixed pa-test-.",
+        "The qa sim was left out. The game does not load it.",
+        "noindex and a back link to this shelf."
+      ]
+    },
+    {
+      "id": "kellys-giraffe-adventure-vol-9",
+      "title": "Kelly's Giraffe Adventure Vol. 9: Lantern Lake",
+      "kind": "review",
+      "tag": "Review build",
+      "blurb": "Kelly lights Lantern Lake for Peter's moon picnic. Six levels and three night bosses.",
+      "controls": "Swipe and hold anywhere to move. Swipe up or JUMP. ACTION bonks, rams, and grabs. Keys: arrows or WASD, Z or Space jump, X action.",
+      "warn": "",
+      "playLabel": "Play this build",
+      "href": "games/kellys-giraffe-adventure-vol-9/",
+      "cover": "games/kellys-giraffe-adventure-vol-9/cover.png",
+      "source": {
+        "repo": "ploug76/kellys-arcade",
+        "pr": 4,
+        "url": "https://github.com/ploug76/kellys-arcade/pull/4",
+        "branch": "cursor/lantern-lake-vol-9-f7d4",
+        "sha": "b4227859adf3d58ab6351d1800db37fbc7fb8837",
+        "path": "games/kellys-giraffe-adventure-vol-9"
+      },
+      "integrationEdits": [
+        "Cache prefix pa-test-kga9-. Activate deletes only that prefix. The review head deleted every other cache on the origin.",
+        "Fetch handler ignores URLs outside this folder.",
+        "Save key pa-test-kga9_save. Shared leaderboard keys prefixed pa-test-.",
+        "noindex was already on this game. A back link was added."
+      ]
+    },
+    {
+      "id": "jimothy-timothy-vol-2-lantern-picnic",
+      "title": "Jimothy Timothy Vol. 2: The Lantern Picnic",
+      "kind": "review",
+      "tag": "Review build",
+      "blurb": "Light the paper lanterns and lead Jimothy Timothy back to the picnic blanket.",
+      "controls": "Swipe and hold anywhere to move. Swipe up or JUMP. ACTION flicks the tail. Keys: arrows or WASD, Space jump, X action.",
+      "warn": "",
+      "playLabel": "Play this build",
+      "href": "games/jimothy-timothy-vol-2-lantern-picnic/",
+      "cover": "games/jimothy-timothy-vol-2-lantern-picnic/cover.png",
+      "source": {
+        "repo": "ploug76/kellys-arcade",
+        "pr": 2,
+        "url": "https://github.com/ploug76/kellys-arcade/pull/2",
+        "branch": "cursor/jimothy-timothy-vol-2-lantern-picnic-f11d",
+        "sha": "bc9dd6f187be04ff50a8b7da2bf23fc9d8e929b2",
+        "path": "games/jimothy-timothy-vol-2-lantern-picnic"
+      },
+      "integrationEdits": [
+        "Cache prefix pa-test-jtlp-. Activate deletes only that prefix. The review head deleted every other cache on the origin.",
+        "Fetch handler ignores URLs outside this folder.",
+        "Save key pa-test-jtlp_save. Skip key pa-test-skip:. Shared leaderboard keys prefixed pa-test-.",
+        "noindex and a back link to this shelf."
+      ]
+    },
+    {
+      "id": "harvest-watch",
+      "title": "Constable Duncan: The Harvest Watch",
+      "kind": "review",
+      "tag": "Review build",
+      "blurb": "A separate Harvest Watch volume. Loaves, lambs, the supper bell, and the harvest table. The original Constable Duncan game was not copied.",
+      "controls": "Swipe and hold anywhere to move. Swipe up or JUMP. ACTION uses what is in front of Duncan.",
+      "warn": "",
+      "playLabel": "Play this build",
+      "href": "games/harvest-watch/",
+      "cover": "games/harvest-watch/art/cover.webp",
+      "source": {
+        "repo": "ploug76/constable-duncan",
+        "pr": 2,
+        "url": "https://github.com/ploug76/constable-duncan/pull/2",
+        "branch": "cursor/harvest-watch-volume-be5e",
+        "sha": "6f8bbd3216ab59361b6f5c3760b9f13ef140c477",
+        "path": "harvest-watch"
+      },
+      "integrationEdits": [
+        "Only the harvest-watch folder was copied, plus the parent art, icons, and Lilita font that folder already loaded.",
+        "Those files now live inside this folder. Stylesheet, icons, pictures, and the service-worker list point at art/, fonts/, and icon-192.png instead of the parent repo.",
+        "Cache prefix pa-test-cd-harvest-watch-. Activate deletes only that prefix.",
+        "Fetch handler ignores URLs outside this folder.",
+        "Save keys pa-test-cdhw_stars, pa-test-cdhw_board, pa-test-cdhw_best, and pa-test-cdhw_sound.",
+        "The node test file was left out. The game does not load it.",
         "noindex and a back link to this shelf."
       ]
     }

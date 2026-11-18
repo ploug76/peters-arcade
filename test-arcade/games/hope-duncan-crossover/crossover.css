@@ -21,21 +21,12 @@ h1 span{display:block;font-size:16px;color:#fff}
 .card ul{margin:6px 0;padding-left:18px}
 button{font-family:Lilita,system-ui,sans-serif;font-size:20px;color:#2a1608;background:linear-gradient(#ffe27a,#f2b63c);border:3px solid #5a3410;border-radius:14px;min-height:48px;padding:8px 12px;cursor:pointer}
 button.big{font-size:28px;min-width:200px}
-#pad{position:fixed;z-index:4;left:0;right:0;bottom:0;top:62%;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;grid-template-rows:auto 1fr 1.15fr;gap:8px;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));background:linear-gradient(#2a1d3a,#140c1e);border-top:3px solid #ffd23f}
-#hint{grid-column:1/-1;font-size:13px;line-height:1.3;color:#ffe8c0;text-align:center}
-#bPunch{grid-column:1/3;background:radial-gradient(circle at 35% 30%,#d8ffd0,#1e8a32);color:#fff;border-color:#fff;font-size:22px}
-#bJump{grid-column:3/5;background:radial-gradient(circle at 35% 30%,#ffe0b0,#e07010);color:#fff;border-color:#fff;font-size:22px}
+#pad{position:fixed;z-index:4;left:0;right:0;bottom:0;top:62%;touch-action:none;background:linear-gradient(#2a1d3a,#140c1e);border-top:3px solid #ffd23f}
+#pad button{touch-action:none;position:absolute;display:flex;align-items:center;justify-content:center;line-height:1;text-shadow:-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000,2px 2px 0 #000}
+#hint{position:absolute;left:8px;right:8px;top:6px;font-size:13px;line-height:1.3;color:#ffe8c0;text-align:center;pointer-events:none}
+#bPunch{background:radial-gradient(circle at 35% 30%,#d8ffd0,#38b040 55%,#0a5a12);color:#fff;border-color:#fff;font-size:18px;box-shadow:0 0 18px #50d06099,inset 0 -6px 12px #0006}
+#bJump{background:radial-gradient(circle at 35% 30%,#ffe0b0,#ff8a1a 55%,#a03a00);color:#fff;border-color:#fff;font-size:22px;box-shadow:0 0 22px #ff9a3a99,inset 0 -6px 12px #0006}
 #pad button.dim{opacity:.38}
 #bStart{margin-top:8px}
-body.playing:not(.portrait) #pad{top:0;bottom:0;height:auto;display:block;background:transparent;border:0;pointer-events:none;padding:0}
+body.playing:not(.portrait) #pad{top:0;bottom:0;height:auto;background:transparent;border:0;pointer-events:none}
 body.playing:not(.portrait) #hint{display:none}
-body.playing:not(.portrait) #pad button{position:absolute;pointer-events:auto;width:86px;height:64px;min-height:64px}
-body.playing:not(.portrait) #bPray{left:12px;bottom:148px}
-body.playing:not(.portrait) #bGrace{left:12px;bottom:76px}
-body.playing:not(.portrait) #bLasso{left:108px;bottom:148px}
-body.playing:not(.portrait) #bSwitch{left:108px;bottom:76px}
-body.playing:not(.portrait) #pad #bPunch{right:118px;bottom:18px;width:100px;height:100px;min-width:100px;min-height:100px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#d8ffd0,#1e8a32);color:#fff}
-body.playing:not(.portrait) #pad #bJump{right:14px;bottom:18px;width:100px;height:100px;min-width:100px;min-height:100px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe0b0,#e07010);color:#fff}
-body.portrait #pad #bPunch,body.portrait #pad #bJump{width:132px;height:132px;min-width:132px;min-height:132px;border-radius:50%;justify-self:center;align-self:center}
-body.portrait #pad #bPunch{background:radial-gradient(circle at 35% 30%,#d8ffd0,#1e8a32);color:#fff}
-body.portrait #pad #bJump{background:radial-gradient(circle at 35% 30%,#ffe0b0,#e07010);color:#fff}
