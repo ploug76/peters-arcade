@@ -45,23 +45,27 @@
       "title": "Huck X and Jimothy — Chapter 1",
       "kind": "review",
       "tag": "Review build",
-      "blurb": "Chapter 1, Side A. Huck and J.T. on one short story. No service worker in this build.",
-      "controls": "Swipe anywhere and hold to move. Orange JUMP, green ACTION, SWAP to change character. Keys: arrows, Space, X, C.",
+      "blurb": "Chapter 1, Side A, rebuilt on the Jimothy shell. Huck and J.T. get a mixtape to the radio porch.",
+      "controls": "Swipe and hold anywhere to move. Swipe up or orange JUMP. Green ACTION digs, grabs, and talks. Keys: arrows or WASD, Space jump, X action.",
       "warn": "",
       "playLabel": "Play this build",
       "href": "games/huck-and-jimothy/",
-      "cover": "",
+      "cover": "games/huck-and-jimothy/cover.png",
       "source": {
         "repo": "ploug76/peters-arcade",
         "pr": 2,
         "url": "https://github.com/ploug76/peters-arcade/pull/2",
         "branch": "cursor/huck-and-jimothy-8c89",
-        "sha": "1aaeb11deb48ba1d5a594f4e8dfa9e3e3215b142",
+        "sha": "da85c2fc08e32b42d563cd975be0bb494b761cd0",
         "path": "games/huck-and-jimothy"
       },
       "integrationEdits": [
-        "Save key pa-test-huck-jimothy-ch1 and mute key pa-test-huck-jimothy-mute.",
-        "noindex and a back link to this shelf."
+        "Replaced the earlier shelf copy with review head da85c2f, rebuilt on the Jimothy shell.",
+        "Save key pa-test-huck-jimothy-ch1. Skip key pa-test-skip:.",
+        "Cache prefix pa-test-huck-jimothy-. Activate deletes only that prefix. Fetch ignores URLs outside this folder.",
+        "The node test file was left out. The game does not load it.",
+        "noindex was already on this game. A back link was added.",
+        "Tile box art is this build's cover.png."
       ]
     },
     {
@@ -69,23 +73,28 @@
       "title": "Pete's 420 Adventure",
       "kind": "adult",
       "tag": "21+ cannabis review",
-      "blurb": "Peter's review copy only. Adults only, 21+. A cartoon about cannabis. Not on the live hub.",
-      "controls": "Swipe to step. Green LOOK / TALK / PUZZLE button uses what is in front of Pete. No jump. Keys: arrows or WASD, E to use.",
+      "blurb": "Rebuilt on the Jimothy shell, with Peter's likeness. Adults only, 21+. The age gate is the first screen. Not on the live hub.",
+      "controls": "After the 21+ gate: swipe and hold to move, swipe up or JUMP, green ACTION turns a pipe, swaps a kit piece, or talks. Keys: arrows or WASD, Space jump, X action.",
       "warn": "Adults only, 21+. Cannabis theme. Review copy, not a live-arcade release.",
       "playLabel": "Play 21+ review",
       "href": "games/petes-420-adventure/",
-      "cover": "",
+      "cover": "games/petes-420-adventure/cover.png",
       "source": {
         "repo": "ploug76/peters-arcade",
         "pr": 4,
         "url": "https://github.com/ploug76/peters-arcade/pull/4",
         "branch": "cursor/petes-420-adventure-aec5",
-        "sha": "7ba0a5da568a727f43096946ff350746963939b4",
+        "sha": "649ce4e5f177d2dcb5a6f15ada96035c0de32a0e",
         "path": "games/petes-420-adventure"
       },
       "integrationEdits": [
-        "No save keys and no service worker in this build.",
-        "noindex, adult label, and a back link to this shelf."
+        "Replaced the earlier shelf copy with review head 649ce4e, rebuilt on the Jimothy shell.",
+        "The 21+ gate is unchanged: play does not start until I AM 21 OR OLDER.",
+        "Save key pa-test-petes-420. Skip key pa-test-skip:.",
+        "Cache prefix pa-test-petes-420-. Activate deletes only that prefix. Fetch ignores URLs outside this folder.",
+        "The node test file was left out. The game does not load it.",
+        "noindex was already on this game. Adult label and a back link were added.",
+        "Tile box art is this build's cover.png."
       ]
     },
     {
