@@ -107,7 +107,7 @@ function shade(hex,f){const n=parseInt(hex.slice(1),16);let r=n>>16,g=(n>>8)&255
 function star5(c,x,y,r,col,ol){c.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r*0.45:r;c.lineTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr)}c.closePath();c.fillStyle=col;c.fill();if(ol){c.lineWidth=0.6;c.strokeStyle=ol;c.stroke()}}
 /* ---------------- Duncan ---------------- */
 const RD=mkRig({vfix:1,S:52,vw:100,vr:280,cw:0.95,cr:1.42});/* Oct 30 v2: was walk 70 / run 190 (too slow to catch anyone). Longer stride keeps feet planted. */
-const RH=mkRig({vfix:1,S:48,vw:100,vr:280,cw:0.95,cr:1.42,L1:25,L2:25,hipH:52,ank:4,lift:8,kick:7,bob:1.4,Am:0.55,Em:0.6});
+const RH=mkRig({vfix:1,S:46,vw:100,vr:280,cw:1.02,cr:1.55,L1:26,L2:26,hipH:55,ank:3,lift:11,kick:6,bob:1.15,Am:0.68,Em:0.42,sp:2.1});
 function heroRig(){return G.who==='hope'?RH:RD}
 const DC={skin:'#eab48c',skinD:'#c98f68',shirt:'#b89d64',shirtD:'#8f7748',ol:'#2e2012',boot:'#18181a',hair:'#dccb9f',hairD:'#a8946a',beard:'#aaa59c'};
 function duncanLegs(c,L,far){const sk=far?DC.skinD:DC.skin,bt=far?'#0d0d0e':DC.boot;
@@ -176,57 +176,88 @@ function drawDuncan(c,o){const P=pose(o,RD),hy=P.hy;o._P=P;
  c.save();c.translate(0,hy);c.rotate(P.lean);c.translate(0,-hy);const ap=duncanArm(c,P,0,hy,false,o);c.restore();
  o._hand=[ap.w[0],ap.w[1]];
  return P}
-/* ---------------- Hope: black long sleeves, cap, aviators, jeans, brown ponytail. Same rig as Duncan. ---------------- */
-const HC={skin:'#e8b898',skinD:'#c99270',shirt:'#141414',shirtD:'#2c2c2c',jean:'#315fad',jeanD:'#244a88',ol:'#140e0c',shoe:'#141414',hair:'#6a3b22',hairL:'#8d552f'};
-function drawPony(c,o,hy){const phase=o.pony||'idle',u=Math.max(0,Math.min(1,o.ponyU||0)),sway=Math.sin((G.t||0)*3+(o.u||0)*5)*3;
- const x0=-5,y0=hy-34;c.save();
- const braid=(x1,y1,bend)=>{c.fillStyle='#4a2a16';c.beginPath();c.moveTo(x0-2.4,y0);c.quadraticCurveTo((x0+x1)/2+bend, (y0+y1)/2, x1-1.3,y1);c.lineTo(x1+1.3,y1);c.quadraticCurveTo((x0+x1)/2+bend+2,(y0+y1)/2,x0+2.4,y0);c.closePath();c.fill();
-  c.fillStyle='#8d552f';c.beginPath();c.moveTo(x0-0.7,y0+1);c.quadraticCurveTo((x0+x1)/2+bend*0.6,(y0+y1)/2,x1,y1-1);c.lineTo(x1+0.6,y1-1);c.quadraticCurveTo((x0+x1)/2+bend*0.6+1,(y0+y1)/2,x0+0.8,y0+1);c.fill()};
- if(phase==='coil'){const k=u*u*(3-2*u);c.strokeStyle='#5a341c';c.lineWidth=3.2;c.beginPath();c.moveTo(x0,y0);
-  for(let i=1;i<=8;i++){const t=i/8,ang=-1+t*Math.PI*2*1.6,rad=4+(1-k)*6+t*4;c.lineTo(2+Math.cos(ang)*rad,y0+8+Math.sin(ang)*rad*0.55)}c.stroke()}
- else if(phase==='unroll'||phase==='lasso'){const to=o.hairTo||{x:70,y:hy+10},k=Math.max(0.15,u),sag=phase==='lasso'?10:6;
-  braid(x0+(to.x-x0)*k, y0+(to.y-y0)*k, sag*(1-k))}
- else braid(x0-1+sway*0.3, y0+42, -6+sway);
+/* ---------------- Hope: modest adventurer. Fitted jacket, cargo pants, boots, braid. Same jointed rig language as Duncan. ---------------- */
+const HC={skin:'#f0c2a4',skinD:'#d7a588',jacket:'#1c6d68',jacketD:'#145650',jacketL:'#3aa39a',cargo:'#c6a56a',cargoD:'#a68448',ol:'#1a140e',boot:'#5a3a22',bootD:'#3a2416',glove:'#6b4a32',belt:'#3a2a18',brass:'#d7b15a',hair:'#4e2c16',hairL:'#8a5a32',lip:'#c46878'};
+function drawBraid(c,o,hy){const phase=o.pony||'idle',u=Math.max(0,Math.min(1,o.ponyU||0));
+ const sway=Math.sin((G.t||0)*3.1+(o.u||0)*TAU)*6*(0.4+0.6*(o.A||0));
+ const x0=-11,y0=hy-28;c.save();c.lineCap='round';c.lineJoin='round';
+ if(phase==='coil'){const k=u*u*(3-2*u);c.strokeStyle=HC.hair;c.lineWidth=4.2;c.beginPath();c.moveTo(x0,y0);
+  for(let i=1;i<=10;i++){const t=i/10,ang=-1.1+t*Math.PI*2*1.8,rad=4+(1-k)*8+t*3;c.lineTo(0+Math.cos(ang)*rad,y0+7+Math.sin(ang)*rad*0.48)}c.stroke();c.restore();return}
+ const to=(phase==='lasso'||phase==='unroll')?(o.hairTo||{x:92,y:hy+4}):null;
+ const k=to?Math.max(0.22,u):1;
+ const x1=to?x0+(to.x-x0)*k:-14+sway*0.45,y1=to?y0+(to.y-y0)*k:y0+74;
+ const mx=(x0+x1)/2+(to?-10*(1-k):-10+sway),my=(y0+y1)/2;
+ c.strokeStyle=HC.hair;c.lineWidth=6.2;c.beginPath();c.moveTo(x0,y0);c.quadraticCurveTo(mx,my,x1,y1);c.stroke();
+ c.strokeStyle=HC.hairL;c.lineWidth=2.3;c.beginPath();c.moveTo(x0+0.6,y0+1);c.quadraticCurveTo(mx+1.2,my,x1+0.4,y1-1);c.stroke();
+ c.strokeStyle='#2a160e';c.lineWidth=1.15;
+ for(let i=0;i<7;i++){const t=(i+0.5)/7,it=1-t,px=it*it*x0+2*it*t*mx+t*t*x1,py=it*it*y0+2*it*t*my+t*t*y1;
+  const flip=i%2?1:-1;c.beginPath();c.moveTo(px-3.1*flip,py-3.4);c.lineTo(px+3.1*flip,py+3.2);c.stroke()}
+ c.fillStyle='#e8d2a8';c.beginPath();c.arc(x1,y1,1.7,0,TAU);c.fill();c.strokeStyle=HC.hair;c.lineWidth=0.8;c.stroke();
  c.restore()}
-function hopeArm(c,P,i,hy,far,o){const sh=[far?-1:2,hy-26];let {sa,ea}=P.arms[i];
- if(o.ov){const v=o.ov;if(v.t==='cuff'&&!far){sa=1.5;ea=0.15}else if(v.t==='cuff'&&far){sa=0.9;ea=0.55}else if(v.t==='hose'&&!far){sa=1.05;ea=0.45}else if(v.t==='blanket'){sa=far?1.2:1.55;ea=0.65}else if(v.t==='cheer'){sa=far?2.55:2.85;ea=0.25}else if(v.t==='point'&&!far){sa=1.5;ea=0.08}else if(v.t==='wave'&&!far){sa=2.6;ea=0.55+0.35*Math.sin(G.t*12)}}
- if(!far&&o.pony==='punch'){sa=1.35;ea=0.15}
- const p=armPts(sh,sa,ea,15,14),col=far?HC.shirtD:HC.shirt;
- segO(c,sh,p.e,5,col,HC.ol);segO(c,p.e,p.w,4.3,col,HC.ol);
- c.fillStyle=far?HC.skinD:HC.skin;c.beginPath();c.arc(p.w[0]+Math.sin(p.fa)*2,p.w[1]+Math.cos(p.fa)*2,3.6,0,TAU);c.fill();
+function hopeArm(c,P,i,hy,far,o){const sh=[far?-0.5:1.2,hy-27];let {sa,ea}=P.arms[i];
+ if(o.ov){const v=o.ov;if(v.t==='cuff'&&!far){sa=1.35;ea=0.2}else if(v.t==='cuff'&&far){sa=0.85;ea=0.5}else if(v.t==='hose'&&!far){sa=1.0;ea=0.4}else if(v.t==='blanket'){sa=far?1.15:1.45;ea=0.6}else if(v.t==='cheer'){sa=far?2.45:2.75;ea=0.22}else if(v.t==='point'&&!far){sa=1.4;ea=0.1}else if(v.t==='wave'&&!far){sa=2.55;ea=0.5+0.3*Math.sin(G.t*12)}}
+ if(!far&&o.pony==='punch'){sa=1.25;ea=0.18}
+ const p=armPts(sh,sa,ea,14,13),col=far?HC.jacketD:HC.jacket;
+ segO(c,sh,p.e,3.5,col,HC.ol);segO(c,p.e,p.w,3.1,col,HC.ol);
+ c.fillStyle=far?shade(HC.glove,0.8):HC.glove;c.strokeStyle=HC.ol;c.lineWidth=0.7;c.beginPath();c.arc(p.w[0]+Math.sin(p.fa)*1.6,p.w[1]+Math.cos(p.fa)*1.6,3.1,0,TAU);c.fill();c.stroke();
  return p}
+function hopeBoot(c,L,far){const col=far?HC.bootD:HC.boot;
+ const bt0=[lerp(L.k[0],L.a[0],0.42),lerp(L.k[1],L.a[1],0.42)];
+ segO(c,bt0,L.a,3.5,col,HC.ol);
+ c.save();c.translate(L.a[0],L.a[1]);c.rotate(L.fr||0);
+ c.fillStyle=col;c.strokeStyle='#1a100c';c.lineWidth=0.7;
+ c.beginPath();c.moveTo(-3.6,-6);c.lineTo(3.2,-6.2);c.lineTo(3.6,-2);c.quadraticCurveTo(11,-1.5,11.2,2.6);c.lineTo(-3.8,3.2);c.closePath();c.fill();c.stroke();
+ c.strokeStyle='rgba(255,220,160,.35)';c.beginPath();c.moveTo(-2.4,-5);c.lineTo(2,-5.2);c.stroke();
+ c.restore()}
 function drawHope(c,o){const P=pose(o,RH),hy=P.hy;o._P=P;
+ const sway=Math.sin((o.u||0)*TAU)*(P.A||0)*2.4;
+ c.save();c.translate(sway,0);
  const hang=(o.pony||'idle')==='idle'||o.pony==='punch';
- if(hang)drawPony(c,o,hy);
+ if(hang)drawBraid(c,o,hy);
  c.save();hopeArm(c,P,1,hy,true,o);c.restore();
- const leg=(L,far)=>{const col=far?HC.jeanD:HC.jean;
-  segO(c,L.h,L.k,5.1,col,HC.ol);segO(c,L.k,L.a,4.5,col,HC.ol);
-  c.save();c.translate(L.a[0],L.a[1]);c.rotate(L.fr||0);c.fillStyle=HC.shoe;c.beginPath();c.moveTo(-4.2,-2.2);c.lineTo(8,-2.4);c.quadraticCurveTo(11.2,0,10.4,3.2);c.lineTo(-4.2,3.2);c.closePath();c.fill();c.fillStyle='#e8e8ea';c.fillRect(-3.2,-1.2,6,1.1);c.restore()};
+ const leg=(L,far)=>{const col=far?HC.cargoD:HC.cargo;
+  segO(c,L.h,L.k,3.7,col,HC.ol);segO(c,L.k,L.a,3.3,col,HC.ol);
+  if(!far){c.save();c.translate(lerp(L.h[0],L.k[0],0.45)+2.2,lerp(L.h[1],L.k[1],0.45));c.fillStyle='#8d6a3a';c.strokeStyle=HC.ol;c.lineWidth=0.6;c.fillRect(-2.2,-3.2,4.6,5.2);c.strokeRect(-2.2,-3.2,4.6,5.2);c.restore()}
+  hopeBoot(c,L,far)};
  leg(P.legs[1],true);leg(P.legs[0],false);
- c.save();c.translate(0,hy);c.rotate(P.lean);c.translate(0,-hy);
- c.beginPath();c.moveTo(-9.5,hy+1);c.quadraticCurveTo(-12,hy-16,-9,hy-30);c.quadraticCurveTo(-1,hy-34,7,hy-30);c.quadraticCurveTo(13,hy-16,11,hy+1);c.closePath();
- const gr=c.createLinearGradient(-10,0,12,0);gr.addColorStop(0,HC.shirtD);gr.addColorStop(0.55,HC.shirt);gr.addColorStop(1,'#3a3a3a');c.fillStyle=gr;c.fill();c.strokeStyle=HC.ol;c.lineWidth=1;c.stroke();
- c.strokeStyle='rgba(255,255,255,.16)';c.lineWidth=0.8;c.beginPath();c.moveTo(-3,hy-28);c.quadraticCurveTo(-1,hy-12,0,hy);c.stroke();
- c.fillStyle=HC.skin;c.fillRect(0.5,hy-36,7,7);
- const hx=4.2,hy2=hy-42;
- c.fillStyle=HC.hair;c.beginPath();c.moveTo(-2,hy2-6);c.quadraticCurveTo(-12,hy2-2,-13,hy2+10);c.quadraticCurveTo(-12,hy2+22,-7,hy2+18);c.quadraticCurveTo(-4,hy2+8,-1,hy2-4);c.fill();
- c.fillStyle=HC.skin;c.strokeStyle=HC.ol;c.lineWidth=0.9;c.beginPath();c.ellipse(hx,hy2,9.2,10.2,0,0,TAU);c.fill();c.stroke();
- c.beginPath();c.moveTo(hx+8.2,hy2-1);c.quadraticCurveTo(hx+12.4,hy2+1.4,hx+8.4,hy2+3);c.fill();
- c.fillStyle='rgba(220,120,130,.4)';c.beginPath();c.ellipse(hx+6.2,hy2+3.2,2.1,1.3,0,0,TAU);c.fill();
- c.strokeStyle='#a65058';c.lineWidth=0.9;c.beginPath();c.arc(hx+5.2,hy2+5.2,2.3,0.25,1.35);c.stroke();
- /* aviators */
- c.strokeStyle='#d5dde6';c.lineWidth=1.15;c.beginPath();c.moveTo(hx-1.5,hy2-1.2);c.lineTo(hx+13.5,hy2-2);c.stroke();
- const lens=c.createLinearGradient(hx,hy2-5,hx+12,hy2+3);lens.addColorStop(0,'#3a4250');lens.addColorStop(0.45,'#0c0e12');lens.addColorStop(1,'#2a3038');
- c.fillStyle=lens;c.beginPath();c.ellipse(hx+6.4,hy2-0.6,6.2,3.7,-0.12,0,TAU);c.fill();c.strokeStyle='#e6edf4';c.lineWidth=1.15;c.stroke();
- c.strokeStyle='rgba(255,255,255,.4)';c.lineWidth=0.7;c.beginPath();c.moveTo(hx+3.2,hy2-2.2);c.lineTo(hx+7.2,hy2-1.6);c.stroke();
- /* black cap */
- c.fillStyle='#121212';c.beginPath();c.moveTo(hx-8,hy2-3);c.quadraticCurveTo(hx-6,hy2-15,hx+2,hy2-15.4);c.quadraticCurveTo(hx+12,hy2-15,hx+13,hy2-4.2);c.lineTo(hx-8,hy2-3);c.fill();
- c.fillStyle='#2a2a2a';c.fillRect(hx-7,hy2-5.6,20,2);
- c.fillStyle='#101010';c.beginPath();c.moveTo(hx+10,hy2-5.4);c.quadraticCurveTo(hx+22,hy2-7,hx+26,hy2-2.6);c.lineTo(hx+25,hy2-1.2);c.quadraticCurveTo(hx+18,hy2-3.2,hx+10,hy2-3.2);c.fill();
+ c.save();c.translate(-sway*0.65,hy);c.rotate(P.lean+(P.run>0.45?0.05:0));c.translate(0,-hy);
+ /* fitted jacket: slim shoulders, narrow waist, modest hips. No bare skin below the collar. */
+ c.beginPath();c.moveTo(-6.4,hy+3);c.quadraticCurveTo(-5.2,hy-4,-4.2,hy-12);c.quadraticCurveTo(-6.6,hy-20,-6.8,hy-30);
+ c.quadraticCurveTo(-2.2,hy-35,5.4,hy-31);c.quadraticCurveTo(8.4,hy-18,6.2,hy-10);c.quadraticCurveTo(5.2,hy-3,6.2,hy+3);c.closePath();
+ const gr=c.createLinearGradient(-8,hy-30,8,hy);gr.addColorStop(0,HC.jacketD);gr.addColorStop(0.45,HC.jacket);gr.addColorStop(1,HC.jacketL);
+ c.fillStyle=gr;c.fill();c.strokeStyle=HC.ol;c.lineWidth=1;c.stroke();
+ c.strokeStyle='rgba(255,255,255,.28)';c.lineWidth=0.8;c.beginPath();c.moveTo(0.2,hy-28);c.lineTo(-0.2,hy-2);c.stroke();
+ c.fillStyle=HC.jacketD;c.fillRect(-6.6,hy-31,13.2,3.2);
+ c.fillStyle=HC.belt;c.fillRect(-6.2,hy-1.2,12.6,3.2);c.fillStyle=HC.brass;c.fillRect(3.2,hy-0.6,2.4,2.2);
+ /* satchel on the hip, strap across the jacket */
+ c.strokeStyle='#6b4e32';c.lineWidth=1.5;c.beginPath();c.moveTo(-5.5,hy-29);c.lineTo(5.5,hy+1);c.stroke();
+ c.save();c.translate(7.2+Math.sin((o.u||0)*TAU)*0.8*(P.A||0),hy+6);c.fillStyle='#8a6240';c.strokeStyle=HC.ol;c.lineWidth=0.7;
+ c.beginPath();c.moveTo(-3.2,-1);c.lineTo(3.4,-1.4);c.quadraticCurveTo(4.2,3.2,3,6.2);c.lineTo(-3.4,6);c.quadraticCurveTo(-4.4,2.4,-3.2,-1);c.fill();c.stroke();
+ c.strokeStyle='#d7b15a';c.beginPath();c.moveTo(-2.2,0.4);c.lineTo(2.4,0.2);c.stroke();c.restore();
+ /* neck, then a softer face */
+ c.fillStyle=HC.skin;c.fillRect(0.6,hy-36,4.8,6);
+ const hx=3.2,hy2=hy-45.5;
+ /* hair pulled back into the braid, with a soft side lock */
+ c.fillStyle=HC.hair;c.beginPath();c.moveTo(hx-1,hy2-11);c.quadraticCurveTo(hx-14,hy2-8,hx-13,hy2+4);c.quadraticCurveTo(hx-12,hy2+16,hx-6,hy2+12);c.quadraticCurveTo(hx-3,hy2+2,hx-1,hy2-6);c.fill();
+ c.fillStyle=HC.hairL;c.beginPath();c.moveTo(hx-2,hy2-9);c.quadraticCurveTo(hx+2,hy2-16,hx+7,hy2-12);c.quadraticCurveTo(hx+3,hy2-7,hx-1,hy2-8);c.fill();
+ c.fillStyle=HC.skin;c.strokeStyle='#e0b090';c.lineWidth=0.7;c.beginPath();c.ellipse(hx,hy2,7.2,9.8,0,0,TAU);c.fill();c.stroke();
+ c.beginPath();c.moveTo(hx+6.2,hy2-0.2);c.quadraticCurveTo(hx+8.6,hy2+1.1,hx+6.3,hy2+2.2);c.fill();
+ c.fillStyle='rgba(232,150,160,.4)';c.beginPath();c.ellipse(hx+4.4,hy2+2.8,1.8,1.15,0,0,TAU);c.fill();
+ c.strokeStyle='#7a4a32';c.lineWidth=1.05;c.beginPath();c.moveTo(hx+1.6,hy2-6.2);c.quadraticCurveTo(hx+4.4,hy2-7.6,hx+7.6,hy2-5.4);c.stroke();
+ const ex=hx+4.7,ey=hy2-1.7;
+ c.fillStyle='#fff';c.beginPath();c.ellipse(ex,ey,3.15,2.15,-0.15,0,TAU);c.fill();
+ c.fillStyle='#6a4630';c.beginPath();c.ellipse(ex+0.35,ey,1.45,1.45,0,0,TAU);c.fill();
+ c.fillStyle='#1a100c';c.beginPath();c.arc(ex+0.55,ey,0.62,0,TAU);c.fill();
+ c.fillStyle='#fff';c.beginPath();c.arc(ex-0.15,ey-0.45,0.38,0,TAU);c.fill();
+ c.strokeStyle='#2a160e';c.lineWidth=1.25;c.beginPath();c.moveTo(ex-3.1,ey-0.7);c.quadraticCurveTo(ex,ey-2.5,ex+3.2,ey-0.9);c.stroke();
+ for(let i=0;i<4;i++){c.beginPath();c.moveTo(ex-2.2+i*1.45,ey-1.15);c.lineTo(ex-2.5+i*1.45,ey-2.7);c.stroke()}
+ c.fillStyle=HC.lip;c.beginPath();c.moveTo(hx+3.3,hy2+4.15);c.quadraticCurveTo(hx+5.3,hy2+3.2,hx+7.5,hy2+4.05);c.quadraticCurveTo(hx+5.5,hy2+6.15,hx+3.3,hy2+4.15);c.fill();
+ c.strokeStyle='#8a3a48';c.lineWidth=0.7;c.stroke();
  c.restore();
- c.save();c.translate(0,hy);c.rotate(P.lean);c.translate(0,-hy);const ap=hopeArm(c,P,0,hy,false,o);c.restore();
- if(!hang)drawPony(c,o,hy);
- o._hand=[ap.w[0],ap.w[1]];
+ c.save();c.translate(-sway*0.35,hy);c.rotate(P.lean);c.translate(0,-hy);const ap=hopeArm(c,P,0,hy,false,o);c.restore();
+ if(!hang){c.save();c.translate(sway*0.2,0);drawBraid(c,o,hy);c.restore()}
+ c.restore();
+ o._hand=[ap.w[0]-sway*0.35,ap.w[1]];
  return P}
 function drawHero(c,o){if(G.who==='hope')drawHope(c,o);else drawDuncan(c,o)}
 function drawWho(c,who,o){if(who==='hope')drawHope(c,o);else drawDuncan(c,o)}
@@ -242,11 +273,14 @@ function pairBegin(c,lead){drawFollowerWorld(c,lead);
  c.scale(lead.face||1,1);drawHero(c,lead.o)}
 function pairEnd(c){c.restore()}
 function makeHopeFace(){const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');
- x.fillStyle='#6a3b22';x.beginPath();x.ellipse(46,78,14,26,0.3,0,TAU);x.fill();
- x.fillStyle='#e8b898';x.beginPath();x.arc(68,72,38,0,TAU);x.fill();
- x.fillStyle='#121212';x.beginPath();x.ellipse(64,46,48,26,0,Math.PI,0);x.fill();x.fillRect(86,40,30,8);
- x.fillStyle='#0c0e12';x.strokeStyle='#e6edf4';x.lineWidth=3;x.beginPath();x.ellipse(82,70,20,11,-0.15,0,TAU);x.fill();x.stroke();
- x.strokeStyle='#a65058';x.lineWidth=2;x.beginPath();x.arc(84,82,8,0.2,1.2);x.stroke();
+ x.fillStyle='#4e2c16';x.beginPath();x.ellipse(40,70,16,34,0.35,0,TAU);x.fill();
+ x.fillStyle='#1c6d68';x.fillRect(18,96,70,28);
+ x.fillStyle='#f0c2a4';x.beginPath();x.ellipse(72,68,30,36,0,0,TAU);x.fill();
+ x.fillStyle='#4e2c16';x.beginPath();x.ellipse(70,42,32,18,0,Math.PI,0);x.fill();
+ x.fillStyle='#fff';x.beginPath();x.ellipse(84,66,8,5,0,0,TAU);x.fill();
+ x.fillStyle='#1a100c';x.beginPath();x.arc(86,66,2.4,0,TAU);x.fill();
+ x.strokeStyle='#2a1a14';x.lineWidth=2;x.beginPath();x.moveTo(76,60);x.quadraticCurveTo(84,56,92,60);x.stroke();
+ x.strokeStyle='#c46878';x.lineWidth=2.4;x.beginPath();x.moveTo(78,84);x.quadraticCurveTo(86,90,94,83);x.stroke();
  return c.toDataURL()}
 /* ---------------- generic people ---------------- */
 const RP=mkRig({vr:150}),RK=mkRig({S:30,L1:17,L2:16,hipH:35,ank:3,lift:6,kick:5,vw:50,vr:140,bob:1.2});
@@ -1156,7 +1190,7 @@ const KEYS_SHOOT=['<b>Touch:</b> swipe &amp; hold anywhere to aim. SQUIRT shoots
 const LV=[
  {id:'c1',name:'Main Street, with Hope',kind:'On foot',make:SideGame,cfg:{bg:'street_day',gy:0.87,len:2700,who:'duncan',toast:'Hope is a few steps behind',endSign:'Next Block →',
    spawns:[{t:'granny',x:330},{t:'umb',x:620},{t:'antifa',x:900},{t:'umb',x:1220},{t:'kid',x:1450,momdx:240},{t:'umb',x:1850},{t:'commie',x:2150},{t:'umb',x:2420}]},
-  story:[['Duncan','Mornin\', Flemingsburg. Constable Duncan, reportin\' for duty. Kilt pressed, boots shined.'],['Hope','I am Hope. Black cap, aviators, long sleeves, and jeans. I will walk with you.'],['Duncan','Only one of us drives. The other stays a few steps back, so you can see who is movin\'.'],['Duncan','SWAP up top, or the C key, and we trade places. My ACTION still busts crooks and folds umbrellas.']],
+  story:[['Duncan','Mornin\', Flemingsburg. Constable Duncan, reportin\' for duty. Kilt pressed, boots shined.'],['Hope','I am Hope. Jacket, cargo pants, boots, and a braid down my back. I will walk with you.'],['Duncan','Only one of us drives. The other stays a few steps back, so you can see who is movin\'.'],['Duncan','SWAP up top, or the C key, and we trade places. My ACTION still busts crooks and folds umbrellas.']],
   how:'Patrol Main Street the way Duncan always has. Hope follows behind. SWAP puts her in front. Bust umbrellas and troublemakers, and help the neighbors.',keys:KEYS_X},
  {id:'c2',name:'Prayer on the Corner',kind:'On foot',make:SideGame,cfg:{bg:'street_dusk',gy:0.83,len:1400,who:'hope',story:true,toast:'Hope leads',endSign:'Corner clear →',
    shades:[{x:460,y:-58,kind:'low'},{x:980,y:-150,kind:'high'}],spawns:[]},

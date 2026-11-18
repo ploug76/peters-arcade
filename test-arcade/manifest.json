@@ -105,11 +105,11 @@
         "pr": 1,
         "url": "https://github.com/ploug76/constable-duncan/pull/1",
         "branch": "cursor/hope-duncan-crossover-967a",
-        "sha": "5a45d51494910134a44cdef2ee4669ae6e501426",
+        "sha": "c48ded5a3b6c01fbedde9ce7781df1e5b6a5dd8b",
         "path": "crossover"
       },
       "integrationEdits": [
-        "Replaced the earlier shelf copy with review head 5a45d51, the crossover rebuilt on the original Constable Duncan game.",
+        "Replaced the earlier shelf copy with review head c48ded5. Hope is redrawn as a modest adventurer on the original Constable Duncan base.",
         "Copied crossover/ plus the parent title art, level pictures, icon, and Lilita font that folder already loaded. Paths point at art/, fonts/, and icon-192.png.",
         "The title card picture, art/cover.webp, is the tile box art.",
         "No service worker in this build.",
