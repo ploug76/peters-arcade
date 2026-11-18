@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14182e">
+<title>Huck X and Jimothy — Chapter 1</title>
+<meta name="description" content="Huck X and Jimothy Timothy get a mixtape to the radio porch. A Jimothy Timothy story, Chapter 1, Side A.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Huck and Jimothy">
+<link rel="preload" href="fonts/lilita.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css?v=1">
+<style>@media (orientation:portrait){#bgart{background-position:70% 46% !important}}</style>
+</head>
+<body>
+<div id="bgart" hidden></div>
+<canvas id="cv" aria-label="Huck X and Jimothy, Chapter 1"></canvas>
+<div id="sp"></div>
+<div id="hud">
+ <button id="bMute" class="hb" type="button" aria-label="Sound on or off">🔊</button>
+ <button id="bPause" class="hb" type="button" aria-label="Pause">II</button>
+</div>
+<div id="pad">
+ <div id="swipeHint">SWIPE &amp; HOLD ANYWHERE TO MOVE<br>SWIPE UP TO JUMP</div>
+ <button id="bJump" class="big" type="button" aria-label="Jump">JUMP</button>
+ <button id="bAct" class="big" type="button" aria-label="Action">ACTION</button>
+</div>
+<div id="ui"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<div id="load"><div class="ld">HUCK X<small>and Jimothy · Chapter 1</small></div><div class="bar"><i></i></div></div>
+<div id="dock" role="toolbar" aria-label="Share"><button id="shareBtn" class="dk" type="button">Share</button></div>
+<div id="shareToast" role="status" aria-live="polite">Link copied!</div>
+<script>window.VERSION='1';window.__ERR=[];window.addEventListener('error',function(e){window.__ERR.push(String(e.message)+' @'+(e.lineno||''));});window.addEventListener('unhandledrejection',function(e){window.__ERR.push(String(e.reason));});</script>
+<script src="rules.js?v=1"></script>
+<script src="story.js?v=1"></script>
+<script src="engine.js?v=1"></script>
+<script src="skip-btn.js?v=1"></script>
+<script>
+(function(){
+  var btn=document.getElementById('shareBtn'), toast=document.getElementById('shareToast');
+  if(!btn)return;
+  ['pointerdown','pointerup','touchstart','mousedown','mouseup','click','keydown'].forEach(function(ev){btn.addEventListener(ev,function(e){e.stopPropagation();});});
+  btn.addEventListener('click',function(e){
+    e.preventDefault(); e.stopPropagation();
+    var data={title:document.title, text:'Play Huck X and Jimothy, Chapter 1. It is not stealing if it is in the trash.', url:location.href.split('#')[0]};
+    if(navigator.share){navigator.share(data).catch(function(){});return;}
+    if(navigator.clipboard)navigator.clipboard.writeText(data.url).then(function(){toast.style.display='block';setTimeout(function(){toast.style.display='none';},1600);}).catch(function(){});
+  });
+})();
+</script>
+<script>
+if('serviceWorker' in navigator && location.protocol==='https:')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).catch(function(){});
+</script>
+</body>
+</html>
