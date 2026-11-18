@@ -38,7 +38,7 @@ body[data-mode="play"] #hud,body[data-mode="pause"] #hud{display:flex}
 #gTxt{position:relative;z-index:1;font-size:15px;font-weight:800;line-height:28px;padding:0 8px;white-space:nowrap}
 .need{display:inline-flex;align-items:center;gap:3px;margin-right:8px}
 .need.done{opacity:.7}
-.gi{display:inline-block;width:24px;height:24px;background:url(art/gems.webp) 0 0/800% 100% no-repeat;vertical-align:middle}
+.gi{display:inline-block;width:24px;height:24px;background:url(art/candies.webp) 0 0/800% 300% no-repeat;vertical-align:middle}
 #btnPause,#bHint{width:48px;height:48px;border-radius:16px;border:3px solid #fff;background:#6a2a98;color:#fff;font-size:20px;flex:0 0 auto}
 #bubble{display:none;position:absolute;z-index:4;left:12px;right:12px;bottom:calc(8px + env(safe-area-inset-bottom));margin:0 auto;max-width:420px;padding:8px 12px;border-radius:16px;background:#fffaf0;border:3px solid var(--gold);color:#4a1767;font-weight:800;font-size:18px;text-align:center;pointer-events:none}
 body.land #bubble{left:auto;right:12px;width:min(320px,34vw);bottom:12px}
@@ -96,7 +96,7 @@ body.land #hud{flex-direction:column;align-items:stretch}
 <div id="bg"></div>
 <div id="boardWrap"><canvas id="cv" width="320" height="320" aria-label="Candy board. Swipe to swap two candies."></canvas></div>
 <header id="hud">
-  <img id="host" src="art/helene.webp" alt="Helene holding her treasure chest full of colorful candies">
+  <img id="host" src="art/helene.webp" alt="Helene holding her chest overflowing with old-fashioned hard candies">
   <div id="hudMain">
     <div id="lvlName">Level 1</div>
     <div class="stats">
@@ -111,7 +111,7 @@ body.land #hud{flex-direction:column;align-items:stretch}
 <p id="bubble" role="status"></p>
 <section id="title" class="scr">
   <div class="panel">
-    <img class="hero" src="art/helene.webp" alt="Helene, smiling, holding a chest of red, blue, green, gold, and purple candies">
+    <img class="hero" src="art/helene.webp" alt="Helene, smiling, holding a chest overflowing with peppermints, pillows, ribbons, and sour balls">
     <h1>Helene's<br>Candy Quest</h1>
     <p class="tag">Match the candies from her chest.</p>
     <button id="bPlay" class="btn gold" type="button"><span>▶ PLAY</span><small id="bPlaySub">Chest Opening</small></button>
@@ -140,13 +140,13 @@ body.land #hud{flex-direction:column;align-items:stretch}
 <script>
 window.PALB_CONFIG={backend:'firestore', firestore:{projectId:'peters-arcade-3ecb5', apiKey:'AIzaSyDF1az3jKEZFcT7FP5j1FzjslDxMGL2VmE'}};
 </script>
-<script src="js/logic.js?v=2"></script>
-<script src="js/levels.js?v=2"></script>
-<script src="js/audio.js?v=2"></script>
-<script src="js/game.js?v=2"></script>
-<script src="js/gamepad.js?v=2"></script>
-<script src="js/pad.js?v=2"></script>
-<script src="js/palb.js?v=2"></script>
+<script src="js/logic.js?v=3"></script>
+<script src="js/levels.js?v=3"></script>
+<script src="js/audio.js?v=3"></script>
+<script src="js/game.js?v=3"></script>
+<script src="js/gamepad.js?v=3"></script>
+<script src="js/pad.js?v=3"></script>
+<script src="js/palb.js?v=3"></script>
 <script>
 PALB.init({
   game:'helenes-candy-quest',

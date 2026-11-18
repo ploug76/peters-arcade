@@ -1,18 +1,18 @@
-/* 18 match-3 lands. Pieces are the jewels from Helene's chest.
+/* 18 match-3 lands. Pieces are old-fashioned hard candies.
    Goals get bigger and moves get tighter as the number climbs. */
 (function(root){
 'use strict';
 const NAMES = [
-  'Chest Opening','Ruby Hearts','Blue Drops','Garden Greens','Golden Squares',
-  'Purple Points','Pearl Shine','Sweet Mix','Ribbon Lesson','Two Colors',
-  'Starlight','Deep Chest','Color Shower',"Helene's Pick",'Wrapper Day',
-  'Busy Board','Almost Full','The Crown Chest'
+  'Candy Dish','Peppermint Swirls','Pillow Mints','Raspberry Drops','Cut Rock',
+  'Ribbon Twists','Sour Balls','Sweet Mix','Striped Sticks','Two Flavors',
+  'Candy Dish Bomb','Deep in the Tin','Color Shower',"Helene's Pick",'Wrapped Sweets',
+  'Busy Dish','Almost Full','The Full Tin'
 ];
 const INTRO = [
   'Swipe two candies that touch. Make a line of 3 or more!',
-  'Fill the score. Match 4 for a Ribbon, 5 for a Chest Star.',
-  'Gather the candies shown up top. They fall from my chest.',
-  'An L or a T makes a Wrapper. It clears a little square.',
+  'Fill the dish. Match 4 for a Striped Stick, 5 for a Candy Dish.',
+  'Gather the candies shown up top. They pour from my chest.',
+  'An L or a T makes a Wrapped Candy. It clears a little square.',
   'Take your time. Invalid swaps bounce back and cost nothing.'
 ];
 function make(){

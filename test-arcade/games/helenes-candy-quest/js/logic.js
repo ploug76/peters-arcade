@@ -1,5 +1,5 @@
 /* ===== Helene's Treasure Chest: rules engine (pure, no drawing) ===== */
-var N=8;/* board size, visible to the game page */let NC=6,GID=1,SPC=0;/* SPC = chance a falling-in gem arrives as a Line gem (Classic/Zen only) */
+var N=8;/* board size, visible to the game page */let NC=6,GID=1,SPC=0;/* SPC = chance a falling candy arrives already a striped stick */
 function K(r,c){return r*N+c}function KR(k){return Math.floor(k/N)}function KC(k){return k%N}
 function setNC(n){NC=n}function setSPC(p){SPC=p}
 function rndColor(){return Math.floor(Math.random()*NC)}
@@ -26,7 +26,7 @@ function moveValid(B,a,b){const A=B[a.r][a.c],Bb=B[b.r][b.c];if(!A||!Bb)return f
 function allMoves(B){const m=[];for(let r=0;r<N;r++)for(let c=0;c<N;c++){if(c<N-1&&moveValid(B,{r,c},{r,c:c+1}))m.push([{r,c},{r,c:c+1}]);if(r<N-1&&moveValid(B,{r,c},{r:r+1,c}))m.push([{r,c},{r:r+1,c}])}return m}
 function findMove(B){const m=allMoves(B);return m.length?m[Math.floor(Math.random()*m.length)]:null}
 function mostCommon(B,skip){const n=new Array(NC).fill(0);for(let r=0;r<N;r++)for(let c=0;c<N;c++){const g=B[r][c];if(g&&g.c>=0&&!(skip&&skip.has(K(r,c))))n[g.c]++}let b=0;for(let i=1;i<NC;i++)if(n[i]>n[b])b=i;return b}
-/* specials: h = clears its row, v = clears its column, b = 3x3 burst, x = Treasure Star (clears every gem of one colour) */
+/* specials: h/v = striped stick (row or column), b = wrapped candy (3x3), x = candy dish (one flavor) */
 function expand(B,clear,forced){const fx=[],done=new Set(),q=[...clear];
  while(q.length){const k=q.shift();if(done.has(k))continue;done.add(k);const r=KR(k),c=KC(k),g=B[r][c];if(!g||!g.s||g.used)continue;g.used=true;const add=[];
   if(g.s==='h'){for(let x=0;x<N;x++)add.push(K(r,x));fx.push({t:'h',r,c,col:g.c})}
@@ -57,7 +57,7 @@ function applyGravity(B){const moves=[];for(let c=0;c<N;c++){let w=N-1;for(let r
 function shuffleBoard(B){const all=[];for(let r=0;r<N;r++)for(let c=0;c<N;c++)all.push(B[r][c]);
  for(let t=0;t<300;t++){for(let i=all.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[all[i],all[j]]=[all[j],all[i]]}
   for(let i=0;i<all.length;i++)B[KR(i)][KC(i)]=all[i];if(boardOK(B))return true}
- for(let r=0;r<N;r++)for(let c=0;c<N;c++)if(!B[r][c].s)B[r][c].c=rndColor();/* fallback: recolour plain gems */
+ for(let r=0;r<N;r++)for(let c=0;c<N;c++)if(!B[r][c].s)B[r][c].c=rndColor();/* fallback: recolour plain candies */
  for(let t=0;t<300&&!boardOK(B);t++){const r=Math.floor(Math.random()*N),c=Math.floor(Math.random()*N);if(!B[r][c].s)B[r][c].c=rndColor()}return boardOK(B)}
 function serial(B){return B.map(row=>row.map(g=>[g.c,g.s||0]))}
 function unserial(S){return S.map((row,r)=>row.map((v,c)=>{const g=mk(v[0],v[1]||0);g.x=c;g.y=r;return g}))}
