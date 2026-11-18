@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#12305a">
+<title>Palm Tree Pete — Release the Files</title>
+<meta name="description" content="Volume 3. A fictional cartoon island adventure. Free the kids, follow the camera cables, and release the files.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Release the Files">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preload" href="fonts/lilita.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/ptp-anton.woff" as="font" type="font/woff" crossorigin>
+<style>
+@font-face{font-family:'Lilita One';src:url(fonts/lilita.woff2) format('woff2');font-display:swap}
+@font-face{font-family:'PTP Anton';src:url(fonts/ptp-anton.woff) format('woff');font-display:swap}
+html,body{margin:0;height:100%;overflow:hidden;background:#071018;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
+canvas{position:fixed;inset:0;display:block;touch-action:none}
+#sp{position:fixed;visibility:hidden;pointer-events:none;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+</style></head><body>
+<canvas id="cv" aria-label="Palm Tree Pete — Release the Files, Volume 3"></canvas>
+<div id="sp"></div>
+<script>window.addEventListener('error',function(e){(window.__ERR=window.__ERR||[]).push(String(e.message));});</script>
+<script src="logic.js?v=1"></script>
+<script src="kit.js?v=1"></script>
+<script src="art.js?v=1"></script>
+<script src="game.js?v=1"></script>
+<script>
+if('serviceWorker' in navigator && location.protocol==='https:')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).catch(function(){});
+</script>
+</body></html>
