@@ -397,7 +397,7 @@
       "title": "Constable Duncan: The Harvest Watch",
       "kind": "review",
       "tag": "Review build",
-      "blurb": "A separate Harvest Watch volume. Loaves, lambs, the supper bell, and the harvest table. The original Constable Duncan game was not copied.",
+      "blurb": "A separate Harvest Watch volume. Loaves, lambs, the supper bell, and the harvest table.",
       "controls": "Swipe and hold anywhere to move. Swipe up or JUMP. ACTION uses what is in front of Duncan.",
       "warn": "",
       "playLabel": "Play this build",
@@ -426,7 +426,7 @@
       "title": "Constable Duncan & Hope's Angels",
       "kind": "review",
       "tag": "Review build",
-      "blurb": "Duncan and Hope's angels light the lane through Flemingsburg. Swap heroes. Each angel has her own gift. The original Constable Duncan game was not copied.",
+      "blurb": "Duncan and Hope's angels light the lane through Flemingsburg. Swap heroes. Each angel has her own gift.",
       "controls": "Swipe and hold anywhere to move. A long swipe runs. Swipe up or JUMP. ACTION uses that hero's gift. SWAP changes who leads.",
       "warn": "",
       "playLabel": "Play this build",
@@ -446,6 +446,34 @@
         "The title card picture, art/cover.webp, is the tile box art.",
         "No service worker in this build.",
         "Save keys pa-test-ha_stars and pa-test-ha_sound.",
+        "noindex and a back link to this shelf."
+      ]
+    },
+    {
+      "id": "constable-duncan-painted",
+      "title": "Constable Duncan (painted upgrade)",
+      "kind": "review",
+      "tag": "Painted sprites",
+      "blurb": "The original Flemingsburg game, with Duncan and the town painted to match the cover. The live Constable Duncan site was not changed.",
+      "controls": "Swipe and hold anywhere to move. Swipe up or JUMP. ACTION uses what is in front of Duncan.",
+      "warn": "",
+      "playLabel": "Play this build",
+      "href": "games/constable-duncan-painted/",
+      "cover": "games/constable-duncan-painted/art/cover.webp",
+      "source": {
+        "repo": "ploug76/constable-duncan",
+        "pr": 4,
+        "url": "https://github.com/ploug76/constable-duncan/pull/4",
+        "branch": "cursor/painted-duncan-sprites-eec0",
+        "sha": "081e3ec252ef0241791a1179b9aeb95a7550af44",
+        "path": ""
+      },
+      "integrationEdits": [
+        "The playable game was copied, including js/duncan-sprites.js and art/sprites/. The sprite build script was left out.",
+        "Tile box art is the original cover, art/cover.webp.",
+        "Cache prefix pa-test-painted-duncan-. Activate deletes only that prefix.",
+        "Fetch handler ignores URLs outside this folder.",
+        "Save keys pa-test-cd_stars and pa-test-cd_sound, separate from the live game's cd_stars and cd_sound.",
         "noindex and a back link to this shelf."
       ]
     }
