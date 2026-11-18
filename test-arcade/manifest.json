@@ -306,7 +306,7 @@
       "title": "Helene's Candy Quest",
       "kind": "review",
       "tag": "Match-3 review",
-      "blurb": "Match the candies from Helene's chest. 18 levels. The treasure-chest games were not copied.",
+      "blurb": "Match old-fashioned hard candies from Helene's chest. 18 levels. The treasure-chest games were not copied.",
       "controls": "Swipe two neighboring candies to swap them. Lines of 3 or more clear. Arrows and Space work on a keyboard.",
       "warn": "",
       "playLabel": "Play this build",
@@ -317,10 +317,11 @@
         "pr": 3,
         "url": "https://github.com/ploug76/kellys-arcade/pull/3",
         "branch": "cursor/helenes-candy-quest-79cd",
-        "sha": "5c0661aa4076b396cdb4fc539932aadf82fc02a3",
+        "sha": "3cf3373064e88a8e0bffdf9fefa0616e3af88128",
         "path": "games/helenes-candy-quest"
       },
       "integrationEdits": [
+        "Replaced the earlier shelf copy with review head 3cf3373. The pieces are hard candies, art/candies.webp, instead of jewels.",
         "Cache prefix pa-test-helenes-candy-quest-. Activate deletes only that prefix.",
         "Fetch handler ignores URLs outside this folder.",
         "Save key pa-test-hcq_save_v2. Shared leaderboard keys prefixed pa-test-.",

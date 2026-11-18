@@ -1,11 +1,11 @@
-/* Helene's Candy Quest: a match-3. The pieces are the jewels from Helene's chest. */
+/* Helene's Candy Quest: a match-3. The pieces are old-fashioned hard candies from Helene's chest. */
 'use strict';
 const $=id=>document.getElementById(id);
 const LEVELS=window.CANDY_LEVELS;
 const Q=new URLSearchParams(location.search);
 const FAST=Q.get('fast')==='1';
 const SPEED=FAST?0.12:1;
-const CNAME=['Ruby Heart','Blue Drop','Green Square','Gold Diamond','Purple Point','Pearl'];
+const CNAME=['Peppermint Swirl','Striped Pillow','Raspberry Drop','Ribbon Candy','Cut-Rock Flower','Sour Ball'];
 const SK='pa-test-hcq_save_v2';
 let SV; try{SV=JSON.parse(localStorage.getItem(SK))||{}}catch(e){SV={}}
 SV=Object.assign({stars:{}, best:{}, music:1, sound:1}, SV);
@@ -15,7 +15,8 @@ function soundMuted(){return !SV.sound}
 var state='title';
 
 const cv=$('cv'), ctx=cv.getContext('2d');
-const gemsImg=new Image(); gemsImg.onload=()=>{if(B){draw(); kick()}}; gemsImg.src='art/gems.webp';
+const candyImg=new Image(); candyImg.onload=()=>{if(B){draw(); kick()}}; candyImg.src='art/candies.webp';
+const SRC=160;
 let playId=0, G=null, B=null, busy=false, sel=null, hint=null, cursor={r:3,c:3,on:false};
 let CELL=48, boardPx=384, dpr=1, camShake=0;
 const dying=[], tweens=[], floaters=[];
@@ -197,22 +198,19 @@ function round(x,y,w,h,r){ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+
 function strokeRound(x,y,w,h,r){round(x,y,w,h,r); ctx.stroke()}
 function drawGem(g, c){
   const sc=g.sc==null?1:g.sc, al=g.al==null?1:g.al;
-  if(sc<0.02||al<0.02||!gemsImg.complete||!gemsImg.naturalWidth) return;
-  const idx=g.s==='x'?7:(g.c>=0?g.c:0);
-  const x=(g.x+0.5)*c, y=(g.y+0.5)*c, d=c*0.9*sc;
+  if(sc<0.02||al<0.02||!candyImg.complete||!candyImg.naturalWidth) return;
+  let col=g.c>=0?g.c:0, row=0, rot=0;
+  if(g.s==='x'){col=7; row=0;}
+  else if(g.s==='h'){row=1;}
+  else if(g.s==='v'){row=1; rot=Math.PI/2;}
+  else if(g.s==='b'){row=2;}
+  const x=(g.x+0.5)*c, y=(g.y+0.5)*c, d=c*0.92*sc;
+  ctx.save();
   ctx.globalAlpha=al;
-  ctx.drawImage(gemsImg, idx*112, 0, 112, 112, x-d/2, y-d/2, d, d);
-  if(g.s==='h'||g.s==='v'){
-    ctx.strokeStyle='rgba(255,255,255,.95)'; ctx.lineWidth=Math.max(2, c*0.06);
-    ctx.beginPath();
-    if(g.s==='h'){ctx.moveTo(x-d*0.28,y); ctx.lineTo(x+d*0.28,y)}
-    else {ctx.moveTo(x,y-d*0.28); ctx.lineTo(x,y+d*0.28)}
-    ctx.stroke();
-  }else if(g.s==='b'){
-    ctx.strokeStyle='rgba(255,220,90,.95)'; ctx.lineWidth=Math.max(2, c*0.07);
-    ctx.beginPath(); ctx.arc(x,y,d*0.42,0,6.3); ctx.stroke();
-  }
-  ctx.globalAlpha=1;
+  ctx.translate(x, y);
+  if(rot) ctx.rotate(rot);
+  ctx.drawImage(candyImg, col*SRC, row*SRC, SRC, SRC, -d/2, -d/2, d, d);
+  ctx.restore();
 }
 function floater(x,y,t,col){floaters.push({x,y,t,col,life:0,max:800}); kick()}
 
@@ -398,7 +396,7 @@ function howTo(back){
   card('<h2>How to play</h2><ul>'+
     '<li><b>Swipe</b> a candy up, down, left, or right. Or <b>tap</b> one, then tap the one beside it.</li>'+
     '<li>Line up <b>3 or more</b> of the same candy from Helene\'s chest. They clear, the ones above fall, and new candies pour in.</li>'+
-    '<li><b>Match 4</b> makes a <b>Ribbon</b>. It clears a whole row or column. An <b>L or T</b> makes a <b>Wrapper</b>, which clears a square. <b>Match 5</b> makes a <b>Chest Star</b>. Swap it to clear one color.</li>'+
+    '<li><b>Match 4</b> makes a <b>Striped Stick</b>. It clears a whole row or column. An <b>L or T</b> makes a <b>Wrapped Candy</b>, which clears a square. <b>Match 5</b> makes a <b>Candy Dish</b>. Swap it to clear one flavor.</li>'+
     '<li>Each level has a goal and a limited number of moves. Leftover moves mean more stars.</li>'+
     '<li>A swap that does not match bounces back and does not spend a move.</li>'+
     '<li>⌨️ Arrows move the gold box. Space or Enter swaps. P pauses. M is sound.</li>'+
