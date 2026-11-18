@@ -1,31 +1,23 @@
-# Huck X — Chapter 1: Side A
+# Huck X and Jimothy — Chapter 1
 
-A short desert adventure for Peter's Arcade. Huck X and Jimothy Timothy (J.T.) get a mixtape back to the radio porch.
+Review build. Not on the arcade hub.
 
-Open `index.html` in a browser. No build step and no network. It plays with a keyboard or with the on-screen buttons (phone portrait and landscape).
+This chapter is rebuilt on the Jimothy Timothy game: the same swipe-anywhere movement, green ACTION on the left, orange JUMP on the right, title, menus, HUD, and the painted backdrops and raccoon sprites from Jimothy Timothy and the Hair Mob (the earlier volume) and The Lantern Picnic (Vol. 2).
 
-## Controls
+Huck X is a new sprite in that same outlined style: red X cap, yellow shirt, denim shorts, freckles, knee bandage. Jimothy Timothy is the raccoon with the sunglasses, drawn from the Hair Mob sheets.
 
-- Move: arrows or WASD. On a phone, LEFT / RIGHT / UP.
-- Jump: Space or Z, or JUMP.
-- Act: X or Enter, or the action button. It digs, rides, pulls the lever, skates, opens the shop, or starts the Jeep, depending on where you are.
-- Swap: C or Q, or SWAP. Switch between Huck and J.T. any time. During the tow, SWAP switches the Jeep and the skateboard.
-- Pause: P or Escape.
+## Play
 
-## Chapter 1
+Open `index.html`. No build step.
 
-1. J.T. rides in Huck's backpack until you swap.
-2. Dig a solar battery out of a trash can as J.T.
-3. Squeeze J.T. through the fence hole, grab the crank, and open the gate.
-4. At the soft sand, swap to J.T. and press Ride. Huck sits on him for the crossing.
-5. Dig the mixtape out of the junk pile.
-6. Optional: spend cans at the shed on board wax, a BMX, or a pocket stereo.
-7. J.T. drives the solar Jeep and tows Huck on a skateboard to the radio porch. Steer far and near. Swap to lean the board yourself.
+1. Backpack Alley. J.T. rides in the pack. ACTION digs a solar battery out of a trash can.
+2. The Fence Hole. Swap to J.T. Squeeze under the fence, grab the crank, open the gate. Huck does not fit.
+3. Soft Sand. Huck rides J.T. Jump the pits. Huck would sink on his own.
+4. Junk and the Shed. Dig the mixtape. Cans buy board wax, a BMX, or a pocket stereo. Nothing costs money.
+5. Radio Road. J.T. drives the solar jeep and tows Huck on a skateboard. ACTION yanks the rope. Reach the radio porch.
 
-Cans are play money. Cartoon trash-digging only — in real life, ask a grown-up first.
+Keyboard: arrows or WASD, Space jumps, X is ACTION, C yanks the rope, P pauses, M mutes.
 
 ## Tests
 
-```bash
-node --test games/huck-and-jimothy/test/logic.test.js
-```
+`node --test games/huck-and-jimothy/test/logic.test.js`
