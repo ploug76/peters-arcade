@@ -799,7 +799,7 @@ function titleScreen(){state='title';AU.music('title');const cont=save.reached>0
  show(`<div class="logo"><div class="l1">KELLY'S</div><div class="l2">GIRAFFE ADVENTURE</div><div class="l3">VOL. 9 · LANTERN LAKE</div></div>
  <div class="tbtns"><button class="btn go" data-a="play">▶ ${cont?'CONTINUE':'PLAY'}</button>${cont?'<button class="btn alt" data-a="new">NEW GAME</button>':''}
  <button class="btn alt" data-a="levels">LEVELS</button><button class="btn alt" data-a="missions">MISSIONS</button><button class="btn alt2" data-a="sides">SIDE GAMES</button><button class="btn alt2" data-a="how">HOW TO PLAY</button><button class="btn dim" data-a="scores">SCORES</button></div>
- <p class="tag">Light the lanterns across 16 levels so Kelly's moon picnic can begin!</p>${save.best?'<p class="sub">Best score: '+save.best.toLocaleString()+'</p>':''}<p class="ctl sub">${ctlLine()}</p><p class="sub">A five8nine game</p>`,'title')}
+ <p class="tag">Light the lanterns across ${LEVELS.length} levels so Kelly's moon picnic can begin!</p>${save.best?'<p class="sub">Best score: '+save.best.toLocaleString()+'</p>':''}<p class="ctl sub">${ctlLine()}</p><p class="sub">A five8nine game</p>`,'title')}
 const STORY=[
  {img:'story1',t:'<b>Moon picnic night!</b> Kelly is waiting by <b>Lantern Lake</b> with Peter. Her giraffe was bringing the paper lanterns when a big breeze blew every flame out.'},
  {img:'story2',t:'<b>The lake is dark!</b> Cross the meadow, the willows, the woods and the lantern village. Light a lantern in every place, and step through painted doors for side games. Gust, Puddle and Nimbus would rather keep it windy.'},

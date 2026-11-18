@@ -344,11 +344,11 @@
         "pr": 4,
         "url": "https://github.com/ploug76/kellys-arcade/pull/4",
         "branch": "cursor/lantern-lake-vol-9-f7d4",
-        "sha": "120461277b086ac9a9beacd805026591c10a6792",
+        "sha": "3eda4213fc261bda94c1286f67be4ea8cec23d60",
         "path": "games/kellys-giraffe-adventure-vol-9"
       },
       "integrationEdits": [
-        "Replaced the earlier shelf copy from b422785 with review head 1204612: 17 levels, side games, mission log, and the new likenesses.",
+        "Replaced the earlier shelf copy with review head 3eda421: painted Peter on the picnic, and the title line uses the 17-level count.",
         "Cache prefix pa-test-kga9-. Activate deletes only that prefix. The review head deleted every other cache on the origin.",
         "Fetch handler ignores URLs outside this folder.",
         "Save key pa-test-kga9_save. Shared leaderboard keys prefixed pa-test-.",
